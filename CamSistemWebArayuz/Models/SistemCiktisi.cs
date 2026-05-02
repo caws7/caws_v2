@@ -71,7 +71,8 @@ namespace CamSistemWebArayuz.Models
             {
                 SistemAltSistemJoin sistemAltSistemJoin = sistemAltSistemJoinRepo.FindBy(e => e.SistemId == siparis.SistemId &&
                                                             e.AltSistemId == siparis.AltSistemId && e.SistemTurId == siparis.SistemTurId).FirstOrDefault();
-                birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
+                if (sistemAltSistemJoin?.BirimFiyat != null)
+                    birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
             }
             else
             {
@@ -163,7 +164,8 @@ namespace CamSistemWebArayuz.Models
             if (siparis.SistemBirimFiyat == null)
             {
                 SistemAltSistemJoin sistemAltSistemJoin = sistemAltSistemJoinRepo.FindBy(e => e.SistemId == siparis.SistemId).FirstOrDefault();
-                birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
+                if (sistemAltSistemJoin?.BirimFiyat != null)
+                    birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
             }
             else
             {
@@ -243,7 +245,8 @@ namespace CamSistemWebArayuz.Models
             {
                 SistemAltSistemJoin sistemAltSistemJoin = sistemAltSistemJoinRepo.FindBy(e => e.SistemId == siparis.SistemId &&
                                                             e.AltSistemId == siparis.AltSistemId && e.SistemTurId == siparis.SistemTurId).FirstOrDefault();
-                birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
+                if (sistemAltSistemJoin?.BirimFiyat != null)
+                    birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
             }
             else
             {
@@ -317,7 +320,8 @@ namespace CamSistemWebArayuz.Models
             if (siparis.SistemBirimFiyat == null)
             {
                 SistemAltSistemJoin sistemAltSistemJoin = sistemAltSistemJoinRepo.FindBy(e => e.SistemId == siparis.SistemId).FirstOrDefault();
-                birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
+                if (sistemAltSistemJoin?.BirimFiyat != null)
+                    birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
             }
             else
             {
@@ -395,7 +399,8 @@ namespace CamSistemWebArayuz.Models
             if (siparis.SistemBirimFiyat == null)
             {
                 SistemAltSistemJoin sistemAltSistemJoin = sistemAltSistemJoinRepo.FindBy(e => e.SistemId == siparis.SistemId).FirstOrDefault();
-                birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
+                if (sistemAltSistemJoin?.BirimFiyat != null)
+                    birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
             }
             else
             {
@@ -481,7 +486,8 @@ namespace CamSistemWebArayuz.Models
             {
                 SistemAltSistemJoin sistemAltSistemJoin = sistemAltSistemJoinRepo.FindBy(e => e.SistemId == siparis.SistemId &&
                                                                 e.AltSistemId == siparis.AltSistemId && e.SistemTurId == siparis.SistemTurId).FirstOrDefault();
-                birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
+                if (sistemAltSistemJoin?.BirimFiyat != null)
+                    birimFiyat = (decimal)sistemAltSistemJoin.BirimFiyat;
             }
             else
             {
