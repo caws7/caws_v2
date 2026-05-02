@@ -257,6 +257,74 @@ namespace CamSistemWebArayuz.Controllers
             return opti.output;
         }
 
+        /// <summary>
+        /// Belirtilen sipariş için OptimizasyonHesap kayıtlarını getirir.
+        /// Kayıt yoksa optimizer'ı çalıştırıp kaydeder, sonra yeniden okur.
+        /// </summary>
+        private List<OptimizasyonHesap> GetOrRunOptimizasyonHesaps(long siparisId)
+        {
+            string siparisIdStr = siparisId.ToString();
+            var optimizasyonHesapRepo = new OptimizasyonHesapRepo();
+
+            List<OptimizasyonHesap> GetFiltered()
+            {
+                var all = optimizasyonHesapRepo.FindBy(e => e.SiparisIds.Contains(siparisIdStr)).ToList();
+                return all
+                    .Where(x => !string.IsNullOrWhiteSpace(x.SiparisIds) &&
+                                x.SiparisIds.Split(',').Select(s => s.Trim()).Any(id => id == siparisIdStr))
+                    .ToList();
+            }
+
+            var hesaps = GetFiltered();
+            if (!hesaps.Any())
+            {
+                try
+                {
+                    var currentUser = (Kullanici)Session["CurrentUser"];
+                    var output = RunOptimizerForSiparis(new List<long> { siparisId }, fireKullanilsinMi: false);
+                    if (output?.stoktanKullanilanProfiller != null)
+                    {
+                        foreach (var p in output.stoktanKullanilanProfiller)
+                        {
+                            optimizasyonHesapRepo.AddAndSave(new OptimizasyonHesap
+                            {
+                                SiparisIds = siparisIdStr,
+                                ProfilId = (int)p.Profil_Kod,
+                                ProfilBoy = (int)p.Boy,
+                                KesimAdet = (int)p.Adet,
+                                KesilecekOlculer = "",
+                                FireAtik = 0,
+                                KullanilanAlan = "Asıl Stok",
+                                KayitTarih = DateTime.Now,
+                                KullaniciId = currentUser.Id
+                            });
+                        }
+                    }
+                    if (output?.fireStoktanKullanilanProfiller != null)
+                    {
+                        foreach (var p in output.fireStoktanKullanilanProfiller)
+                        {
+                            optimizasyonHesapRepo.AddAndSave(new OptimizasyonHesap
+                            {
+                                SiparisIds = siparisIdStr,
+                                ProfilId = (int)p.Profil_Kod,
+                                ProfilBoy = (int)p.Boy,
+                                KesimAdet = (int)p.Adet,
+                                KesilecekOlculer = "",
+                                FireAtik = 0,
+                                KullanilanAlan = "Fire Stok",
+                                KayitTarih = DateTime.Now,
+                                KullaniciId = currentUser.Id
+                            });
+                        }
+                    }
+                    hesaps = GetFiltered();
+                }
+                catch { }
+            }
+            return hesaps;
+        }
+
         [HttpPost]
         [AuthLog(Roles = "SİPARİS,GORUNTULEME,IMALAT,ONAYLAMA")]
         public ActionResult OptimizasyonHesapla(long SiparisId)
@@ -495,47 +563,51 @@ namespace CamSistemWebArayuz.Controllers
                 // PROFİL GÖNDERİM -> OPTİMİZASYON HESAPLA ve DB'ye yaz
                 if (siparisEntity.SiparisTur == "Profil Gönderim")
                 {
-                    var output = RunOptimizerForSiparis(new List<long> { siparisEntity.Id }, fireKullanilsinMi: false);
-                    var optimizasyonRepo = new OptimizasyonHesapRepo();
-                    var currentUser2 = (Kullanici)Session["CurrentUser"];
-
-                    if (output?.stoktanKullanilanProfiller != null)
+                    try
                     {
-                        foreach (var p in output.stoktanKullanilanProfiller)
+                        var output = RunOptimizerForSiparis(new List<long> { siparisEntity.Id }, fireKullanilsinMi: false);
+                        var optimizasyonRepo = new OptimizasyonHesapRepo();
+                        var currentUser2 = (Kullanici)Session["CurrentUser"];
+
+                        if (output?.stoktanKullanilanProfiller != null)
                         {
-                            optimizasyonRepo.AddAndSave(new OptimizasyonHesap
+                            foreach (var p in output.stoktanKullanilanProfiller)
                             {
-                                SiparisIds = siparisEntity.Id.ToString(),
-                                ProfilId = (int)p.Profil_Kod,
-                                ProfilBoy = (int)p.Boy,
-                                KesimAdet = (int)p.Adet,
-                                KesilecekOlculer = "",
-                                FireAtik = 0,
-                                KullanilanAlan = "Asıl Stok",
-                                KayitTarih = DateTime.Now,
-                                KullaniciId = currentUser2.Id
-                            });
+                                optimizasyonRepo.AddAndSave(new OptimizasyonHesap
+                                {
+                                    SiparisIds = siparisEntity.Id.ToString(),
+                                    ProfilId = (int)p.Profil_Kod,
+                                    ProfilBoy = (int)p.Boy,
+                                    KesimAdet = (int)p.Adet,
+                                    KesilecekOlculer = "",
+                                    FireAtik = 0,
+                                    KullanilanAlan = "Asıl Stok",
+                                    KayitTarih = DateTime.Now,
+                                    KullaniciId = currentUser2.Id
+                                });
+                            }
+                        }
+
+                        if (output?.fireStoktanKullanilanProfiller != null)
+                        {
+                            foreach (var p in output.fireStoktanKullanilanProfiller)
+                            {
+                                optimizasyonRepo.AddAndSave(new OptimizasyonHesap
+                                {
+                                    SiparisIds = siparisEntity.Id.ToString(),
+                                    ProfilId = (int)p.Profil_Kod,
+                                    ProfilBoy = (int)p.Boy,
+                                    KesimAdet = (int)p.Adet,
+                                    KesilecekOlculer = "",
+                                    FireAtik = 0,
+                                    KullanilanAlan = "Fire Stok",
+                                    KayitTarih = DateTime.Now,
+                                    KullaniciId = currentUser2.Id
+                                });
+                            }
                         }
                     }
-
-                    if (output?.fireStoktanKullanilanProfiller != null)
-                    {
-                        foreach (var p in output.fireStoktanKullanilanProfiller)
-                        {
-                            optimizasyonRepo.AddAndSave(new OptimizasyonHesap
-                            {
-                                SiparisIds = siparisEntity.Id.ToString(),
-                                ProfilId = (int)p.Profil_Kod,
-                                ProfilBoy = (int)p.Boy,
-                                KesimAdet = (int)p.Adet,
-                                KesilecekOlculer = "",
-                                FireAtik = 0,
-                                KullanilanAlan = "Fire Stok",
-                                KayitTarih = DateTime.Now,
-                                KullaniciId = currentUser2.Id
-                            });
-                        }
-                    }
+                    catch { }
                 }
 
                 ViewBag.RecordResult = 1;
@@ -844,7 +916,7 @@ namespace CamSistemWebArayuz.Controllers
                     }
 
                     //Fire stok için de kontrol yapılacak 
-                    if (siparis.SiparisTur.Equals("Demonte Gönderim"))
+                    if (siparis.SiparisTur == "Demonte Gönderim")
                     {
 
                     }
@@ -1124,25 +1196,28 @@ namespace CamSistemWebArayuz.Controllers
 
         public FileResult SiparisIndir(string file)
         {
-            string pathAfter = Server.MapPath("~/Assets/temp/");
+            string basePath = Server.MapPath("~/Assets/temp/");
+
+            // Sanitize file parameter to prevent path traversal
+            string safeFile = Path.GetFileName(file);
+            if (string.IsNullOrWhiteSpace(safeFile))
+                throw new ArgumentException("Geçersiz dosya adı.");
+
+            string fullPath = Path.Combine(basePath, safeFile);
+            if (!fullPath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("Geçersiz dosya yolu.");
+
             try
             {
-                System.IO.File.Delete(Server.MapPath(pathAfter + file));
-
-                long siparisId = Convert.ToInt64(file.Split('_')[0]);
-                excelKaydet(siparisId);
-
-                byte[] fileBytes = System.IO.File.ReadAllBytes(pathAfter + file);
-                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, file);
+                System.IO.File.Delete(fullPath);
             }
-            catch (Exception)
-            {
-                long siparisId = Convert.ToInt64(file.Split('_')[0]);
-                excelKaydet(siparisId);
+            catch { }
 
-                byte[] fileBytes = System.IO.File.ReadAllBytes(pathAfter + file);
-                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, file);
-            }
+            long siparisId = Convert.ToInt64(safeFile.Split('_')[0]);
+            excelKaydet(siparisId);
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(fullPath);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, safeFile);
         }
 
         [HttpGet]
@@ -1279,12 +1354,12 @@ namespace CamSistemWebArayuz.Controllers
             ViewBag.AluKg = aluKgFiyat;
             SistemAltSistemJoin sistemAltSistemJoin = sistemAltSistemJoinRepo.FindBy(e => e.SistemId == siparis.SistemId &&
                                                             e.AltSistemId == siparis.AltSistemId && e.SistemTurId == siparis.SistemTurId).FirstOrDefault();
-            if (siparis.SiparisTur.Equals("Profil Gönderim"))
+            if (siparis.SiparisTur == "Profil Gönderim")
             {
                 List<SiparisEnBoyAdet> enBoyList = sebaRepo.FindBy(e => e.SiparisId == SiparisId).ToList();
                 SiparisTeklifRepo siparisTeklifRepo = new SiparisTeklifRepo();
-                OptimizasyonHesapRepo optimizasyonHesapRepo = new OptimizasyonHesapRepo();
-                List<OptimizasyonHesap> optimizasyonHesaps = optimizasyonHesapRepo.FindBy(e => e.SiparisIds.Equals(siparis.Id.ToString())).ToList();
+
+                List<OptimizasyonHesap> optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id);
 
                 List<int> profDist = optimizasyonHesaps.Select(e => (int)e.ProfilId).Distinct().ToList();
                 List<ProfilGonderimSablonModel> profilGonderimList = new List<ProfilGonderimSablonModel>();
@@ -1657,10 +1732,9 @@ namespace CamSistemWebArayuz.Controllers
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
             Adres adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
-            if (siparis.SiparisTur.Equals("Profil Gönderim"))
+            if (siparis.SiparisTur == "Profil Gönderim")
             {
                 ViewBag.SiparisTur = "tur_profil";
-                OptimizasyonHesapRepo optimizasyonHesapRepo = new OptimizasyonHesapRepo();
                 SiparisStokSablon sablon = new SiparisStokSablon();
                 decimal aluKgFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault().SabitDeger) / 100;
                 ProfilRepo profilRepo = new ProfilRepo();
@@ -1673,7 +1747,9 @@ namespace CamSistemWebArayuz.Controllers
 
                 List<SiparisStokProfil> profilList = new List<SiparisStokProfil>();
                 List<SiparisStokAksesuar> aksesuarList = new List<SiparisStokAksesuar>();
-                List<OptimizasyonHesap> optimizasyonHesaps = optimizasyonHesapRepo.FindBy(e => e.SiparisIds.Equals(siparis.Id.ToString())).ToList();
+
+                List<OptimizasyonHesap> optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id);
+
                 List<int> profDist = optimizasyonHesaps.Select(e => (int)e.ProfilId).Distinct().ToList();
                 List<ProfilGonderimSablonModel> profilGonderimList = new List<ProfilGonderimSablonModel>();
 
