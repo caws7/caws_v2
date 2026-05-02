@@ -3,3 +3,6 @@
 ################################################################################
 
 /CamSistemDataLayer/BussinesLogic/MaliyetHesapla.cs
+.nuget/
+ProfilOptimizasyon/obj/
+CamSistemDataLayer/obj/
