@@ -648,15 +648,15 @@
                                     <th colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.First().siparisModel.TahminiTeslim))</th>
                                 </tr>
                                 <tr>
-                                    <th>Profil Kodu</th>
-                                    <th>Profil Kesitleri</th>
-                                    <th>Profil Adı</th>
-                                    <th>Birim Ağırlık</th>
-                                    <th>Kesilecek Profil</th>
-                                    <th>Kesilecek Ölçüler</th>
-                                    <th>Kesim Adeti</th>
-                                    <th>Fire / Atık</th>
-                                    <th>Kullanılan Stok</th>
+                                    <th style="text-align:center;vertical-align:middle;min-width:60px;max-width:80px;padding:4px 3px;">Profil Kodu</th>
+                                    <th style="text-align:center;vertical-align:middle;">Profil Kesit</th>
+                                    <th style="text-align:center;vertical-align:middle;">Profil Adı</th>
+                                    <th style="text-align:center;vertical-align:middle;">Birim Ağırlık (gr)</th>
+                                    <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy (mm)</th>
+                                    <th style="text-align:center;vertical-align:middle;">Kesim Planı</th>
+                                    <th style="text-align:center;vertical-align:middle;">Kesim Ölçüleri (mm)</th>
+                                    <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy Adedi</th>
+                                    <th style="text-align:center;vertical-align:middle;min-width:50px;max-width:70px;padding:4px 3px;">Fire / Atık</th>
                                 </tr>
                             </thead>
                             <tfoot>
@@ -691,25 +691,26 @@
                                 @foreach (var item2 in Model.First().optimizasyonList)
                                 {
                 <tr>
-                    <td>
+                    <td style="text-align:center;vertical-align:middle;min-width:60px;max-width:80px;padding:4px 3px;">
                         @Html.DisplayFor(modelItem => item2.profil.ProfilKodu)
                     </td>
-                    <td>
+                    <td style="text-align:center;vertical-align:middle;">
                         @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item2.profil.ProfilFoto) + "' />")
                     </td>
-                    <td>
+                    <td style="text-align:center;vertical-align:middle;">
                         @Html.DisplayFor(modelItem => item2.profil.ProfilAdi)
                     </td>
-                    <td>
+                    <td style="text-align:center;vertical-align:middle;">
                         @Html.DisplayFor(modelItem => item2.profil.BirimAgirlik)
                     </td>
-                    <td>
+                    <td style="text-align:center;vertical-align:middle;">
                         @Html.DisplayFor(modelItem => item2.ProfilBoy)
                     </td>
-                    <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
-                        @Html.DisplayFor(modelItem => item2.KesilecekOlculer)
+                    <td style="text-align:center;vertical-align:middle;"></td>
+                    <td style="text-align:center;vertical-align:middle;word-wrap:break-word;min-width:120px;max-width:200px;">
+                        @FormatKesimOlculeri(item2.KesilecekOlculer)
                     </td>
-                    <td>
+                    <td style="text-align:center;vertical-align:middle;">
                         @Html.DisplayFor(modelItem => item2.KesimAdet)
                     </td>
                     @{ var limit = ViewBag.minimumFire;
@@ -717,15 +718,12 @@
                         if (item2.FireAtik > limit)
                         {
 
-        @Html.Raw("<th class='bg-light-green'>") }
+        @Html.Raw("<th class='bg-light-green' style='text-align:center;vertical-align:middle;min-width:50px;max-width:70px;padding:4px 3px;'>") }
         else
         {
-        @Html.Raw("<th class='bg-red'>") }
+        @Html.Raw("<th class='bg-red' style='text-align:center;vertical-align:middle;min-width:50px;max-width:70px;padding:4px 3px;'>") }
         @Html.Raw(item2.FireAtik)
                             @Html.Raw("</th>") }
-                    <td>
-                        @Html.DisplayFor(modelItem => item2.KullanilanAlan)
-                    </td>
                 </tr>
         }
                             </tbody>
@@ -744,3 +742,17 @@
 <div class="modal-footer">
     <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
 </div>
+
+@functions {
+    static string FormatKesimOlculeri(string olcular)
+    {
+        if (string.IsNullOrWhiteSpace(olcular)) return "";
+        var parts = olcular.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
+        var groups = parts
+            .GroupBy(x => x.Trim())
+            .OrderByDescending(g => g.Count())
+            .ThenBy(g => g.Key)
+            .Select(g => string.Format("{0}x{1}", g.Count(), g.Key));
+        return string.Join(", ", groups);
+    }
+}
