@@ -3819,6 +3819,7 @@
     <Compile Include="Models\KullaniciRolModel.cs" />
     <Compile Include="Models\MusteriveAdresModel.cs" />
     <Compile Include="Models\OptimizasyonSonuc.cs" />
+    <Compile Include="Helpers\OptimizasyonHelper.cs" />
     <Compile Include="Models\ProfilGonderimSablonModel.cs" />
     <Compile Include="Models\SiparisAksesuarFiyatGuncelleModel.cs" />
     <Compile Include="Models\SiparisSayfaModel.cs" />
