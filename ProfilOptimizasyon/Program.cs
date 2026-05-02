@@ -164,16 +164,15 @@ namespace Optimizasyon
             input.FireStok = fire_stok;
             input.Stok = stok;
 
-            Optimizer optimizer = new Optimizer(input);
-
             bool fireStokAktif = false;
 
-            double optimizasyonSuresi = 0;
+            Optimizer optimizer = new Optimizer(input, fireStokAktif);
 
-            optimizer.optimizeEt(fireStokAktif);
-            
+            optimizer.optimizeEt();
 
-           Console.WriteLine("Geçen Süre : {0} saniye",optimizasyonSuresi);
+            double optimizasyonSuresi = optimizer.output.optimizasyonSuresi;
+
+            Console.WriteLine("Geçen Süre : {0} saniye", optimizasyonSuresi);
 
 
 
