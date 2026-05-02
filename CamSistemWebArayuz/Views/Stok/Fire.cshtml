@@ -1,0 +1,169 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.AtikStok>
+@{
+    ViewBag.Title = "CamSistem - Stok Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<style>
+    .row {
+        margin-right: 0px;
+    }
+</style>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script type="text/javascript">
+    function fireStokSil(Id) {
+        Swal.fire({
+            title: "Emin misin?",
+            text: "Bu kaydı silmek istediğine emin misin?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: "İptal",
+            confirmButtonText: 'Sil'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("FireStokSil", "Stok")',
+                    dataType: 'json',
+                    data: { "Id": Id },
+                    type: "POST"
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            text: "Kayıt başarıyla silindi."
+                        }).then(() => {
+                            window.location.href = '@Url.Action("Fire", "Stok")';
+                        })
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });       
+    }
+    function stokDus(_Id) {
+        Swal.fire({
+            title: 'Stoktan Düşme',
+            input: 'number',
+            inputLabel: 'Düşülecek Miktar',
+            showCancelButton: true,
+            cancelButtonText: 'Vazgeç',
+            confirmButtonText: 'Kaydet',
+            inputPlaceholder: 'Düşülecek stok miktarını giriniz...',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Bu alan boş geçilemez!'
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("FireStokDus", "Stok")',
+                    dataType: 'json',
+                    data: { "StokId": _Id, "StokAdet": result.value },
+                    type: "POST"
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            text: "Kayıt başarıyla kaydedildi."
+                        }).then(() => {
+                            window.location.href = '@Url.Action("Fire", "Stok")';
+                        })
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+<div class="block-header">
+    <h2>
+        Fire Stok Yönetimi
+        <small>Stoklarla ilgili işlemleri yönetebileceğiniz sayfadır.</small>
+    </h2>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Stok Durumu Listesi
+                </h2>
+            </div>
+            <div class="body">
+                <button type="button" onclick="location.href='@Url.Action("FireStokKaydet", "Stok")'" class="btn btn-info waves-effect">
+                    <i class="material-icons">new_releases</i>
+                    <span>Fire Stok Gir</span>
+                </button>
+                <div style="padding-top:10px;" class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover dataTable js-exportable-stoktan-stok-fire">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.ProfilModel.ProfilKodu)</th>
+                                <th>@Html.DisplayNameFor(model => model.ProfilModel.ProfilAdi)</th>
+                                <th>Kesit Görseli</th>
+                                <th>@Html.DisplayNameFor(model => model.ProfilModel.KalipNo)</th>
+                                <th>@Html.DisplayNameFor(model => model.ProfilModel.BirimAgirlik)</th>
+                                <th>@Html.DisplayNameFor(model => model.Olcu)</th>
+                                <th>@Html.DisplayNameFor(model => model.Adet)</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProfilModel.ProfilKodu)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProfilModel.ProfilAdi)
+                                    </td>
+                                    <td>
+                                        @if (item.ProfilModel.ProfilFoto != null)
+                                        {
+                                            @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item.ProfilModel.ProfilFoto) + "' />")
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProfilModel.KalipNo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProfilModel.BirimAgirlik)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Olcu)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Adet)
+                                    </td>
+                                    <td>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Stoktan Düş"
+                                                onclick="stokDus('@item.Id')" class="btn btn-warning btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">trending_down</i>
+                                        </button>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Sil"
+                                                onclick="fireStokSil('@item.Id')" class="btn btn-danger btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

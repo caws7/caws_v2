@@ -1,0 +1,1242 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="icon" href="~/images/favicon.ico" type="image/x-icon">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
+    <!-- Bootstrap Core Css -->
+    <link href="~/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Waves Effect Css -->
+    <link href="~/plugins/node-waves/waves.css" rel="stylesheet" />
+    <!-- Animation Css -->
+    <link href="~/plugins/animate-css/animate.css" rel="stylesheet" />
+    <!-- Custom Css -->
+    <link href="~/css/style.css" rel="stylesheet">
+    <!-- Colorpicker Css -->
+    <link href="~/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.css" rel="stylesheet" />
+    <!-- Multi Select Css -->
+    <link href="~/plugins/multi-select/css/multi-select.css" rel="stylesheet">
+    <!-- Bootstrap Select Css -->
+    <link href="~/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+    <link href="~/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="~/plugins/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet" />
+    <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
+    <link href="~/css/themes/all-themes.css" rel="stylesheet" />
+
+    <style>
+        /* =========================================================
+   USER INFO (Logo + isim/mail/rol) + SIDEBAR MENU SCROLL
+   Footer (copyright) her zaman görünür, menu tekerlekle kayar
+   ========================================================= */
+
+        /* ===== SIDEBAR LAYOUT: 3 satır (user-info / menu / footer) ===== */
+        aside#leftsidebar.sidebar {
+            display: flex !important;
+            flex-direction: column !important;
+            height: 100vh !important;
+            overflow: hidden !important; /* menu kendi içinde scroll olacak */
+        }
+
+            /* Üst kullanıcı alanı (sabit) */
+            aside#leftsidebar.sidebar > .user-info {
+                flex: 0 0 auto !important;
+            }
+
+            /* Menü (scroll burada) */
+            aside#leftsidebar.sidebar > .menu {
+                flex: 1 1 auto !important;
+                min-height: 0 !important; /* flex + overflow için kritik */
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                height: auto !important;
+            }
+
+            /* Footer (her zaman görünür) */
+            aside#leftsidebar.sidebar > .legal {
+                flex: 0 0 auto !important;
+                display: block !important;
+                position: relative !important;
+                background: #fff !important;
+                border-top: 1px solid #eee;
+                padding: 10px 15px !important;
+                z-index: 1 !important;
+            }
+
+        /* SlimScroll eklentisi wrapper bıraktıysa ölçüleri bozmasın */
+        .sidebar .slimScrollDiv {
+            height: auto !important;
+        }
+
+        .sidebar .menu .list {
+            height: auto !important;
+        }
+
+        /* ===== USER INFO: AdminBSB absolute/sabit yükseklik iptal ===== */
+        .sidebar .user-info.user-info--white {
+            background: #ffffff !important;
+            border-bottom: 1px solid #eee;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 6px;
+            padding: 10px !important;
+            height: auto !important;
+            min-height: 160px !important;
+            overflow: visible !important;
+            position: relative !important; /* dropdown ikon için */
+            box-sizing: border-box;
+        }
+
+            /* Logo alanı */
+            .sidebar .user-info.user-info--white .image {
+                width: 100%;
+                height: 100px; /* logo yüksekliği */
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                padding: 0 !important;
+                border-radius: 0 !important;
+                box-sizing: border-box;
+            }
+
+                /* Logo */
+                .sidebar .user-info.user-info--white .image img {
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: contain; /* kırpma yok, tamamı görünsün */
+                    object-position: left center;
+                    display: block;
+                    border-radius: 0 !important;
+                }
+
+            /* AdminBSB’nin info-container absolute düzenini kapat */
+            .sidebar .user-info.user-info--white .info-container {
+                position: static !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-sizing: border-box;
+            }
+
+                /* Metinler */
+                .sidebar .user-info.user-info--white .info-container .name,
+                .sidebar .user-info.user-info--white .info-container .email,
+                .sidebar .user-info.user-info--white .info-container .role {
+                    display: block !important;
+                    white-space: normal !important;
+                    word-break: break-word;
+                    line-height: 16px;
+                    color: #222 !important;
+                }
+
+                .sidebar .user-info.user-info--white .info-container .name {
+                    font-weight: 600;
+                }
+
+                .sidebar .user-info.user-info--white .info-container .email,
+                .sidebar .user-info.user-info--white .info-container .role {
+                    opacity: .75;
+                    font-size: 12px;
+                    margin-top: 2px;
+                }
+
+            /* Dropdown ikon */
+            .sidebar .user-info.user-info--white .btn-group.user-helper-dropdown {
+                position: absolute !important;
+                right: 6px !important;
+                top: 6px !important;
+            }
+        /* Footer'ı sidebar'ın en altına sabitle */
+        aside#leftsidebar.sidebar .legal {
+            display: block !important;
+            position: fixed !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 300px !important; /* AdminBSB default sidebar width */
+            background: #fff !important;
+            border-top: 1px solid #eee !important;
+            z-index: 9999 !important;
+            padding: 10px 15px !important;
+            height: 80px !important; /* footer yüksekliği */
+            box-sizing: border-box;
+        }
+
+        /* Footer menünün üstünü kapatmasın diye menüye alttan pay bırak */
+        aside#leftsidebar.sidebar .menu {
+            padding-bottom: 80px !important; /* footer yüksekliği kadar */
+        }
+        /* Üst barı ince şerit yap */
+        .navbar {
+            min-height: 10px !important;
+            height: 10px !important;
+            box-shadow: none !important; /* gölgeyi kaldır, daha kibar */
+        }
+
+            /* İç boşlukları sıfırla ki kalınlaşmasın */
+            .navbar .container-fluid,
+            .navbar .navbar-header {
+                min-height: 10px !important;
+                height: 10px !important;
+                padding: 0 !important;
+            }
+
+            .navbar .navbar-brand,
+            .navbar .navbar-toggle,
+            .navbar .bars {
+                display: none !important; /* içindeki ikon/boşluklar kalınlık yapıyor */
+            }
+
+        /* İçeriğin navbar altında boşluk bırakmasını azalt */
+        section.content {
+            margin-top: 10px !important; /* navbar yüksekliği ile aynı */
+        }
+        /* Navbar yüksekliğin (ince şerit) */
+        :root {
+            --topbar-h: 10px;
+        }
+        /* sen 10px yapmıştın; 6 yaptıysan 6px yaz */
+
+        /* Sol sidebar kırmızı şeride yaslansın */
+        #leftsidebar.sidebar {
+            top: var(--topbar-h) !important;
+        }
+
+        /* Ana içerik de aynı yerden başlasın */
+        section.content {
+            margin-top: var(--topbar-h) !important;
+        }
+
+        /* AdminBSB wrapper kullanıyorsa */
+        .overlay-open .sidebar,
+        .sidebar {
+            top: var(--topbar-h) !important;
+        }
+            .sidebar .menu .list li.header {
+                text-align: center !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+        /* Tüm sayfalarda üstteki gri başlık alanını (Sipariş Yönetimi vb.) kaldır */
+        .block-header {
+            display: none !important;
+        }
+
+        /* Block-header kalkınca içerik yukarı yaslansın */
+        section.content {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+
+            section.content > .container-fluid {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+            }
+
+            /* İlk satırda kalan ekstra boşluk varsa */
+            section.content .row.clearfix:first-child {
+                margin-top: 0 !important;
+            }
+    </style>
+</head>
+<body class="theme-red">
+    <!-- Page Loader -->
+    <div class="page-loader-wrapper">
+        <div class="loader">
+            <div class="preloader">
+                <div class="spinner-layer pl-red">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <p>@TempData["loader"]</p>
+        </div>
+    </div>
+    <!-- #END# Page Loader -->
+    <!-- Overlay For Sidebars -->
+    <div class="overlay"></div>
+    <!-- #END# Overlay For Sidebars -->
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <div class="search-icon">
+            <i class="material-icons">search</i>
+        </div>
+        <input type="text" placeholder="START TYPING...">
+        <div class="close-search">
+            <i class="material-icons">close</i>
+        </div>
+    </div>
+    <!-- #END# Search Bar -->
+    <!-- Top Bar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>
+                <a href="javascript:void(0);" class="bars"></a>
+                <a class="navbar-brand" style="padding: 0;" href="@Url.Action("Index", "Home")">
+
+                </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-collapse">
+
+            </div>
+        </div>
+        <div class="topbar-datetime">
+            <i class="material-icons topbar-datetime__icon">access_time</i>
+            <span class="topbar-datetime__label">Tarih / Saat:</span>
+            <span id="dashboardDateTime" class="topbar-datetime__value">-</span>
+        </div>
+    </nav>
+    <!-- #Top Bar -->
+    <section>
+        <!-- Left Sidebar -->
+        <aside id="leftsidebar" class="sidebar">
+            <!-- User Info -->
+            <div class="user-info user-info--white">
+                <div class="image">
+                    <img src="~/images/logo.png" alt="Logo" />
+                </div>
+                <div class="info-container">
+                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Session["KullaniciAdSoyad"]</div>
+                    <div class="email">@Session["KullaniciMail"]</div>
+                    <div class="role-logout-row">
+                        <div class="role">
+                            @{
+                                var rol = Session["KullaniciRol"];
+                            }
+                            @(rol != null ? rol.ToString() : "-")
+                        </div>
+
+                        <a class="logout-link" href="@Url.Action("Logout", "Login")" title="Çıkış Yap">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- #User Info -->
+            <!-- Menu -->
+            <div class="menu">
+                <ul class="list">
+                    <li class="header">ERP/MRP Modül Menü</li>
+                    <li id="Menu_Anasayfa">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="material-icons">home</i>
+                            <span>Anasayfa</span>
+                        </a>
+                    </li>
+                    @if (User.IsInRole("KULLANİCİ"))
+                    {
+                        <li id="Menu_KullaniciSayfasi">
+                            <a href="@Url.Action("Index", "Kullanici")">
+                                <i class="material-icons">face</i>
+                                <span class="icon-name">Kullanıcı Yönetimi</span>
+                            </a>
+                        </li>
+                    }
+                    @if (User.IsInRole("YETKİ"))
+                    {
+                        <li id="Menu_YetkiSayfasi">
+                            <a href="@Url.Action("Index", "Yetki")">
+                                <i class="material-icons">lock</i>
+                                <span class="icon-name">Yetkilendirme</span>
+                            </a>
+                        </li>
+                    }
+                    @if (User.IsInRole("MUSTERİ"))
+                    {
+                        <li id="Menu_MusteriSayfasi">
+                            <a href="@Url.Action("Index", "Musteri")">
+                                <i class="material-icons">group</i>
+                                <span class="icon-name">Müşteri Yönetimi</span>
+                            </a>
+                        </li>
+                    }
+                    @if (User.IsInRole("TEDARİK"))
+                    {
+                        <li id="Menu_TedarikSayfasi">
+                            <a href="javascript:void(0);" class="menu-toggle tedarik-menu">
+                                <i class="material-icons">business</i>
+                                <span class="icon-name">Tedarikçi Yönetimi</span>
+                            </a>
+                            <ul class="ml-menu tedarik-ml">
+                                <li id="SubMenu_TedarikSayfasi">
+                                    <a id="SubMenu_TedarikSayfasi2" href="@Url.Action("Index", "Tedarik")">Tedarikçi Tanımlama</a>
+                                </li>
+                                <li id="SubMenu_CamTedarikSayfasi">
+                                    <a id="SubMenu_CamTedarikSayfasi2" href="@Url.Action("Cam", "Tedarik")">Cam Tedarik</a>
+                                </li>
+                                <li id="SubMenu_BoyaTedarikSayfasi">
+                                    <a id="SubMenu_BoyaTedarikSayfasi2" href="@Url.Action("Boya", "Tedarik")">Boya Tedarik</a>
+                                </li>
+                                <li id="SubMenu_DisTedarikSayfasi">
+                                    <a id="SubMenu_DisTedarikSayfasi2" href="@Url.Action("Dis", "Tedarik")">Dış Tedarik</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    @if (User.IsInRole("SİPARİS"))
+                    {
+                        <li id="Menu_SiparisSayfasi">
+                            <a href="javascript:void(0);" class="menu-toggle siparis-menu">
+                                <i class="material-icons">shopping_basket</i>
+                                <span class="icon-name">Sipariş Yönetimi</span>
+                            </a>
+                            <ul class="ml-menu siparis-ml">
+                                <li id="SubMenu_DogrudanSiparisSayfasi">
+                                    <a id="SubMenu_DogrudanSiparisSayfasi2" href="@Url.Action("Index", "Siparis")">Doğrudan Sipariş</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    @if (User.IsInRole("IMALAT"))
+                    {
+                        <li id="Menu_ImalatSayfasi">
+                            <a href="@Url.Action("Index", "Imalat")">
+                                <i class="material-icons">flip</i>
+                                <span class="icon-name">İmalat Yönetimi</span>
+                            </a>
+                        </li>
+                    }
+                    @if (User.IsInRole("RAPOR"))
+                    {
+                        <li id="Menu_RaporSayfasi">
+                            <a href="javascript:void(0);" class="menu-toggle rapor-menu">
+                                <i class="material-icons">assessment</i>
+                                <span class="icon-name">Raporlamalar</span>
+                            </a>
+                            <ul class="ml-menu rapor-ml">
+                                <li id="SubMenu_TamamlananRaporSayfasi">
+                                    <a id="SubMenu_TamamlananRaporSayfasi2" href="@Url.Action("TamamlananSiparisListesi", "Rapor")">Tamamlanmış Siparişler</a>
+                                </li>
+                                <li id="SubMenu_IptalEdilenRaporSayfasi">
+                                    <a id="SubMenu_IptalEdilenRaporSayfasi2" href="@Url.Action("IptalEdilenSiparisListesi", "Rapor")">İptal Edilen Siparişler</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    @if (User.IsInRole("STOK"))
+                    {
+                        <li id="Menu_StokSayfasi">
+                            <a href="javascript:void(0);" class="menu-toggle stok-menu">
+                                <i class="material-icons">store_mall_directory</i>
+                                <span class="icon-name">Stok Yönetimi</span>
+                            </a>
+                            <ul class="ml-menu stok-ml">
+                                <li id="SubMenu_ProfilStokSayfasi">
+                                    <a id="SubMenu_ProfilStokSayfasi2" href="@Url.Action("Index", "Stok")">Profil Stok</a>
+                                </li>
+                                <li id="SubMenu_FireStokSayfasi">
+                                    <a id="SubMenu_FireStokSayfasi2" href="@Url.Action("Fire", "Stok")">Fire Stok</a>
+                                </li>
+                                <li id="SubMenu_AksesuarStokSayfasi">
+                                    <a id="SubMenu_AksesuarStokSayfasi2" href="@Url.Action("Aksesuar", "Stok")">Aksesuar Stok</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    @if (User.IsInRole("TANİMLAMA"))
+                    {
+                        <li id="Menu_TanimlamaSayfasi">
+                            <a href="javascript:void(0);" class="menu-toggle tanim-menu">
+                                <i class="material-icons">add_to_photos</i>
+                                <span>Tanımlamalar</span>
+                            </a>
+                            <ul class="ml-menu tanim-ml">
+                                <li id="SubMenu_TanimlamaSayfasiRenk">
+                                    <a id="SubMenu_TanimlamaSayfasiRenk2" href="@Url.Action("Renk", "Tanimlama")">Renk Tanımlama</a>
+                                </li>
+                                <li id="SubMenu_TanimlamaSayfasiSistem">
+                                    <a id="SubMenu_TanimlamaSayfasiSistem2" href="@Url.Action("Sistem", "Tanimlama")">Sistem Tanımlama</a>
+                                </li>
+                                <li id="SubMenu_TanimlamaSayfasiProfil">
+                                    <a id="SubMenu_TanimlamaSayfasiProfil2" href="@Url.Action("Profil", "Tanimlama")">Profil Tanımlama</a>
+                                </li>
+                                <li id="SubMenu_TanimlamaSayfasiAksesuar">
+                                    <a id="SubMenu_TanimlamaSayfasiAksesuar2" href="@Url.Action("Aksesuar", "Tanimlama")">Aksesuar Tanımlama</a>
+                                </li>
+                                <li id="SubMenu_TanimlamaSayfasiCam">
+                                    <a id="SubMenu_TanimlamaSayfasiCam2" href="@Url.Action("Cam", "Tanimlama")">Cam Kombinasyon Tanımlama</a>
+                                </li>
+                                <li id="SubMenu_TanimlamaSayfasiSabit">
+                                    <a id="SubMenu_TanimlamaSayfasiSabit2" href="@Url.Action("Sabitler", "Tanimlama")">Sabit Tanımlama</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    @if (User.IsInRole("FİYATLANDIRMA"))
+                    {
+                        <li id="Menu_FiyatSayfasi">
+                            <a href="javascript:void(0);" class="menu-toggle fiyat-menu">
+                                <i class="material-icons">monetization_on</i>
+                                <span>Fiyatlandırma</span>
+                            </a>
+                            <ul class="ml-menu fiyat-ml">
+                                <li id="SubMenu_FiyatSayfasiCam">
+                                    <a id="SubMenu_FiyatSayfasiCam2" href="@Url.Action("Cam", "Fiyat")">Cam Kombinasyon Fiyatlandırma</a>
+                                </li>
+                                <li id="SubMenu_FiyatSayfasiSistem">
+                                    <a id="SubMenu_FiyatSayfasiSistem2" href="@Url.Action("Sistem", "Fiyat")">Sistem Fiyatlandırma</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <!-- #Menu -->
+            <!-- Footer -->
+            <div class="legal">
+                <div class="copyright">
+                    &copy; 2016 - @DateTime.Now.Year.ToString() <a href="javascript:void(0);">Caws - ERP/MRP Modül</a>.
+                </div>
+                <div class="version">
+                    <b>Version: </b> 1.1.4
+                </div>
+            </div>
+            <!-- #Footer -->
+        </aside>
+        <!-- #END# Left Sidebar -->
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+            @RenderBody()
+        </div>
+    </section>
+    <!-- Tüm script ve JS bağımlılıkları EN SONA AL -->
+    <!-- 1. Jquery Core Js -->
+    <script src="~/plugins/jquery/jquery.min.js"></script>
+    <!-- 2. Bootstrap Core Js -->
+    <script src="~/plugins/bootstrap/js/bootstrap.js"></script>
+    <!-- 3. Select Plugin Js -->
+    <script src="~/plugins/bootstrap-select/js/bootstrap-select.js"></script>
+    <!-- 4. Diğer Tüm Plugin'ler ve Custom Scriptler -->
+    <script src="~/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
+    <script src="~/plugins/node-waves/waves.js"></script>
+    <script src="~/plugins/bootstrap-notify/bootstrap-notify.js"></script>
+    @*<script src="~/plugins/sweetalert/sweetalert.min.js"></script>*@
+    <script src="~/js/admin.js"></script>
+    <script src="~/js/helpers.js"></script>
+    <script src="~/js/pages/widgets/infobox/infobox-5.js"></script>
+    <script src="~/js/pages/ui/dialogs.js"></script>
+    <script src="~/js/pages/ui/tooltips-popovers.js"></script>
+    <script src="~/js/demo.js"></script>
+    <script src="~/plugins/jquery-sparkline/jquery.sparkline.js"></script>
+    <script src="~/plugins/jquery-countto/jquery.countTo.js"></script>
+    <script src="~/plugins/momentjs/moment.js"></script>
+    <script src="~/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="~/plugins/multi-select/js/jquery.quicksearch.js"></script>
+    <script src="~/plugins/multi-select/js/jquery.multi-select.js"></script>
+    <script src="~/plugins/jquery-datatable/jquery.dataTables.js"></script>
+    <script src="~/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+    <script src="~/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+    <script src="~/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+    <script src="~/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+    <script src="~/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
+    <script src="~/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+    <script src="~/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+    <script src="~/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+    <script src="~/js/pages/tables/jquery-datatable.js"></script>
+    <script src="~/plugins/jquery-validation/jquery.validate.js"></script>
+    <script src="~/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/plugins/jquery-validation/localization/messages_tr.js"></script>
+    <script src="~/plugins/jstree/dist/jstree.min.js"></script>
+    <script src="~/Scripts/dropzone/dropzone.js"></script>
+    <!-- EN SON: Script section ile view'a özel JS'ler buraya gelir! -->
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+
+        function initSparkline() {
+            $('.sparkline').each(function () {
+                var $this = $(this);
+                $this.sparkline('html', $this.data());
+            });
+        }
+
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode;
+            if (charCode > 31
+                && (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+        }
+
+        function PrintElem(elem) {
+            var divContents = document.getElementById(elem).innerHTML;
+
+            var htmlToPrint = '' +
+                '<style type="text/css">' +
+                'table { border: 1px solid black;' +
+                'border-collapse: collapse;width: 100 %;}' +
+                'td {border: 1px solid black;border-collapse: collapse;text-align: center;font-size: 12px;}' +
+                'th {border: 1px solid black;border-collapse: collapse;text-align: center;font-size: 12px;}' +
+                'table th {text-align: center;}' +
+                '</style>';
+            htmlToPrint += divContents;
+
+            var printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.open();
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(htmlToPrint);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function printTextArea(elem) {
+            childWindow = window.open('', 'childWindow', 'location=yes, menubar=yes, toolbar=yes');
+            childWindow.document.open();
+            childWindow.document.write('<html><head></head><body>');
+            childWindow.document.write(document.getElementById(elem).value.replace(/\n/gi, '<br>'));
+            childWindow.document.write('</body></html>');
+            childWindow.print();
+            childWindow.document.close();
+            childWindow.close();
+        }
+
+        $(document).ready(function () {
+            $.validator.setDefaults({
+                /*OBSERVATION: note how the ignore option is placed in here*/
+                ignore: ':not(select:hidden, input:visible, textarea:visible)',
+
+                /*...other options omitted to focus on the OP...*/
+
+                errorPlacement: function (error, element) {
+                    if (element.hasClass('bs-select')) {
+                        error.insertAfter('.bootstrap-select');
+                    } else {
+                        error.insertAfter(element);
+                    }
+                    /*Add other (if...else...) conditions depending on your
+                    * validation styling requirements*/
+                }
+            });
+            $('#form_validation').validate({
+                rules: {
+                    'profilTur': {
+                        required: true
+                    },
+                },
+                highlight: function (input) {
+                    $(input).parents('.form-line').addClass('error');
+                },
+                unhighlight: function (input) {
+                    $(input).parents('.form-line').removeClass('error');
+                },
+                errorPlacement: function (error, element) {
+                    $(element).parents('.form-group').append(error);
+                }
+            });
+
+            $('[data-toggle="tooltip"]').tooltip({
+                container: 'body'
+            });
+            initSparkline();
+            var $demoMaskedInput = $('.form-group');
+            $demoMaskedInput.find('.mobile-phone-number').inputmask('+99 (999) 999-99-99', { placeholder: '+90 (___) ___-__-__' });
+            $demoMaskedInput.find('.zip-code').inputmask('99999', { placeholder: '_____' });
+            $demoMaskedInput.find('.mail-input-mask').inputmask({ alias: "email" });
+
+            $('#bs_datepicker_component_container').datepicker({
+                autoclose: true,
+                format: "dd/mm/yyyy",
+                container: '#bs_datepicker_component_container'
+            });
+            $('#bs_datepicker_component_container2').datepicker({
+                autoclose: true,
+                format: "dd/mm/yyyy",
+                container: '#bs_datepicker_component_container2'
+            });
+
+            var resultRecord = '@ViewBag.RecordResult';
+            if (resultRecord == 1 || resultRecord == "1") {
+                $.notify({
+                    //title: '<strong>Kayıt!</strong>',
+                    icon: 'glyphicon glyphicon-thumbs-up',
+                    message: " İşlem başarıyla gerçekleştirildi."
+                }, {
+                    type: 'success',
+                    animate: {
+                        enter: 'animated zoomInUp',
+                        exit: 'animated zoomOutUp'
+                    },
+                    placement: {
+                        from: "bottom",
+                        align: "center"
+                    },
+                    offset: 20,
+                    spacing: 10,
+                    z_index: 1031,
+                });
+            }
+            else if (resultRecord == 2 || resultRecord == "2") {
+                $.notify({
+                    title: '<strong>Bir hata oluştu!</strong>',
+                    icon: 'glyphicon glyphicon-thumbs-down',
+                    message: "İşlem gerçekleştirilemedi."
+                }, {
+                    type: 'error',
+                    animate: {
+                        enter: 'animated zoomInUp',
+                        exit: 'animated zoomOutUp'
+                    },
+                    placement: {
+                        from: "bottom",
+                        align: "center"
+                    },
+                    offset: 20,
+                    spacing: 10,
+                    z_index: 1031,
+                });
+            }
+            else if (resultRecord == 3 || resultRecord == "3") {
+                $.notify({
+                    title: '<strong>İşlem gerçekleştirilemedi!</strong>',
+                    icon: 'glyphicon glyphicon-thumbs-down',
+                    message: "Bu kullanici için tanımlı rol bulunmaktadır! Öncelikle tanımlı rolü silmeniz gerekmektedir."
+                }, {
+                        type: 'error',
+                        animate: {
+                            enter: 'animated zoomInUp',
+                            exit: 'animated zoomOutUp'
+                        },
+                        placement: {
+                            from: "bottom",
+                            align: "center"
+                        },
+                        offset: 20,
+                        spacing: 10,
+                        z_index: 1031,
+                    });
+            }
+
+            var activeMenu = '@TempData["ActiveMenu"]';
+            if (activeMenu == 'Anasayfa')
+                $('#Menu_Anasayfa').addClass("active");
+            else if (activeMenu == 'KullaniciSayfasi')
+                $('#Menu_KullaniciSayfasi').addClass("active");
+            else if (activeMenu == 'YetkiSayfasi')
+                $('#Menu_YetkiSayfasi').addClass("active");
+            else if (activeMenu == 'MusteriSayfasi')
+                $('#Menu_MusteriSayfasi').addClass("active");
+            else if (activeMenu == 'TedarikSayfasi') {
+                $('#Menu_TedarikSayfasi').addClass("active");
+                $('#SubMenu_TedarikSayfasi').addClass("active");
+                $('#SubMenu_TedarikSayfasi2').addClass("toggled");
+                $('.tedarik-menu').addClass("toggled");
+                $('.tedarik-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'CamTedarikSayfasi') {
+                $('#Menu_TedarikSayfasi').addClass("active");
+                $('#SubMenu_CamTedarikSayfasi').addClass("active");
+                $('#SubMenu_CamTedarikSayfasi2').addClass("toggled");
+                $('.tedarik-menu').addClass("toggled");
+                $('.tedarik-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'BoyaTedarikSayfasi') {
+                $('#Menu_TedarikSayfasi').addClass("active");
+                $('#SubMenu_BoyaTedarikSayfasi').addClass("active");
+                $('#SubMenu_BoyaTedarikSayfasi2').addClass("toggled");
+                $('.tedarik-menu').addClass("toggled");
+                $('.tedarik-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'DisTedarikSayfasi') {
+                $('#Menu_TedarikSayfasi').addClass("active");
+                $('#SubMenu_DisTedarikSayfasi').addClass("active");
+                $('#SubMenu_DisTedarikSayfasi2').addClass("toggled");
+                $('.tedarik-menu').addClass("toggled");
+                $('.tedarik-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'ImalatSayfasi')
+                $('#Menu_ImalatSayfasi').addClass("active");
+            else if (activeMenu == 'TamamlananRaporSayfasi') {
+                $('#Menu_RaporSayfasi').addClass("active");
+                $('#SubMenu_TamamlananRaporSayfasi').addClass("active");
+                $('#SubMenu_TamamlananRaporSayfasi2').addClass("toggled");
+                $('.rapor-menu').addClass("toggled");
+                $('.rapor-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'IptalEdilenRaporSayfasi') {
+                $('#Menu_RaporSayfasi').addClass("active");
+                $('#SubMenu_IptalEdilenRaporSayfasi').addClass("active");
+                $('#SubMenu_IptalEdilenRaporSayfasi2').addClass("toggled");
+                $('.rapor-menu').addClass("toggled");
+                $('.rapor-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'DogrudanSiparisSayfasi') {
+                $('#Menu_SiparisSayfasi').addClass("active");
+                $('#SubMenu_DogrudanSiparisSayfasi').addClass("active");
+                $('#SubMenu_DogrudanSiparisSayfasi2').addClass("toggled");
+                $('.siparis-menu').addClass("toggled");
+                $('.siparis-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'StoktanSiparisSayfasi') {
+                $('#Menu_SiparisSayfasi').addClass("active");
+                $('#SubMenu_StoktanSiparisSayfasi').addClass("active");
+                $('#SubMenu_StoktanSiparisSayfasi2').addClass("toggled");
+                $('.siparis-menu').addClass("toggled");
+                $('.siparis-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'DisSiparisSayfasi') {
+                $('#Menu_SiparisSayfasi').addClass("active");
+                $('#SubMenu_DisSiparisSayfasi').addClass("active");
+                $('#SubMenu_DisSiparisSayfasi2').addClass("toggled");
+                $('.siparis-menu').addClass("toggled");
+                $('.siparis-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'SevkiyatSayfasi') {
+                $('#Menu_SiparisSayfasi').addClass("active");
+                $('#SubMenu_SevkiyatSayfasi').addClass("active");
+                $('#SubMenu_SevkiyatSayfasi2').addClass("toggled");
+                $('.siparis-menu').addClass("toggled");
+                $('.siparis-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'ProfilStokSayfasi') {
+                $('#Menu_StokSayfasi').addClass("active");
+                $('#SubMenu_ProfilStokSayfasi').addClass("active");
+                $('#SubMenu_ProfilStokSayfasi2').addClass("toggled");
+                $('.stok-menu').addClass("toggled");
+                $('.stok-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'AksesuarStokSayfasi') {
+                $('#Menu_StokSayfasi').addClass("active");
+                $('#SubMenu_AksesuarStokSayfasi').addClass("active");
+                $('#SubMenu_AksesuarStokSayfasi2').addClass("toggled");
+                $('.stok-menu').addClass("toggled");
+                $('.stok-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'FireStokSayfasi') {
+                $('#Menu_StokSayfasi').addClass("active");
+                $('#SubMenu_FireStokSayfasi').addClass("active");
+                $('#SubMenu_FireStokSayfasi2').addClass("toggled");
+                $('.stok-menu').addClass("toggled");
+                $('.stok-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'FiyatSayfasiCam') {
+                $('#Menu_FiyatSayfasi').addClass('active');
+                $('#SubMenu_FiyatSayfasiCam').addClass('active');
+                $('#SubMenu_FiyatSayfasiCam2').addClass('toggled');
+                $('.fiyat-menu').addClass('toggled');
+                $('.fiyat-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'FiyatSayfasiSistem') {
+                $('#Menu_FiyatSayfasi').addClass('active');
+                $('#SubMenu_FiyatSayfasiSistem').addClass('active');
+                $('#SubMenu_FiyatSayfasiSistem2').addClass('toggled');
+                $('.fiyat-menu').addClass('toggled');
+                $('.fiyat-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'TanimlamaSayfasiRenk') {
+                $('#Menu_TanimlamaSayfasi').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiRenk').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiRenk2').addClass("toggled");
+                $('.tanim-menu').addClass("toggled");
+                $('.tanim-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'TanimlamaSayfasiSistem') {
+                $('#Menu_TanimlamaSayfasi').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiSistem').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiSistem2').addClass("toggled");
+                $('.tanim-menu').addClass("toggled");
+                $('.tanim-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'TanimlamaSayfasiProfil') {
+                $('#Menu_TanimlamaSayfasi').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiProfil').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiProfil2').addClass("toggled");
+                $('.tanim-menu').addClass("toggled");
+                $('.tanim-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'TanimlamaSayfasiAksesuar') {
+                $('#Menu_TanimlamaSayfasi').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiAksesuar').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiAksesuar2').addClass("toggled");
+                $('.tanim-menu').addClass("toggled");
+                $('.tanim-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'TanimlamaSayfasiCam') {
+                $('#Menu_TanimlamaSayfasi').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiCam').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiCam2').addClass("toggled");
+                $('.tanim-menu').addClass("toggled");
+                $('.tanim-ml').css('display', 'block');
+            }
+            else if (activeMenu == 'TanimlamaSayfasiSabit') {
+                $('#Menu_TanimlamaSayfasi').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiSabit').addClass("active");
+                $('#SubMenu_TanimlamaSayfasiSabit2').addClass("toggled");
+                $('.tanim-menu').addClass("toggled");
+                $('.tanim-ml').css('display', 'block');
+            }
+            // Buradan sonrası sende nasılsa aynı kalabilir (Dropzone vb.)
+            var maxFileReached = false;
+            var imageName;
+            var imageType;
+            Dropzone.autoDiscover = false;
+            Dropzone.options.dZUpload = {
+                acceptedFiles: "image/jpeg,image/jpg,image/png",
+                dictRemoveFile: "Fotoğrafı Sil",
+                dictInvalidFileType: "Bu dosya tipini yükleyemezsiniz!",
+                dictMaxFilesExceeded: "Daha fazla fotoğraf ekleyemezsiniz!",
+                paramName: "file", // The name that will be used to transfer the file
+                maxFilesize: 10, // MB
+                maxFiles: 1,
+                uploadMultiple: false,
+                init: function () {
+                    this.on("removedfile", function (file) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/Tanimlama/DosyaYuklemeSil',
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            data: '{ "ImageName":"' + imageName + '", "ImageType":"' + imageType + '"}',
+                            success: function (result) {
+                                $("#ImageName").val(result);
+                                imageName = result;
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
+                    });
+                    this.on("sending", function (file, xhr, formData) {
+                        formData.append('ImageType', imageType);
+                    });
+                    this.on("error", function (file, response) {
+                        alert("Lütfen uygun formatlarda dosya seçiniz!");
+                        this.removeFile(file);
+                    });
+                    this.on("successmultiple", function (file, response) {
+                        if (response != "KodBos") {
+                            $("#ImageName").val(response);
+                            imageName = response;
+
+                            for (var i = 0; i < response.length; i++) {
+                                $(file[i].previewElement).find('.dz-filename').text(response[i]);
+                            }
+                        }
+                    });
+                },
+                renameFile: function (file) {
+                    if ($('#ProfilKod').val() != '' || $('#AksesuarKod').val() != '') {
+                        imageType = $('#ImageType').val();
+                        if (imageType == 'P') {
+                            imageName = $('#ProfilKod').val();
+                        } else if (imageType == 'A') {
+                            imageName = $('#AksesuarKod').val();
+                        }
+                        imageName = imageName + "." + file.name.split('.').slice(-1);
+                        $("#ImageName").val(imageName);
+                        let newName = imageName;
+                        return newName;
+                    } else {
+                        alert('Lütfen önce Kod alanını doldurunuz!');
+                        return;
+                    }
+
+                },
+                accept: function (file, done) {
+                    done();
+                },
+                maxfilesreached: function (file) {
+                    maxFileReached = true;
+                },
+                addedfile: function (file) {
+
+                    if (maxFileReached == true) {
+                        dZUpload.removeFile(file);
+                    }
+
+                    var node, removeFileEvent, removeLink, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+                    if (this.element === this.previewsContainer) {
+                        this.element.classList.add("dz-started");
+                    }
+
+                    if (this.previewsContainer) {
+                        file.previewElement = Dropzone.createElement(this.options.previewTemplate.trim());
+                        file.previewTemplate = file.previewElement;
+                        this.previewsContainer.appendChild(file.previewElement);
+
+                        _ref = file.previewElement.querySelectorAll("[data-dz-name]");
+                        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                            node = _ref[_i];
+                            node.textContent = file.name;
+                        }
+                        _ref1 = file.previewElement.querySelectorAll("[data-dz-size]");
+                        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+                            node = _ref1[_j];
+                            node.innerHTML = this.filesize(file.size);
+                        }
+                        if (this.options.addRemoveLinks) {
+                            file._removeLink = Dropzone.createElement("<a class=\"dz-remove\" href=\"javascript:undefined;\" data-dz-remove>" + this.options.dictRemoveFile + "</a>");
+                            file.previewElement.appendChild(file._removeLink);
+                        }
+
+                        removeFileEvent = (function (_this) {
+                            return function (e) {
+                                maxFileReached = false;
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (file.status === Dropzone.UPLOADING) {
+                                    return Dropzone.confirm(_this.options.dictCancelUploadConfirmation, function () {
+                                        return _this.removeFile(file);
+                                    });
+                                } else {
+                                    if (_this.options.dictRemoveFileConfirmation) {
+                                        return Dropzone.confirm(_this.options.dictRemoveFileConfirmation, function () {
+                                            return _this.removeFile(file);
+                                        });
+                                    } else {
+                                        return _this.removeFile(file);
+                                    }
+                                }
+                            };
+                        })(this);
+
+                        _ref2 = file.previewElement.querySelectorAll("[data-dz-remove]");
+                        _results = [];
+                        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+                            removeLink = _ref2[_k];
+                            _results.push(removeLink.addEventListener("click", removeFileEvent));
+                        }
+                        return _results;
+                    }
+                }
+            };
+
+            $("div#dZUpload").dropzone(
+                {
+                    url: '/Tanimlama/DosyaYuklemeKaydet',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    paramName: "file",
+                    autoProcessQueue: true,
+                    addRemoveLinks: true,
+                    uploadMultiple: true,
+                    acceptedFiles: "image/*",
+                    maxFiles: 1,
+                    parallelUploads: 10,
+                    dictInvalidFileType: "Bilinmeyen dosya formatı!",
+                    dictFileTooBig: "Dosya boyutu belirlenenden büyük",
+                    success: function (file, response) {
+                        if (response == "Error") {
+                            alert("Dosya adı özel karakter içeremez!");
+                        }
+                        else if (response == "ErrorUnknowFileContent") {
+                            alert("Dosya içeriği uyuşmamaktadır. Lütfen uygun içerikte dosya yükleyiniz!");
+                            file.previewElement.classList.add("dz-error");
+                            $(file.previewElement).find('.dz-error-message').text("Yükleme başarısız!");
+                        } else if (response == "KodBos") {
+                            file.previewElement.classList.add("dz-error");
+                            $(file.previewElement).find('.dz-error-message').text("Yükleme başarısız!");
+                        }
+                        else {
+                            file.previewElement.classList.add("dz-success");
+                        }
+                    },
+                    error: function (file, response) {
+                        file.previewElement.classList.add("dz-error");
+                        $(file.previewElement).find('.dz-error-message').text(response);
+                    }
+                });
+
+            var fileList = new Array;
+            var i = 0;
+            Dropzone.options.dZUploadDiger = {
+                acceptedFiles: "image/*,application/pdf",
+                dictRemoveFile: "Dosyayı Sil",
+                dictInvalidFileType: "Bu dosya tipini yükleyemezsiniz!",
+                dictMaxFilesExceeded: "Daha fazla dosya ekleyemezsiniz!",
+                paramName: "file", // The name that will be used to transfer the file
+                maxFilesize: 5, // MB
+                maxFiles: 5,
+                chunking: true,
+                init: function () {
+                    this.on("removedfile", function (file) {
+                        var name = file.previewElement.querySelector('[data-dz-name]').innerHTML;
+                        $.ajax({
+                            type: 'POST',
+                            url: '/Tedarik/DosyaYuklemeSil',
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            data: '{ "ImageName":"' + name + '"}',
+                            success: function (result) {
+                                $("#ImageName").val(result);
+                                imageName = result;
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
+                    });
+                    this.on("error", function (file, response) {
+                        alert("Lütfen uygun formatlarda dosya seçiniz!");
+                        this.removeFile(file);
+                    });
+                    //this.on("successmultiple", function (file, response) {
+                    //    $("#ImageName").val(response);
+                    //    imageName = response;
+
+                    //    for (var i = 0; i < file.length; i++) {
+                    //        $(file[i].previewElement).find('.dz-filename').text(response[i]);
+                    //    }
+                    //});
+                },
+                accept: function (file, done) {
+                    done();
+                },
+                maxfilesreached: function (file) {
+                    maxFileReached = true;
+                },
+                addedfile: function (file) {
+
+                    if (maxFileReached == true) {
+                        dZUploadDiger.removeFile(file);
+                    }
+
+                    var node, removeFileEvent, removeLink, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+                    if (this.element === this.previewsContainer) {
+                        this.element.classList.add("dz-started");
+                    }
+
+                    if (this.previewsContainer) {
+                        file.previewElement = Dropzone.createElement(this.options.previewTemplate.trim());
+                        file.previewTemplate = file.previewElement;
+                        this.previewsContainer.appendChild(file.previewElement);
+
+                        _ref = file.previewElement.querySelectorAll("[data-dz-name]");
+                        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                            node = _ref[_i];
+                            node.textContent = file.name;
+                        }
+                        _ref1 = file.previewElement.querySelectorAll("[data-dz-size]");
+                        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+                            node = _ref1[_j];
+                            node.innerHTML = this.filesize(file.size);
+                        }
+                        if (this.options.addRemoveLinks) {
+                            file._removeLink = Dropzone.createElement("<a class=\"dz-remove\" href=\"javascript:undefined;\" data-dz-remove>" + this.options.dictRemoveFile + "</a>");
+                            file.previewElement.appendChild(file._removeLink);
+                        }
+
+                        removeFileEvent = (function (_this) {
+                            return function (e) {
+                                maxFileReached = false;
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (file.status === Dropzone.UPLOADING) {
+                                    return Dropzone.confirm(_this.options.dictCancelUploadConfirmation, function () {
+                                        return _this.removeFile(file);
+                                    });
+                                } else {
+                                    if (_this.options.dictRemoveFileConfirmation) {
+                                        return Dropzone.confirm(_this.options.dictRemoveFileConfirmation, function () {
+                                            return _this.removeFile(file);
+                                        });
+                                    } else {
+                                        return _this.removeFile(file);
+                                    }
+                                }
+                            };
+                        })(this);
+
+                        _ref2 = file.previewElement.querySelectorAll("[data-dz-remove]");
+                        _results = [];
+                        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+                            removeLink = _ref2[_k];
+                            _results.push(removeLink.addEventListener("click", removeFileEvent));
+                        }
+                        return _results;
+                    }
+                }
+            };
+
+            $("div#dZUploadDiger").dropzone(
+                {
+                    url: '/Tedarik/DosyaYuklemeKaydet',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    paramName: "file",
+                    autoProcessQueue: true,
+                    addRemoveLinks: true,
+                    acceptedFiles: "image/*,application/pdf",
+                    maxFiles: 5,
+                    parallelUploads: 5,
+                    dictInvalidFileType: "Bilinmeyen dosya formatı!",
+                    dictFileTooBig: "Dosya boyutu belirlenenden büyük",
+                    success: function (file, response) {
+                        if (response == "Error") {
+                            alert("Dosya adı özel karakter içeremez!");
+                        }
+                        else {
+                            var fileuploded = file.previewElement.querySelector("[data-dz-name]");
+                            fileuploded.innerHTML = response;
+                            file.previewElement.classList.add("dz-success");
+                        }
+                    },
+                    error: function (file, response) {
+                        file.previewElement.classList.add("dz-error");
+                        $(file.previewElement).find('.dz-error-message').text(response);
+                    }
+                }); // ✅ dropzone bitti
+        }); // <-- document.ready kapanışı
+    </script>
+    <script>
+        // === Sidebar: SlimScroll'u kapat, native scroll kullan ===
+        $(function () {
+            try {
+                var $menu = $('.sidebar .menu');
+
+                if ($.fn.slimScroll) {
+                    $menu.slimScroll({ destroy: true });
+                }
+
+                // SlimScroll wrapper varsa kaldır
+                var $wrapper = $menu.closest('.slimScrollDiv');
+                if ($wrapper.length) {
+                    $wrapper.replaceWith($menu);
+                }
+
+                // Native scroll
+                $menu.css({
+                    'overflow-y': 'auto',
+                    'height': 'calc(100vh - 260px)'
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        });
+    </script>
+    @*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+    <script>
+        (function () {
+            function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+            function updateDateTime() {
+                var d = new Date();
+                var text =
+                    pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear() + ' ' +
+                    pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+
+                var el = document.getElementById('dashboardDateTime');
+                if (el) el.textContent = text;
+            }
+
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        })();
+    </script>
+</body>
+</html>

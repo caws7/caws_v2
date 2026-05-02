@@ -1,0 +1,140 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.Siparis>
+@using CamSistemDataLayer.Enums
+@{ ViewBag.Title = "CamSistem - Sipariş Yönetimi";
+                Layout = "~/Views/Shared/_HomeLayout.cshtml"; }
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script language="javascript" type="text/javascript">
+    function SevkiyatDetayiGoruntule(_siparisId) {
+        var url = '@Url.Action("SevkiyatDetayGoruntule", "Siparis")';
+
+        $('#searchResults').load(url, { Id: _siparisId });
+        $('#showDuzenleModal').modal('show');
+    }
+    function SevkiyatSil(_siparisId) {
+        Swal.fire({
+            title: 'Emin misin?',
+            text: 'Bu kaydı silmek istediğine emin misin?',
+            icon: 'warning',
+            cancelButtonText: 'Vazgeç',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                url: '@Url.Action("SevkiyatSil", "Siparis")',
+                dataType: 'json',
+                data: { "Id": _siparisId },
+                type: "POST"
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            title: 'Silindi!',
+                            text: 'Sevkiyat bilgisi başarıyla silindi.',
+                            icon: 'success',
+                            timer: 1500
+                        }).then(() => {
+                             window.location.href = '@Url.Action("Sevkiyat", "Siparis")';
+                        });
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });
+    }
+</script>
+<div class="block-header">
+    <h2>
+        Sipariş Yönetimi
+        <small>Siparişlerinizle ilgili işlemleri yönetebileceğiniz sayfadır.</small>
+    </h2>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Sipariş Listesi
+                </h2>
+            </div>
+            <div class="body">
+                <div style="padding-top:10px;" class="table-responsive">
+                    <table id="siparisTablosu" class="table table-bordered table-striped table-hover dataTable js-basic-example">
+                        <thead>
+                            <tr>
+                                <th>Sipariş No</th>
+                                <th>Müşteri Adı Soyadı - Şirket Adı</th>
+                                <th>Sistem Bilgisi</th>
+                                <th>Sistem En / Sistem Boy /Sistem Adet</th>
+                                <th>Sipariş Tür</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MusteriTamAdi)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SistemTamami)
+                    </td>
+
+                    <td>
+                        @foreach (var item2 in item.enBoyAdetList)
+                        {
+        @Html.Raw(item2.GirilenEn + " / " + item2.GirilenBoy + " / " + item2.GirilenAdet + "<br />")}
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SiparisTur)
+                    </td>
+                    <td>
+                        @if (item.SevkiyatVarMi)
+                        {
+        <button type="button" data-toggle="tooltip" data-placement="top" title="Görüntüle" onclick="SevkiyatDetayiGoruntule('@item.Id')"
+                class="btn bg-blue btn-circle waves-effect waves-circle waves-float">
+            <i class="material-icons">content_copy</i>
+        </button>
+                            <button type="button" data-toggle="tooltip" data-placement="top" title="Sevkiyat Bilgisi Düzenle"
+                                    onclick="location.href='@Url.Action("SevkiyatDuzenle", "Siparis", new { SiparisId = item.Id })'" class="btn btn-warning btn-circle waves-effect waves-circle waves-float">
+                                <i class="material-icons">edit</i>
+                            </button> if ((int)item.DurumId == (int)Durumlar.Onaylandı || (int)item.DurumId == (int)Durumlar.Sevkiyatta || (int)item.DurumId == (int)Durumlar.ImalataGonderildi)
+                                                {
+                            <button type="button" data-toggle="tooltip" data-placement="top" title="Sevkiyat Bilgisi Sil"
+                                    onclick="SevkiyatSil('@item.Id')" class="btn btn-danger btn-circle waves-effect waves-circle waves-float">
+                                <i class="material-icons">delete</i>
+                            </button> }
+                                            }
+                                            else
+                                            {
+                            <button type="button" data-toggle="tooltip" data-placement="top" title="Sevkiyat Bilgisi Ekle"
+                                    onclick="location.href='@Url.Action("SevkiyatKaydet", "Siparis", new { SiparisId = item.Id })'" class="btn btn-primary btn-circle waves-effect waves-circle waves-float">
+                                <i class="material-icons">add</i>
+                            </button>}
+                    </td>
+                </tr>}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="showDuzenleModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div id="searchResults">
+
+            </div>
+        </div>
+    </div>
+</div>

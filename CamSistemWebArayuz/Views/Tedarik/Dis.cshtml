@@ -1,0 +1,137 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.Siparis>
+
+@{
+    ViewBag.Title = "CamSistem - Tedarik Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<style>
+    .row {
+        margin-right: 0px;
+    }
+</style>
+<script src="~/plugins/sweetalert/sweetalert.min.js"></script>
+<link href="~/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script type="text/javascript">
+    function DisTedarikSil(_tedarikId) {
+        swal({
+            title: "Emin misin?",
+            text: "Bu kaydı silmek istediğine emin misin?",
+            type: "warning",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            cancelButtonText: "İptal",
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Sil",
+            confirmButtonColor: "#ec6c62"
+        },
+        function () {
+            $.ajax({
+                url: '@Url.Action("DisTedarikSil", "Tedarik")',
+                dataType: 'json',
+                data: { "Id": _tedarikId },
+                type: "POST"
+            })
+            .done(function (data) {
+                if (data == 'OK') {
+                    sweetAlert
+                        ({
+                            title: "Silindi!",
+                            text: "Kayıt başarıyla silindi!",
+                            type: "success",
+                            timer: 1500
+                        },
+                            function () {
+                                window.location.href = '@Url.Action("Dis", "Tedarik")';
+                            });
+                } else {
+                    swal("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                }
+            })
+            .error(function (data) {
+                swal("Oops", "Beklenmedik hata oluştu!", "error");
+            });
+        });
+    }
+</script>
+
+<div class="block-header">
+    <h2>
+        Tedarik Yönetimi
+        <small>Tedarikçilere ait bilgilerin bulunduğu ve bu bilgilerin düzenlenip yenisinin oluşturulabileceği sayfadır.</small>
+    </h2>
+</div>
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Sipariş Listesi
+                </h2>
+            </div>
+            <div class="body">
+                <div style="padding-top:10px;" class="table-responsive">
+                    <table id="siparisTablosu" class="table table-bordered table-striped table-hover dataTable js-basic-example">
+                        <thead>
+                            <tr>
+                                <th>Sipariş No</th>
+                                <th>Müşteri Adı Soyadı - Şirket Adı</th>
+                                <th>Sistem Bilgisi</th>
+                                <th>Sistem En / Sistem Boy /Sistem Adet</th>
+                                <th>Sipariş Tür</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Id)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.MusteriTamAdi)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SistemTamami)
+                                    </td>
+
+                                    <td>
+                                        @foreach (var item2 in item.enBoyAdetList)
+                                        {
+                                            @Html.Raw(item2.GirilenEn + " / " + item2.GirilenBoy + " / " + item2.GirilenAdet + "<br />")
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SiparisTur)
+                                    </td>
+                                    <td>
+                                        @if (item.DisTedarikId != null)
+                                        {
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="Tedarik Bilgisi Düzenle"
+                                                    onclick="location.href='@Url.Action("DisTedarikDuzenle", "Tedarik", new { SiparisId = item.Id })'" class="btn btn-warning btn-circle waves-effect waves-circle waves-float">
+                                                <i class="material-icons">edit</i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="Tedarik Bilgisi Sil"
+                                                    onclick="DisTedarikSil('@item.Id')" class="btn btn-danger btn-circle waves-effect waves-circle waves-float">
+                                                <i class="material-icons">delete</i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="Tedarik Bilgisi Ekle"
+                                                    onclick="location.href='@Url.Action("DisTedarikKaydet", "Tedarik", new { SiparisId = item.Id })'" class="btn btn-primary btn-circle waves-effect waves-circle waves-float">
+                                                <i class="material-icons">add</i>
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

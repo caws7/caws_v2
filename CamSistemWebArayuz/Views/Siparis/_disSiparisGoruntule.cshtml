@@ -1,0 +1,140 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.DisSiparis>
+
+<style>
+    .modal-body {
+        overflow: auto;
+    }
+
+    .nav {
+        padding-left: revert;
+    }
+</style>
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs tab-nav-right tab-col-red" role="tablist">
+    <li role="presentation" class="active"><a href="#siparisdetay" data-toggle="tab"><b>İMALAT</b></a></li>
+    <li role="presentation"><a href="#sevkiyat" data-toggle="tab"><b>SEVKİYAT</b></a></li>
+    <li role="presentation"><a href="#aciklama" data-toggle="tab"><b>AÇIKLAMA BİLGİSİ</b></a></li>
+</ul>
+<!-- Tab panes -->
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade in active" id="siparisdetay">
+        <div class="modal-body">
+            <div class="tab-content">
+                <div id="imalatyazdir_disSiparis">
+                    @foreach (var item in Model)
+                    {
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" rowspan="3"><img src="~/images/icons/icon.jpeg" /></td>
+                                    <td colspan="4" rowspan="3"><center><h2><b>PROFORMA</b></h2></center></td>
+                                    <td colspan="6"><center>ANKARA</center></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3"><center>TEL. 0312 000 00 00</center></td>
+                                    <td colspan="3"><center>CEP: 0530 000 00 00</center></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6"><center>mail@mail.com</center></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12"><center><b>MÜŞTERİ BİLGİLERİ</b></center></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><center>@Html.DisplayFor(model => item.Musteri.AdSoyadSirketAdi)</center></td>
+                                    <td class="text-right">ADRES :</td>
+                                    <td colspan="9">@Html.Raw(item.Musteri.Adres.AcikAdres + " " + item.Musteri.Adres.Ilce + " / " + item.Musteri.Adres.Il + " - " + item.Musteri.Adres.Ulke)</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-right">SİPARİŞ NUMARASI :</td>
+                                    <td>@Html.DisplayFor(model => item.Id)</td>
+                                    <td></td>
+                                    <td colspan="2">SİPARİŞ TARİHİ :</td>
+                                    <td colspan="2">@Html.DisplayFor(model => item.KayitTarihi)</td>
+                                    <td colspan="2">TESLİM TARİHİ :</td>
+                                    <td colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", item.OnayIptalTarihi))</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" class="text-center"><b>TEDARİKÇİ BİLGİLERİ</b></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-center">@Html.DisplayFor(model => item.Tedarikci.TedarikciAdi)</td>
+                                    <td class="text-right">ADRES :</td>
+                                    <td colspan="5">@Html.DisplayFor(model => item.Tedarikci.Adres)</td>
+                                    <td colspan="2" class="text-right">TEDARİK FİYATI :</td>
+                                    <td colspan="2">@Html.Raw(string.Format("{0:c2}", item.TedarikFiyat))</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-right">SİPARİŞ NUMARASI :</td>
+                                    <td>@Html.DisplayFor(model => item.Id)</td>
+                                    <td></td>
+                                    <td colspan="2">SİPARİŞ TARİHİ :</td>
+                                    <td colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", item.KayitTarihi))</td>
+                                    <td colspan="2">TESLİM TARİHİ :</td>
+                                    <td colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", item.OnayIptalTarihi))</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" class="text-center">SİSTEM AÇIKLAMASI</td>
+                                    <td colspan="6" class="text-center">GENEL AÇIKLAMA</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6">@Html.DisplayFor(model => item.SistemAciklamasi)</td>
+                                    <td colspan="6">@Html.DisplayFor(model => item.GenelAciklama)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                </div>
+                <button type="button" onclick="PrintElem('imalatyazdir_disSiparis')" class="btn bg-red waves-effect waves-light pull-right">
+                    <i class="material-icons">print</i>
+                    <span>YAZDIR</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane fade" id="sevkiyat">
+        <div class="modal-body">
+            <div class="tab-content">
+                sevkiyat bilgileri gelecek
+            </div>
+        </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane fade" id="aciklama">
+        <div class="modal-body">
+            <div class="tab-content">
+                <h4 class="card-inside-title">Açıklama</h4>
+                <div class="row clearfix">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <div class="form-line">
+                                <div id="aciklamayazdir">
+                                    @foreach (var item in Model)
+                                    {
+                                        @Html.TextAreaFor(model => item.SiparisAciklama, new { @id = "siparisAciklamaId", @class = "form-control", @rows = 2, @name = "Açıklama" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <button type="button" onclick="DisSiparisAciklamaEkle('@Model.First().Id')" class="btn bg-green waves-effect waves-light pull-right">
+                        <i class="material-icons">save</i>
+                        <span>KAYDET / GÜNCELLE</span>
+                    </button>
+
+                    <button type="button" style="margin-right:10px;" onclick="PrintElem('siparisAciklamaId')" class="btn bg-red waves-effect waves-light pull-right">
+                        <i class="material-icons">print</i>
+                        <span>YAZDIR</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
+</div>

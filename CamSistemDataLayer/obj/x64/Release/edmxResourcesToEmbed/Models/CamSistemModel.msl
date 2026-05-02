@@ -1,0 +1,549 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="CamSistemDbModelStoreContainer" CdmEntityContainer="CamSistemDbEntities">
+    <EntitySetMapping Name="AltSistem">
+      <EntityTypeMapping TypeName="CamSistemDbModel.AltSistem">
+        <MappingFragment StoreEntitySet="AltSistem">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="AltSistemAdi" ColumnName="AltSistemAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AtikStok">
+      <EntityTypeMapping TypeName="CamSistemDbModel.AtikStok">
+        <MappingFragment StoreEntitySet="AtikStok">
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="Adet" ColumnName="Adet" />
+          <ScalarProperty Name="Olcu" ColumnName="Olcu" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CamKombinasyon">
+      <EntityTypeMapping TypeName="CamSistemDbModel.CamKombinasyon">
+        <MappingFragment StoreEntitySet="CamKombinasyon">
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+          <ScalarProperty Name="Birim" ColumnName="Birim" />
+          <ScalarProperty Name="Kombinasyon" ColumnName="Kombinasyon" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Durum">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Durum">
+        <MappingFragment StoreEntitySet="Durum">
+          <ScalarProperty Name="DurumAdi" ColumnName="DurumAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Kullanici">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Kullanici">
+        <MappingFragment StoreEntitySet="Kullanici">
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="RolId" ColumnName="RolId" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="KullaniciTelefon" ColumnName="KullaniciTelefon" />
+          <ScalarProperty Name="Sifre" ColumnName="Sifre" />
+          <ScalarProperty Name="KullaniciMail" ColumnName="KullaniciMail" />
+          <ScalarProperty Name="KullaniciSoyadi" ColumnName="KullaniciSoyadi" />
+          <ScalarProperty Name="KullaniciAdi" ColumnName="KullaniciAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Musteri">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Musteri">
+        <MappingFragment StoreEntitySet="Musteri">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="AdresId" ColumnName="AdresId" />
+          <ScalarProperty Name="MusteriTelefon" ColumnName="MusteriTelefon" />
+          <ScalarProperty Name="SirketAdi" ColumnName="SirketAdi" />
+          <ScalarProperty Name="MusteriSoyadi" ColumnName="MusteriSoyadi" />
+          <ScalarProperty Name="MusteriAdi" ColumnName="MusteriAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Profil">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Profil">
+        <MappingFragment StoreEntitySet="Profil">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="ProfilFoto" ColumnName="ProfilFoto" />
+          <ScalarProperty Name="KalipNo" ColumnName="KalipNo" />
+          <ScalarProperty Name="BirimAgirlik" ColumnName="BirimAgirlik" />
+          <ScalarProperty Name="ProfilKodu" ColumnName="ProfilKodu" />
+          <ScalarProperty Name="ProfilAdi" ColumnName="ProfilAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ProfilBoy">
+      <EntityTypeMapping TypeName="CamSistemDbModel.ProfilBoy">
+        <MappingFragment StoreEntitySet="ProfilBoy">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="ProfilBoyu" ColumnName="ProfilBoyu" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Renk">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Renk">
+        <MappingFragment StoreEntitySet="Renk">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="RenkImg" ColumnName="RenkImg" />
+          <ScalarProperty Name="RenkKodu" ColumnName="RenkKodu" />
+          <ScalarProperty Name="RenkAdi" ColumnName="RenkAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sabitler">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Sabitler">
+        <MappingFragment StoreEntitySet="Sabitler">
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="SabitDeger" ColumnName="SabitDeger" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisAksesuar">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SiparisAksesuar">
+        <MappingFragment StoreEntitySet="SiparisAksesuar">
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisCam">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SiparisCam">
+        <MappingFragment StoreEntitySet="SiparisCam">
+          <ScalarProperty Name="ArkaCam" ColumnName="ArkaCam" />
+          <ScalarProperty Name="AraBosluk" ColumnName="AraBosluk" />
+          <ScalarProperty Name="OnCam" ColumnName="OnCam" />
+          <ScalarProperty Name="CamKombinasyon" ColumnName="CamKombinasyon" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisStok">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SiparisStok">
+        <MappingFragment StoreEntitySet="SiparisStok">
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="FisNo" ColumnName="FisNo" />
+          <ScalarProperty Name="IslemDurum" ColumnName="IslemDurum" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="MarkaId" ColumnName="MarkaId" />
+          <ScalarProperty Name="AksesuarAdet" ColumnName="AksesuarAdet" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="ProfilAdet" ColumnName="ProfilAdet" />
+          <ScalarProperty Name="ProfilBoyId" ColumnName="ProfilBoyId" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sistem">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Sistem">
+        <MappingFragment StoreEntitySet="Sistem">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="SistemAdi" ColumnName="SistemAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SistemAksesuarJoin">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SistemAksesuarJoin">
+        <MappingFragment StoreEntitySet="SistemAksesuarJoin">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="SistemAltSistemJoinId" ColumnName="SistemAltSistemJoinId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SistemAltSistemJoin">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SistemAltSistemJoin">
+        <MappingFragment StoreEntitySet="SistemAltSistemJoin">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+          <ScalarProperty Name="AltSistemId" ColumnName="AltSistemId" />
+          <ScalarProperty Name="SistemTurId" ColumnName="SistemTurId" />
+          <ScalarProperty Name="SistemId" ColumnName="SistemId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SistemProfilJoin">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SistemProfilJoin">
+        <MappingFragment StoreEntitySet="SistemProfilJoin">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="SistemAltSistemJoinId" ColumnName="SistemAltSistemJoinId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SistemTur">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SistemTur">
+        <MappingFragment StoreEntitySet="SistemTur">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="TurAdi" ColumnName="TurAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Stok">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Stok">
+        <MappingFragment StoreEntitySet="Stok">
+          <ScalarProperty Name="StokAdet" ColumnName="StokAdet" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="OzelOlcu" ColumnName="OzelOlcu" />
+          <ScalarProperty Name="ProfilBoyId" ColumnName="ProfilBoyId" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="StokAksesuar">
+      <EntityTypeMapping TypeName="CamSistemDbModel.StokAksesuar">
+        <MappingFragment StoreEntitySet="StokAksesuar">
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="StokAdet" ColumnName="StokAdet" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Aksesuar">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Aksesuar">
+        <MappingFragment StoreEntitySet="Aksesuar">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="Kumanda" ColumnName="Kumanda" />
+          <ScalarProperty Name="Motor" ColumnName="Motor" />
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+          <ScalarProperty Name="AksesuarBirim" ColumnName="AksesuarBirim" />
+          <ScalarProperty Name="AksesuarKalipNo" ColumnName="AksesuarKalipNo" />
+          <ScalarProperty Name="AksesuarGorsel" ColumnName="AksesuarGorsel" />
+          <ScalarProperty Name="AksesuarKodu" ColumnName="AksesuarKodu" />
+          <ScalarProperty Name="AksesuarAdi" ColumnName="AksesuarAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisEnBoyAdet">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SiparisEnBoyAdet">
+        <MappingFragment StoreEntitySet="SiparisEnBoyAdet">
+          <ScalarProperty Name="GirilenSolEn" ColumnName="GirilenSolEn" />
+          <ScalarProperty Name="GirilenAdet" ColumnName="GirilenAdet" />
+          <ScalarProperty Name="GirilenBoy" ColumnName="GirilenBoy" />
+          <ScalarProperty Name="GirilenEn" ColumnName="GirilenEn" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Tedarikci">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Tedarikci">
+        <MappingFragment StoreEntitySet="Tedarikci">
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="TedarikciTuru" ColumnName="TedarikciTuru" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="Telefon" ColumnName="Telefon" />
+          <ScalarProperty Name="Adres" ColumnName="Adres" />
+          <ScalarProperty Name="TedarikciAdi" ColumnName="TedarikciAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="YuklenenDosyalar">
+      <EntityTypeMapping TypeName="CamSistemDbModel.YuklenenDosyalar">
+        <MappingFragment StoreEntitySet="YuklenenDosyalar">
+          <ScalarProperty Name="YuklenmeTarihi" ColumnName="YuklenmeTarihi" />
+          <ScalarProperty Name="DosyaYolu" ColumnName="DosyaYolu" />
+          <ScalarProperty Name="DosyaUzantisi" ColumnName="DosyaUzantisi" />
+          <ScalarProperty Name="DosyaAdi" ColumnName="DosyaAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BoyaTedarik">
+      <EntityTypeMapping TypeName="CamSistemDbModel.BoyaTedarik">
+        <MappingFragment StoreEntitySet="BoyaTedarik">
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="GelisTarihi" ColumnName="GelisTarihi" />
+          <ScalarProperty Name="CikisTarihi" ColumnName="CikisTarihi" />
+          <ScalarProperty Name="BoyadanGelisKilosu" ColumnName="BoyadanGelisKilosu" />
+          <ScalarProperty Name="BoyadanCikisKilosu" ColumnName="BoyadanCikisKilosu" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="TedarikciId" ColumnName="TedarikciId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CamTedarik">
+      <EntityTypeMapping TypeName="CamSistemDbModel.CamTedarik">
+        <MappingFragment StoreEntitySet="CamTedarik">
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="GuncelDurum" ColumnName="GuncelDurum" />
+          <ScalarProperty Name="TerminTarihi" ColumnName="TerminTarihi" />
+          <ScalarProperty Name="SiparisOnayTarihi" ColumnName="SiparisOnayTarihi" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="TedarikciId" ColumnName="TedarikciId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisTeklif">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SiparisTeklif">
+        <MappingFragment StoreEntitySet="SiparisTeklif">
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="ToplamTutar" ColumnName="ToplamTutar" />
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+          <ScalarProperty Name="Miktar" ColumnName="Miktar" />
+          <ScalarProperty Name="Birim" ColumnName="Birim" />
+          <ScalarProperty Name="Malzeme" ColumnName="Malzeme" />
+          <ScalarProperty Name="SiparisEnBoyAdetId" ColumnName="SiparisEnBoyAdetId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisTeklifToplamBilgisi">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SiparisTeklifToplamBilgisi">
+        <MappingFragment StoreEntitySet="SiparisTeklifToplamBilgisi">
+          <ScalarProperty Name="Teklif" ColumnName="Teklif" />
+          <ScalarProperty Name="m2" ColumnName="m2" />
+          <ScalarProperty Name="ToplamMaliyet" ColumnName="ToplamMaliyet" />
+          <ScalarProperty Name="SiparisEnBoyAdetId" ColumnName="SiparisEnBoyAdetId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Adres">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Adres">
+        <MappingFragment StoreEntitySet="Adres">
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="Ulke" ColumnName="Ulke" />
+          <ScalarProperty Name="Ilce" ColumnName="Ilce" />
+          <ScalarProperty Name="Il" ColumnName="Il" />
+          <ScalarProperty Name="PostaKodu" ColumnName="PostaKodu" />
+          <ScalarProperty Name="AcikAdres" ColumnName="AcikAdres" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Rol">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Rol">
+        <MappingFragment StoreEntitySet="Rol">
+          <ScalarProperty Name="RolAdi" ColumnName="RolAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sayfa">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Sayfa">
+        <MappingFragment StoreEntitySet="Sayfa">
+          <ScalarProperty Name="SayfaAdi" ColumnName="SayfaAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Yetki">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Yetki">
+        <MappingFragment StoreEntitySet="Yetki">
+          <ScalarProperty Name="YetkiAdi" ColumnName="YetkiAdi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RolSayfaYetki">
+      <EntityTypeMapping TypeName="CamSistemDbModel.RolSayfaYetki">
+        <MappingFragment StoreEntitySet="RolSayfaYetki">
+          <ScalarProperty Name="SayfaId" ColumnName="SayfaId" />
+          <ScalarProperty Name="YetkiId" ColumnName="YetkiId" />
+          <ScalarProperty Name="RolId" ColumnName="RolId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="KullaniciRol">
+      <EntityTypeMapping TypeName="CamSistemDbModel.KullaniciRol">
+        <MappingFragment StoreEntitySet="KullaniciRol">
+          <ScalarProperty Name="DuzenlemeTarihi" ColumnName="DuzenlemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="EkleyenKullaniciId" ColumnName="EkleyenKullaniciId" />
+          <ScalarProperty Name="RolId" ColumnName="RolId" />
+          <ScalarProperty Name="KullaniciId" ColumnName="KullaniciId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DisSiparis">
+      <EntityTypeMapping TypeName="CamSistemDbModel.DisSiparis">
+        <MappingFragment StoreEntitySet="DisSiparis">
+          <ScalarProperty Name="SevkiyatId" ColumnName="SevkiyatId" />
+          <ScalarProperty Name="SiparisAciklama" ColumnName="SiparisAciklama" />
+          <ScalarProperty Name="TedarikFiyat" ColumnName="TedarikFiyat" />
+          <ScalarProperty Name="TedarikciId" ColumnName="TedarikciId" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="OnayIptalKullaniciId" ColumnName="OnayIptalKullaniciId" />
+          <ScalarProperty Name="OnayIptalTarihi" ColumnName="OnayIptalTarihi" />
+          <ScalarProperty Name="GenelAciklama" ColumnName="GenelAciklama" />
+          <ScalarProperty Name="IslemDurum" ColumnName="IslemDurum" />
+          <ScalarProperty Name="SistemAciklamasi" ColumnName="SistemAciklamasi" />
+          <ScalarProperty Name="SistemBilgisi" ColumnName="SistemBilgisi" />
+          <ScalarProperty Name="DurumId" ColumnName="DurumId" />
+          <ScalarProperty Name="FisNo" ColumnName="FisNo" />
+          <ScalarProperty Name="MusteriId" ColumnName="MusteriId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DisTedarik">
+      <EntityTypeMapping TypeName="CamSistemDbModel.DisTedarik">
+        <MappingFragment StoreEntitySet="DisTedarik">
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GenelAciklama" ColumnName="GenelAciklama" />
+          <ScalarProperty Name="SistemAciklama" ColumnName="SistemAciklama" />
+          <ScalarProperty Name="TedarikFiyat" ColumnName="TedarikFiyat" />
+          <ScalarProperty Name="TedarikTarihi" ColumnName="TedarikTarihi" />
+          <ScalarProperty Name="SistemBilgisi" ColumnName="SistemBilgisi" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="TedarikciId" ColumnName="TedarikciId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sevkiyat">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Sevkiyat">
+        <MappingFragment StoreEntitySet="Sevkiyat">
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="SevkiyatTarihi" ColumnName="SevkiyatTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="SevkiyatBilgisi" ColumnName="SevkiyatBilgisi" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisSevkiyatAksesuar">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SiparisSevkiyatAksesuar">
+        <MappingFragment StoreEntitySet="SiparisSevkiyatAksesuar">
+          <ScalarProperty Name="KullaniciId" ColumnName="KullaniciId" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="AksesuarAdet" ColumnName="AksesuarAdet" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="SiparisEnBoyAdetId" ColumnName="SiparisEnBoyAdetId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Siparis">
+      <EntityTypeMapping TypeName="CamSistemDbModel.Siparis">
+        <MappingFragment StoreEntitySet="Siparis">
+          <ScalarProperty Name="ImalatDurum" ColumnName="ImalatDurum" />
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+          <ScalarProperty Name="ToplamAluKgFiyat" ColumnName="ToplamAluKgFiyat" />
+          <ScalarProperty Name="ToplamAluKg" ColumnName="ToplamAluKg" />
+          <ScalarProperty Name="SistemBirimFiyat" ColumnName="SistemBirimFiyat" />
+          <ScalarProperty Name="DisTedarikId" ColumnName="DisTedarikId" />
+          <ScalarProperty Name="BoyaTedarikId" ColumnName="BoyaTedarikId" />
+          <ScalarProperty Name="CamTedarikId" ColumnName="CamTedarikId" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="FisNo" ColumnName="FisNo" />
+          <ScalarProperty Name="KumandaMarkaId" ColumnName="KumandaMarkaId" />
+          <ScalarProperty Name="MotorMarkaId" ColumnName="MotorMarkaId" />
+          <ScalarProperty Name="SiparisTur" ColumnName="SiparisTur" />
+          <ScalarProperty Name="OnayIptalKullaniciId" ColumnName="OnayIptalKullaniciId" />
+          <ScalarProperty Name="OnayIptalTarihi" ColumnName="OnayIptalTarihi" />
+          <ScalarProperty Name="TahminiTeslim" ColumnName="TahminiTeslim" />
+          <ScalarProperty Name="TeslimTarihi" ColumnName="TeslimTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="IslemDurum" ColumnName="IslemDurum" />
+          <ScalarProperty Name="DurumId" ColumnName="DurumId" />
+          <ScalarProperty Name="RenkId" ColumnName="RenkId" />
+          <ScalarProperty Name="AltSistemId" ColumnName="AltSistemId" />
+          <ScalarProperty Name="SistemTurId" ColumnName="SistemTurId" />
+          <ScalarProperty Name="SistemId" ColumnName="SistemId" />
+          <ScalarProperty Name="MusteriId" ColumnName="MusteriId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisSevkiyatProfil">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SiparisSevkiyatProfil">
+        <MappingFragment StoreEntitySet="SiparisSevkiyatProfil">
+          <ScalarProperty Name="Paket" ColumnName="Paket" />
+          <ScalarProperty Name="KullaniciId" ColumnName="KullaniciId" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="ToplamKg" ColumnName="ToplamKg" />
+          <ScalarProperty Name="ToplamMetre" ColumnName="ToplamMetre" />
+          <ScalarProperty Name="ProfilAdet" ColumnName="ProfilAdet" />
+          <ScalarProperty Name="ProfilBoy" ColumnName="ProfilBoy" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="SiparisEnBoyAdetId" ColumnName="SiparisEnBoyAdetId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OptimizasyonHesap">
+      <EntityTypeMapping TypeName="CamSistemDbModel.OptimizasyonHesap">
+        <MappingFragment StoreEntitySet="OptimizasyonHesap">
+          <ScalarProperty Name="ImalatDurum" ColumnName="ImalatDurum" />
+          <ScalarProperty Name="KullaniciId" ColumnName="KullaniciId" />
+          <ScalarProperty Name="KayitTarih" ColumnName="KayitTarih" />
+          <ScalarProperty Name="KullanilanAlan" ColumnName="KullanilanAlan" />
+          <ScalarProperty Name="FiredenKullanilanToplamAgirlik" ColumnName="FiredenKullanilanToplamAgirlik" />
+          <ScalarProperty Name="FiredenKullanilanToplamUzunluk" ColumnName="FiredenKullanilanToplamUzunluk" />
+          <ScalarProperty Name="AsilStoktanKullanilanToplamAgirlik" ColumnName="AsilStoktanKullanilanToplamAgirlik" />
+          <ScalarProperty Name="AsilStoktanKullanilanToplamUzunluk" ColumnName="AsilStoktanKullanilanToplamUzunluk" />
+          <ScalarProperty Name="FireyeEklenenToplamAgirlik" ColumnName="FireyeEklenenToplamAgirlik" />
+          <ScalarProperty Name="FireyeEklenenToplamUzunluk" ColumnName="FireyeEklenenToplamUzunluk" />
+          <ScalarProperty Name="ToplamAtikAgirlik" ColumnName="ToplamAtikAgirlik" />
+          <ScalarProperty Name="ToplamAtikUzunluk" ColumnName="ToplamAtikUzunluk" />
+          <ScalarProperty Name="FireAtik" ColumnName="FireAtik" />
+          <ScalarProperty Name="KesimAdet" ColumnName="KesimAdet" />
+          <ScalarProperty Name="KesilecekOlculer" ColumnName="KesilecekOlculer" />
+          <ScalarProperty Name="ProfilBoy" ColumnName="ProfilBoy" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="SiparisIds" ColumnName="SiparisIds" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SevkiyatPaket">
+      <EntityTypeMapping TypeName="CamSistemDbModel.SevkiyatPaket">
+        <MappingFragment StoreEntitySet="SevkiyatPaket">
+          <ScalarProperty Name="PaketAdet" ColumnName="PaketAdet" />
+          <ScalarProperty Name="PaketYukseklik" ColumnName="PaketYukseklik" />
+          <ScalarProperty Name="PaketBoy" ColumnName="PaketBoy" />
+          <ScalarProperty Name="PaketEn" ColumnName="PaketEn" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

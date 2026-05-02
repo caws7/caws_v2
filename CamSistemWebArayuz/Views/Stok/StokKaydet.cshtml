@@ -1,0 +1,160 @@
+﻿@model CamSistemDataLayer.Models.Stok
+@using CamSistemDataLayer.Models
+@{
+    ViewBag.Title = "CamSistem - Stok Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<script src="~/plugins/sweetalert/sweetalert.min.js"></script>
+<link href="~/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script>
+    $(document).ready(function () {
+        $(function () {
+            $('#stokKaydetId').click(function (e) {
+                e.preventDefault();
+                var StokModel = {
+                    ProfilId: $('#ProfilId').val(),
+                    ProfilBoyId: $('#ProfilBoyId').val(),
+                    OzelOlcu: $('#OzelBoyId').val(),
+                    StokAdet: $('#ProfilAdetId').val()
+                }
+                if ($("#form_validation").validate().form()) {
+                    $.ajax({
+                        type: 'POST',
+                        data: JSON.stringify({ stok: StokModel}),
+                        url: '@Url.Action("StokKaydet", "Stok")',
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        success: function(data) {
+                            if (data == 'UPDATE') {
+                                sweetAlert
+                                    ({
+                                        title: "Güncellendi!",
+                                        text: "Stok başarıyla güncellendi!",
+                                        type: "success",
+                                        timer: 1500
+                                    },
+                                    function () {
+                                        window.location.href = '@Url.Action("StokKaydet", "Stok")';
+                                    });
+                            } else if (data == 'INSERT') {
+                                sweetAlert
+                                    ({
+                                        title: "Eklendi!",
+                                        text: "Stok başarıyla eklendi!",
+                                        type: "success",
+                                        timer: 1500
+                                    },
+                                    function () {
+                                        window.location.href = '@Url.Action("StokKaydet", "Stok")';
+                                    });
+                            }
+                        },
+                        error: function(errorObj) {
+                            alert(errorObj.toString());
+                        }
+                    });
+                }
+            });
+        });
+
+        $("input#OzelSecimDurum")
+            .change(function () {
+                var $input = $(this);
+                if ($input.is(":checked")) {
+                    $('#ProfilBoyId').attr("disabled", "disabled");
+                    $('#ProfilBoyId option').remove();
+                    $('#ProfilBoyId').append('<option value="-1"> Seçim Kaldırıldı! </option>');
+                    $('#ProfilBoyId').selectpicker('refresh');
+                    $("#OzelBoyId").prop("disabled", false);
+
+                } else {
+                    var boyList = @Html.Raw(Json.Encode(@ViewBag.ProfilBoyList));
+                    $("#ProfilBoyId").prop("disabled", false);
+                    $('#ProfilBoyId option').remove();
+                    $('#ProfilBoyId').selectpicker('refresh');
+                    $('#ProfilBoyId').append('<option value=""> Profil Boyu Seçiniz... </option>');
+                    for (var x = 0; x < boyList.length; x++) {
+                        markup = '<option value="' + boyList[x].Id + '">' + boyList[x].ProfilBoyu + '</option>';
+                        $('#ProfilBoyId').append(markup);
+                        $('#ProfilBoyId').selectpicker('refresh');
+                    }
+                    $("#OzelBoyId").prop("disabled", true);
+
+                }
+            }).change();
+    });
+</script>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Stok Kaydetme
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("StokKaydet", "Stok", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.ValidationSummary(true)
+                    <div class="row clearfix">
+                        <div class="col-sm-4">
+                            <label for="ProfilId">Profil</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <select id="ProfilId" title="Select your surfboard" class="selectpicker form-control show-tick required" data-live-search="true" required>
+                                        @foreach (Profil item in ViewBag.ProfilList)
+                                        {
+                                            if (item.ProfilFoto != null)
+                                            {
+                                                <option value="@item.Id" data-thumbnail="/images/profilicons/@item.ProfilFoto">@item.ProfilAdi - (@item.ProfilKodu)</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Id">@item.ProfilAdi - (@item.ProfilKodu)</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="ProfilBoyId">Profil Boyu</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.ProfilBoyId, new SelectList(ViewBag.ProfilBoyList, "Id", "ProfilBoyu"), "Profil Boyu Seçiniz...", new { @class = "form-control show-tick", @id = "ProfilBoyId", @required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="ProfilAdetId">Stok Adet</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.StokAdet, new { @class = "form-control", @required = "required", @id = "ProfilAdetId", @onkeypress = "return isNumberKey(event)" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="OzelSecimDurum">Özel Ölçü</label>
+                            <div class="demo-switch">
+                                <div class="switch">
+                                    <label>YOK<input id="OzelSecimDurum" type="checkbox"><span class="lever switch-col-light-green"></span>VAR</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="OzelBoyId">Özel Ölçü Boyu (mm cinsinden)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input id="OzelBoyId" type="text" class="form-control" onkeypress="return isNumberKey(event)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <button type="submit" id="stokKaydetId" class="btn bg-green waves-effect">KAYDET</button>
+                <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("Index", "Stok")'">LİSTEYE GERİ DÖN</button>
+            </div>
+        </div>
+    </div>
+</div>

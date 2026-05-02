@@ -1,0 +1,140 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.Siparis>
+@using CamSistemDataLayer.Enums
+
+@{
+    ViewBag.Title = "CamSistem - Raporlama | İptal Edilen Siparişler";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+<script>
+    function SiparisDetayiGoruntule(_siparisId) {
+        var url = '@Url.Action("SiparisDetayGoruntule", "Siparis")';
+
+        $('#searchResults').load(url, { SiparisId: _siparisId, raporMu: true });
+        $('#showDuzenleModal').modal('show');
+    }
+</script>
+
+<div class="block-header">
+    <h2>
+        İptal Edilen Sipariş Listesi
+        <small>İptal edilmiş sipariş listesinin gösterildiği raporlama sayfasıdır.</small>
+    </h2>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="body">
+                <div style="padding-top:10px;" class="table-responsive">
+                    <table id="siparisTablosu" class="table table-bordered table-striped table-hover dataTable js-exportable-siparis">
+                        <thead>
+                            <tr>
+                                <th>Sipariş No</th>
+                                <th>Fiş No</th>
+                                <th>Müşteri Adı Soyadı - Şirket Adı</th>
+                                <th>Sistem Bilgisi</th>
+                                <th>Sipariş Tür</th>
+                                <th>Durum Bilgisi</th>
+                                <th>İşlem Durumu</th>
+                                <th>Onay / İptal Tarihi</th>
+                                <th>Onay / İptal Kullanıcısı</th>
+                                <th>Tahmini Teslim Tarihi</th>
+                                <th>Teslim Onay Tarihi</th>
+                                <th>Sipariş Oluşturma Tarihi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Id)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.FisNo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.MusteriTamAdi)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SistemTamami)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SiparisTur)
+                                    </td>
+                                    @{
+                                        switch ((int)item.DurumId)
+                                        {
+                                            case (int)Durumlar.Beklemede: @Html.Raw("<td class='bg-warning'><b>TEKLİF</b></td>");
+                                            break;
+                                            case (int)Durumlar.Onaylandı: @Html.Raw("<td class='bg-success'><b>ONAYLANDI</b></td>");
+                                            break;
+                                            case (int)Durumlar.Reddedildi: @Html.Raw("<td class='bg-danger'><b>REDDEDİLDİ</b></td>");
+                                            break;
+                                            case (int)Durumlar.TeslimEdildi: @Html.Raw("<td class='bg-success'><b>TESLİM EDİLDİ</b></td>");
+                                            break;
+                                            case (int)Durumlar.ImalataGonderildi: @Html.Raw("<td class='bg-info'><b>İMALATA GÖNDERİLDİ</b></td>");
+                                            break;
+                                            case (int)Durumlar.Sevkiyatta: @Html.Raw("<td class='bg-orange'><b>SEVKİYATA HAZIR</b></td>");
+                                            break;
+                                            case (int)Durumlar.SevkiyatOnaylandi: @Html.Raw("<td class='bg-green'><b>SEVKİYAT ONAYLANDI</b></td>");
+                                            break;
+
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                    @{
+                                        switch (item.IslemDurum)
+                                        {
+                                            case "İşlem Beklemede": @Html.Raw("<td class='bg-warning'><b>İŞLEM BEKLEMEDE</b></td>")
+                                            break;
+                                            case "İşlem Onaylandı": @Html.Raw("<td class='bg-success'><b>İŞLEM ONAYLANDI</b></td>")
+                                            break;
+
+                                            default: @Html.Raw("<td></td>")
+                                            break;
+                                        }
+                                    }
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.OnayIptalTarihi)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.KullaniciTamAdi)
+                                    </td>
+                                    <td>
+                                        @Html.Raw(string.Format("{0:dd/MM/yyyy}", item.TahminiTeslim))
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TeslimTarihi)
+                                    </td>
+                                    <td>
+                                        @Html.Raw(string.Format("{0:dd/MM/yyyy}", item.KayitTarihi))
+                                    </td>
+                                    <td>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Görüntüle" onclick="SiparisDetayiGoruntule('@item.Id')"
+                                                class="btn bg-blue btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">content_copy</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="showDuzenleModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div id="searchResults">
+
+            </div>
+        </div>
+    </div>
+</div>

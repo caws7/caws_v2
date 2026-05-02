@@ -1,0 +1,549 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="CamSistemDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="CamSistemDbEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="AltSistem" EntityType="CamSistemDbModel.AltSistem" />
+    <EntitySet Name="AtikStok" EntityType="CamSistemDbModel.AtikStok" />
+    <EntitySet Name="CamKombinasyon" EntityType="CamSistemDbModel.CamKombinasyon" />
+    <EntitySet Name="Durum" EntityType="CamSistemDbModel.Durum" />
+    <EntitySet Name="Kullanici" EntityType="CamSistemDbModel.Kullanici" />
+    <EntitySet Name="Musteri" EntityType="CamSistemDbModel.Musteri" />
+    <EntitySet Name="Profil" EntityType="CamSistemDbModel.Profil" />
+    <EntitySet Name="ProfilBoy" EntityType="CamSistemDbModel.ProfilBoy" />
+    <EntitySet Name="Renk" EntityType="CamSistemDbModel.Renk" />
+    <EntitySet Name="Sabitler" EntityType="CamSistemDbModel.Sabitler" />
+    <EntitySet Name="SiparisAksesuar" EntityType="CamSistemDbModel.SiparisAksesuar" />
+    <EntitySet Name="SiparisCam" EntityType="CamSistemDbModel.SiparisCam" />
+    <EntitySet Name="SiparisStok" EntityType="CamSistemDbModel.SiparisStok" />
+    <EntitySet Name="Sistem" EntityType="CamSistemDbModel.Sistem" />
+    <EntitySet Name="SistemAksesuarJoin" EntityType="CamSistemDbModel.SistemAksesuarJoin" />
+    <EntitySet Name="SistemAltSistemJoin" EntityType="CamSistemDbModel.SistemAltSistemJoin" />
+    <EntitySet Name="SistemProfilJoin" EntityType="CamSistemDbModel.SistemProfilJoin" />
+    <EntitySet Name="SistemTur" EntityType="CamSistemDbModel.SistemTur" />
+    <EntitySet Name="Stok" EntityType="CamSistemDbModel.Stok" />
+    <EntitySet Name="StokAksesuar" EntityType="CamSistemDbModel.StokAksesuar" />
+    <EntitySet Name="Aksesuar" EntityType="CamSistemDbModel.Aksesuar" />
+    <EntitySet Name="SiparisEnBoyAdet" EntityType="CamSistemDbModel.SiparisEnBoyAdet" />
+    <EntitySet Name="Tedarikci" EntityType="CamSistemDbModel.Tedarikci" />
+    <EntitySet Name="YuklenenDosyalar" EntityType="CamSistemDbModel.YuklenenDosyalar" />
+    <EntitySet Name="BoyaTedarik" EntityType="CamSistemDbModel.BoyaTedarik" />
+    <EntitySet Name="CamTedarik" EntityType="CamSistemDbModel.CamTedarik" />
+    <EntitySet Name="SiparisTeklif" EntityType="CamSistemDbModel.SiparisTeklif" />
+    <EntitySet Name="SiparisTeklifToplamBilgisi" EntityType="CamSistemDbModel.SiparisTeklifToplamBilgisi" />
+    <EntitySet Name="Adres" EntityType="CamSistemDbModel.Adres" />
+    <EntitySet Name="Rol" EntityType="CamSistemDbModel.Rol" />
+    <EntitySet Name="Sayfa" EntityType="CamSistemDbModel.Sayfa" />
+    <EntitySet Name="Yetki" EntityType="CamSistemDbModel.Yetki" />
+    <EntitySet Name="RolSayfaYetki" EntityType="CamSistemDbModel.RolSayfaYetki" />
+    <EntitySet Name="KullaniciRol" EntityType="CamSistemDbModel.KullaniciRol" />
+    <EntitySet Name="DisSiparis" EntityType="CamSistemDbModel.DisSiparis" />
+    <EntitySet Name="DisTedarik" EntityType="CamSistemDbModel.DisTedarik" />
+    <EntitySet Name="Sevkiyat" EntityType="CamSistemDbModel.Sevkiyat" />
+    <EntitySet Name="SiparisSevkiyatAksesuar" EntityType="CamSistemDbModel.SiparisSevkiyatAksesuar" />
+    <EntitySet Name="Siparis" EntityType="CamSistemDbModel.Siparis" />
+    <EntitySet Name="SiparisSevkiyatProfil" EntityType="CamSistemDbModel.SiparisSevkiyatProfil" />
+    <EntitySet Name="OptimizasyonHesap" EntityType="CamSistemDbModel.OptimizasyonHesap" />
+    <EntitySet Name="SevkiyatPaket" EntityType="CamSistemDbModel.SevkiyatPaket" />
+  </EntityContainer>
+  <EntityType Name="AltSistem">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="AltSistemAdi" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="AtikStok">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="Olcu" Type="Int32" />
+    <Property Name="Adet" Type="Int32" />
+    <Property Name="ProfilId" Type="Int32" />
+    <Property Name="Aciklama" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="CamKombinasyon">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="Kombinasyon" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Birim" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="BirimFiyat" Precision="17" Scale="2" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="Durum">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="DurumAdi" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="Kullanici">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="KullaniciAdi" MaxLength="50" FixedLength="false" Unicode="false" Type="String" />
+    <Property Name="KullaniciSoyadi" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KullaniciMail" MaxLength="150" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Sifre" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KullaniciTelefon" MaxLength="25" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AktifMi" Type="Boolean" />
+    <Property Name="RolId" Type="Int32" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GuncellemeTarihi" Precision="3" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="Musteri">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="MusteriAdi" MaxLength="150" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="MusteriSoyadi" MaxLength="150" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="SirketAdi" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="MusteriTelefon" MaxLength="25" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AdresId" Type="Int32" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GuncellemeTarihi" Precision="3" Type="DateTime" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="Profil">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="ProfilAdi" MaxLength="150" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="ProfilKodu" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="BirimAgirlik" Type="Int32" />
+    <Property Name="KalipNo" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="ProfilFoto" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="ProfilBoy">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="ProfilBoyu" Type="Int32" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="Renk">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="RenkAdi" MaxLength="150" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="RenkKodu" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="RenkImg" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="Sabitler">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="SabitDeger" Type="Int32" />
+    <Property Name="Aciklama" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="SiparisAksesuar">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="SiparisId" Type="Int64" />
+    <Property Name="AksesuarId" Type="Int32" />
+    <Property Name="BirimFiyat" Precision="17" Scale="2" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="SiparisCam">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="SiparisId" Type="Int64" />
+    <Property Name="CamKombinasyon" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="OnCam" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AraBosluk" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="ArkaCam" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="SiparisStok">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="SiparisId" Type="Int64" />
+    <Property Name="ProfilId" Type="Int32" />
+    <Property Name="ProfilBoyId" Type="Int32" />
+    <Property Name="ProfilAdet" Type="Int32" />
+    <Property Name="AksesuarId" Type="Int32" />
+    <Property Name="AksesuarAdet" Type="Int32" />
+    <Property Name="MarkaId" Type="Int32" />
+    <Property Name="Aciklama" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="IslemDurum" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="FisNo" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="GuncellemeTarihi" Precision="3" Type="DateTime" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="Sistem">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="SistemAdi" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="SistemAksesuarJoin">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="SistemAltSistemJoinId" Type="Int32" />
+    <Property Name="AksesuarId" Type="Int32" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="SistemAltSistemJoin">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="SistemId" Type="Int32" />
+    <Property Name="SistemTurId" Type="Int32" />
+    <Property Name="AltSistemId" Type="Int32" />
+    <Property Name="BirimFiyat" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="SistemProfilJoin">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="SistemAltSistemJoinId" Type="Int32" />
+    <Property Name="ProfilId" Type="Int32" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="SistemTur">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="TurAdi" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="Stok">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="ProfilId" Type="Int32" />
+    <Property Name="ProfilBoyId" Type="Int32" />
+    <Property Name="OzelOlcu" Type="Int32" />
+    <Property Name="Aciklama" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="StokAdet" Type="Int32" />
+  </EntityType>
+  <EntityType Name="StokAksesuar">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="AksesuarId" Type="Int32" />
+    <Property Name="StokAdet" Type="Int32" />
+    <Property Name="Aciklama" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="Aksesuar">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="AksesuarAdi" MaxLength="150" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AksesuarKodu" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AksesuarGorsel" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AksesuarKalipNo" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AksesuarBirim" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="BirimFiyat" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="Motor" Type="Boolean" />
+    <Property Name="Kumanda" Type="Boolean" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="SiparisEnBoyAdet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="SiparisId" Type="Int64" />
+    <Property Name="GirilenEn" Type="Int32" />
+    <Property Name="GirilenBoy" Type="Int32" />
+    <Property Name="GirilenAdet" Type="Int32" />
+    <Property Name="GirilenSolEn" Type="Int32" />
+  </EntityType>
+  <EntityType Name="Tedarikci">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="TedarikciAdi" MaxLength="150" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Adres" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Telefon" MaxLength="25" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="TedarikciTuru" MaxLength="25" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="AktifMi" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="YuklenenDosyalar">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="DosyaAdi" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="DosyaUzantisi" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="DosyaYolu" MaxLength="350" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="YuklenmeTarihi" Precision="3" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="BoyaTedarik">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="TedarikciId" Type="Int32" />
+    <Property Name="SiparisId" Type="Int64" />
+    <Property Name="BoyadanCikisKilosu" MaxLength="15" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="BoyadanGelisKilosu" MaxLength="15" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="CikisTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GelisTarihi" Precision="3" Type="DateTime" />
+    <Property Name="Aciklama" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="DosyaIds" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="CamTedarik">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="TedarikciId" Type="Int32" />
+    <Property Name="SiparisId" Type="Int64" />
+    <Property Name="SiparisOnayTarihi" Precision="3" Type="DateTime" />
+    <Property Name="TerminTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GuncelDurum" MaxLength="150" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Aciklama" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="DosyaIds" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="SiparisTeklif">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="SiparisEnBoyAdetId" Type="Int64" />
+    <Property Name="Malzeme" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Birim" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Miktar" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="BirimFiyat" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="ToplamTutar" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="SiparisTeklifToplamBilgisi">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="SiparisEnBoyAdetId" Type="Int64" />
+    <Property Name="ToplamMaliyet" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="m2" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="Teklif" Precision="17" Scale="2" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="Adres">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="AcikAdres" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="PostaKodu" MaxLength="5" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Il" MaxLength="150" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Ilce" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Ulke" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GuncellemeTarihi" Precision="3" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="Rol">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="RolAdi" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="Sayfa">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="SayfaAdi" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="Yetki">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="YetkiAdi" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="RolSayfaYetki">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="RolId" Type="Int32" />
+    <Property Name="YetkiId" Type="Int32" />
+    <Property Name="SayfaId" Type="Int32" />
+  </EntityType>
+  <EntityType Name="KullaniciRol">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="KullaniciId" Type="Int32" />
+    <Property Name="RolId" Type="Int32" />
+    <Property Name="EkleyenKullaniciId" Type="Int32" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="DuzenlemeTarihi" Precision="3" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="DisSiparis">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="MusteriId" Type="Int64" />
+    <Property Name="FisNo" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="DurumId" Type="Int32" />
+    <Property Name="SistemBilgisi" MaxLength="200" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="SistemAciklamasi" MaxLength="350" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="IslemDurum" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="GenelAciklama" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="OnayIptalTarihi" Precision="3" Type="DateTime" />
+    <Property Name="OnayIptalKullaniciId" Type="Int32" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GuncellemeTarihi" Precision="3" Type="DateTime" />
+    <Property Name="TedarikciId" Type="Int32" />
+    <Property Name="TedarikFiyat" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="SiparisAciklama" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="SevkiyatId" Type="Int64" />
+  </EntityType>
+  <EntityType Name="DisTedarik">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="TedarikciId" Type="Int32" />
+    <Property Name="SiparisId" Type="Int64" />
+    <Property Name="SistemBilgisi" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="TedarikTarihi" Precision="3" Type="DateTime" />
+    <Property Name="TedarikFiyat" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="SistemAciklama" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="GenelAciklama" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="DosyaIds" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+  </EntityType>
+  <EntityType Name="Sevkiyat">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+    <Property Name="SevkiyatBilgisi" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Aciklama" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="DosyaIds" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GuncellemeTarihi" Precision="3" Type="DateTime" />
+    <Property Name="SevkiyatTarihi" Precision="3" Type="DateTime" />
+    <Property Name="SiparisId" Type="Int64" />
+  </EntityType>
+  <EntityType Name="SiparisSevkiyatAksesuar">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="SiparisEnBoyAdetId" Type="Int64" />
+    <Property Name="AksesuarId" Type="Int32" />
+    <Property Name="AksesuarAdet" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GuncellemeTarihi" Precision="3" Type="DateTime" />
+    <Property Name="KullaniciId" Type="Int32" />
+  </EntityType>
+  <EntityType Name="Siparis">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="MusteriId" Type="Int64" />
+    <Property Name="SistemId" Type="Int32" />
+    <Property Name="SistemTurId" Type="Int32" />
+    <Property Name="AltSistemId" Type="Int32" />
+    <Property Name="RenkId" Type="Int32" />
+    <Property Name="DurumId" Type="Int32" />
+    <Property Name="IslemDurum" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GuncellemeTarihi" Precision="3" Type="DateTime" />
+    <Property Name="TeslimTarihi" Precision="3" Type="DateTime" />
+    <Property Name="TahminiTeslim" Precision="3" Type="DateTime" />
+    <Property Name="OnayIptalTarihi" Precision="3" Type="DateTime" />
+    <Property Name="OnayIptalKullaniciId" Type="Int32" />
+    <Property Name="SiparisTur" MaxLength="25" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="MotorMarkaId" Type="Int32" />
+    <Property Name="KumandaMarkaId" Type="Int32" />
+    <Property Name="FisNo" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="Aciklama" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="CamTedarikId" Type="Int64" />
+    <Property Name="BoyaTedarikId" Type="Int64" />
+    <Property Name="DisTedarikId" Type="Int64" />
+    <Property Name="SistemBirimFiyat" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="ToplamAluKg" Type="Int32" />
+    <Property Name="ToplamAluKgFiyat" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="DosyaIds" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="ImalatDurum" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="SiparisSevkiyatProfil">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="SiparisEnBoyAdetId" Type="Int64" />
+    <Property Name="ProfilId" Type="Int32" />
+    <Property Name="ProfilBoy" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="ProfilAdet" Type="Int32" />
+    <Property Name="ToplamMetre" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="ToplamKg" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="KayitTarihi" Precision="3" Type="DateTime" />
+    <Property Name="GuncellemeTarihi" Precision="3" Type="DateTime" />
+    <Property Name="KullaniciId" Type="Int32" />
+    <Property Name="Paket" Type="Int32" />
+  </EntityType>
+  <EntityType Name="OptimizasyonHesap">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="SiparisIds" MaxLength="250" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="ProfilId" Type="Int32" />
+    <Property Name="ProfilBoy" Type="Int32" />
+    <Property Name="KesilecekOlculer" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KesimAdet" Type="Int32" />
+    <Property Name="FireAtik" Type="Int32" />
+    <Property Name="ToplamAtikUzunluk" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="ToplamAtikAgirlik" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="FireyeEklenenToplamUzunluk" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="FireyeEklenenToplamAgirlik" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="AsilStoktanKullanilanToplamUzunluk" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="AsilStoktanKullanilanToplamAgirlik" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="FiredenKullanilanToplamUzunluk" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="FiredenKullanilanToplamAgirlik" Precision="17" Scale="2" Type="Decimal" />
+    <Property Name="KullanilanAlan" MaxLength="50" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="KayitTarih" Precision="3" Type="DateTime" />
+    <Property Name="KullaniciId" Type="Int32" />
+    <Property Name="ImalatDurum" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="SevkiyatPaket">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int64" />
+    <Property Name="SiparisId" Type="Int64" />
+    <Property Name="PaketEn" Type="Int32" />
+    <Property Name="PaketBoy" Type="Int32" />
+    <Property Name="PaketYukseklik" Type="Int32" />
+    <Property Name="PaketAdet" Type="Int32" />
+  </EntityType>
+</Schema>

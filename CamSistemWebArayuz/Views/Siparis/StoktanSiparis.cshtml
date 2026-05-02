@@ -1,0 +1,480 @@
+﻿@model CamSistemWebArayuz.Models.SiparisStokModel
+@using CamSistemDataLayer.Models
+@{
+    ViewBag.Title = "CamSistem - Sipariş Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+        $(function () {
+            $('#stoktanSiparisKaydetForm').click(function (e) {
+                e.preventDefault();
+                var items = new Array();
+                var item = {};
+                $("#tblProfiles TBODY TR").each(function () {
+                    var row = $(this);
+                    item = {};
+                    item.ProfilId = row.find("TD").eq(1).html();
+                    item.ProfilBoyId = row.find("TD").eq(3).html();
+                    item.ProfilAdet = row.find("TD").eq(4).html();
+                    item.AksesuarId = null;
+                    item.AksesuarAdet = null;
+                    items.push(item);
+                });
+
+                $("#tblAccess TBODY TR").each(function () {
+                    var row = $(this);
+                    item = {};
+                    item.ProfilId = null;
+                    item.ProfilBoyId = null;
+                    item.ProfilAdet = null;
+                    item.AksesuarId = row.find("TD").eq(1).html();
+                    item.AksesuarAdet = row.find("TD").eq(2).html();
+                    items.push(item);
+                });
+
+                var SiparisModel = {
+                    MusteriId: $('#MusteriId').val(),
+                    RenkId: $('#RenkId').val(),
+                    TahminiTeslim: $('#@Html.IdFor(m=>m.SiparisModel.TahminiTeslim)').val()
+                }
+                if ($("#form_validation").validate().form()) {
+                    $.ajax({
+                        type: 'POST',
+                        data: JSON.stringify({ siparis: SiparisModel, siparisStok: items }),
+                        url: '@Url.Action("StoktanSiparisKaydet", "Siparis")',
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        success: function(data) {
+                            if (data == 'OK') {
+                                location.href = '/Siparis/Stoktan';
+                            }
+                        },
+                        error: function(errorObj) {
+                            alert(errorObj.toString());
+                        }
+                    });
+                }
+            });
+        });
+    });
+    
+    $("body").on("click", "#btnProfilAdd", function () {
+        //Reference the Name and Country TextBoxes.
+        var txtProfil = $("#ProfilId");
+        var txtProfilBoy = $("#ProfilBoyId");
+        var txtAdet = $("#txtProfilAdet");
+        if (txtProfil.val() != "" && txtProfilBoy.val() != "" && txtAdet.val() != "") {
+            $.ajax({
+                url: '@Url.Action("StoktaVarMi", "Siparis")',
+                dataType: "json",
+                data: JSON.stringify({ ProfilId: txtProfil.val(), ProfilBoyId: txtProfilBoy.val(), ProfilAdet: txtAdet.val()}),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function(data) {
+                    if (data) {
+                        //Get the reference of the Table's TBODY element.
+                        var tBody = $("#tblProfiles > TBODY")[0];
+
+                        //Add Row.
+                        var row = tBody.insertRow(-1);
+
+                        //Add En cell.
+                        var cell = $(row.insertCell(-1));
+                        cell.html($("#ProfilId option:selected").text());
+
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtProfil.val()).css("display", "none");
+
+                        //Add Boy cell.
+                        cell = $(row.insertCell(-1));
+                        cell.html($("#ProfilBoyId option:selected").text());
+
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtProfilBoy.val()).css("display", "none");
+
+                        //Add Adet cell.
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtAdet.val());
+
+                        //Add Button cell.
+                        cell = $(row.insertCell(-1));
+                        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float' ><i class='material-icons'>delete</i></button>");
+                        btnRemove.attr("type", "button");
+                        btnRemove.attr("onclick", "RemoveProfil(this);");
+                        btnRemove.val("Remove");
+                        cell.append(btnRemove);
+
+                        //Clear the TextBoxes.
+                        txtProfil.val("");
+                        txtProfilBoy.val("");
+                        txtAdet.val("");
+                    } else {
+                        alert('Stok yetersiz!');
+                        //Get the reference of the Table's TBODY element.
+                        var tBody = $("#tblProfiles > TBODY")[0];
+
+                        //Add Row.
+                        var row = tBody.insertRow(-1);
+
+                        //Add En cell.
+                        var cell = $(row.insertCell(-1)).css("background-color", "#f2dede");
+                        cell.html($("#ProfilId option:selected").text());
+
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtProfil.val()).css("display", "none");
+
+                        //Add Boy cell.
+                        cell = $(row.insertCell(-1));
+                        cell.html($("#ProfilBoyId option:selected").text()).css("background-color", "#f2dede");
+
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtProfilBoy.val()).css("display", "none");
+
+                        //Add Adet cell.
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtAdet.val()).css("background-color", "#f2dede");
+
+                        //Add Button cell.
+                        cell = $(row.insertCell(-1));
+                        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float' ><i class='material-icons'>delete</i></button>");
+                        btnRemove.attr("type", "button");
+                        btnRemove.attr("onclick", "RemoveProfil(this);");
+                        btnRemove.val("Remove");
+                        cell.css("background-color", "#f2dede");
+                        cell.append(btnRemove);
+
+                        //Clear the TextBoxes.
+                        txtProfil.val("");
+                        txtProfilBoy.val("");
+                        txtAdet.val("");
+                    }
+                },
+                error: function(errorObj) {
+                    alert(errorObj.toString());
+                }
+            });
+        } else {
+            alert('Lütfen tüm alanlarını doldurunuz!');
+        }
+    });
+
+    $("body").on("click", "#btnAksesuarAdd", function () {
+        //Reference the Name and Country TextBoxes.
+        var txtAksesuar = $("#AksesuarId");
+        var txtAdet = $("#txtAksesuarAdet");
+        if (txtAksesuar.val() != "" && txtAdet.val() != "") {
+            $.ajax({
+                url: '@Url.Action("AksesuarStoktaVarMi", "Siparis")',
+                dataType: "json",
+                data: JSON.stringify({ AksesuarId: txtAksesuar.val(), AksesuarAdet: txtAdet.val()}),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                success: function(data) {
+                    if (data) {
+                        //Get the reference of the Table's TBODY element.
+                        var tBody = $("#tblAccess > TBODY")[0];
+
+                        //Add Row.
+                        var row = tBody.insertRow(-1);
+
+                        //Add En cell.
+                        var cell = $(row.insertCell(-1));
+                        cell.html($("#AksesuarId option:selected").text());
+
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtAksesuar.val()).css("display", "none");
+
+                        //Add Adet cell.
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtAdet.val());
+
+                        //Add Button cell.
+                        cell = $(row.insertCell(-1));
+                        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float' ><i class='material-icons'>delete</i></button>");
+                        btnRemove.attr("type", "button");
+                        btnRemove.attr("onclick", "RemoveAksesuar(this);");
+                        btnRemove.val("Remove");
+                        cell.append(btnRemove);
+
+                        //Clear the TextBoxes.
+                        //$('#AksesuarId option').remove();
+                        txtAksesuar.val("");
+                        txtAdet.val("");
+                    }
+                    else {
+                        alert('Stok yetersiz!');
+
+                        //Get the reference of the Table's TBODY element.
+                        var tBody = $("#tblAccess > TBODY")[0];
+
+                        //Add Row.
+                        var row = tBody.insertRow(-1);
+
+                        //Add En cell.
+                        var cell = $(row.insertCell(-1));
+                        cell.html($("#AksesuarId option:selected").text()).css("background-color", "#f2dede");
+
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtAksesuar.val()).css("display", "none");
+
+                        //Add Adet cell.
+                        cell = $(row.insertCell(-1));
+                        cell.html(txtAdet.val()).css("background-color", "#f2dede");
+
+                        //Add Button cell.
+                        cell = $(row.insertCell(-1));
+                        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float' ><i class='material-icons'>delete</i></button>");
+                        btnRemove.attr("type", "button");
+                        btnRemove.attr("onclick", "RemoveAksesuar(this);");
+                        btnRemove.val("Remove");
+                        cell.css("background-color", "#f2dede");
+                        cell.append(btnRemove);
+
+                        //Clear the TextBoxes.
+                        txtAksesuar.val("");
+                        txtAdet.val("");
+                    }
+                },
+                error: function (errorObj) {
+                    alert(errorObj.toString());
+                }
+            });
+        } else {
+            alert('Lütfen tüm alanlarını doldurunuz!');
+        }
+    });
+
+    function RemoveAksesuar(button) {
+        //Determine the reference of the Row using the Button.
+        var row = $(button).closest("TR");
+        if (confirm("Seçili satırı silmek istediğinize emin misiniz?")) {
+            //Get the reference of the Table.
+            var table = $("#tblAccess")[0];
+
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+        }
+    };
+
+    function RemoveProfil(button) {
+        //Determine the reference of the Row using the Button.
+        var row = $(button).closest("TR");
+        if (confirm("Seçili satırı silmek istediğinize emin misiniz?")) {
+            //Get the reference of the Table.
+            var table = $("#tblProfiles")[0];
+
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+        }
+    };
+</script>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Stoktan Satış
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("StoktanSiparisKaydet", "Siparis", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.ValidationSummary(true)
+                    <div class="row clearfix">
+                        <div class="col-md-4">
+                            <p>
+                                <b>Müşteri Listesi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.SiparisModel.MusteriId, new SelectList(ViewBag.Musteriler, "Id", "AdSoyadSirketAdi"), "Müşteri Seçiniz...", new { @class = "form-control show-tick", @id = "MusteriId", @required = "required", data_live_search = "true" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <p>
+                                <b>Renk Listesi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.SiparisModel.RenkId, new SelectList(ViewBag.Renkler, "Id", "RenkAdi"), "Renk Seçiniz...", new { @class = "form-control show-tick", @id = "RenkId", @required = "required", data_live_search = "true" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <p>
+                                <b>Tahmini Teslim Tarihi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="input-group date" id="bs_datepicker_component_container">
+                                    <span class="input-group-addon">
+                                        <i class="material-icons">date_range</i>
+                                    </span>
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.SiparisModel.TahminiTeslim, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <table id="tblProfiles" class="table" cellpadding="0" cellspacing="0" class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                        <thead>
+                            <tr>
+                                <th>Profil Adı - (Profil Kodu)</th>
+                                <th>Profil Boy</th>
+                                <th>Profil Adet</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.SiparisStokList)
+                            {
+                                <tr>
+                                    <td>@item.profil.ProfilAdi - (@item.profil.ProfilKodu)</td>
+                                    <td>@item.ProfilId</td>
+                                    <td>@item.profilBoy.ProfilBoyu</td>
+                                    <td>@item.ProfilBoyId</td>
+                                    <td>@item.ProfilAdet</td>
+                                    <td><input type="button" value="Remove" onclick="Remove(this)" /></td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    <div class="form-group form-float">
+                                        <div class="form-line">
+                                            <select id="ProfilId" title="Profil seçiniz..." data-live-search = "true" class="selectpicker form-control show-tick">
+                                                @foreach (Profil item in ViewBag.ProfilList)
+                                                {
+                                                    if (item.ProfilFoto != null)
+                                                    {
+                                                        <option value="@item.Id" data-thumbnail="/images/profilicons/@item.ProfilFoto">@item.ProfilAdi - (@item.ProfilKodu)</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Id">@item.ProfilAdi - (@item.ProfilKodu)</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group form-float">
+                                        <div class="form-line">
+                                            @Html.DropDownListFor(model => model.SiparisStok.ProfilBoyId, new SelectList(ViewBag.ProfilBoyList, "Id", "ProfilBoyu"), "Profil Boyu Seçiniz...", new { @class = "form-control show-tick", @id = "ProfilBoyId" })
+                                        </div>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    <div class="form-group form-float">
+                                        <div class="form-line">
+                                            <input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtProfilAdet" />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn bg-green btn-circle waves-effect waves-circle waves-float" id="btnProfilAdd" value="Add">
+                                        <i class="material-icons">add</i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <table id="tblAccess" class="table" cellpadding="0" cellspacing="0" class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                        <thead>
+                            <tr>
+                                <th>Aksesuar</th>
+                                <th>Aksesuar Adet</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.SiparisStokList)
+                            {
+                                <tr>
+                                    <td>@item.aksesuar.AksesuarAdi</td>
+                                    <td>@item.AksesuarAdet</td>
+                                    <td><input type="button" value="Remove" onclick="Remove(this)" /></td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    <div class="form-group form-float">
+                                        <div class="form-line">
+                                            <select id="AksesuarId" title="Select your surfboard" data-size="6" data-live-search = "true" class="selectpicker form-control show-tick">
+                                                @foreach (Aksesuar item in ViewBag.Aksesuarlar)
+                                                {
+                                                    if (item.AksesuarGorsel != null)
+                                                    {
+                                                        <option value="@item.Id" data-thumbnail="/images/aksesuaricons/@item.AksesuarGorsel">@item.AksesuarAdi - (@item.AksesuarKodu)</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@item.Id">@item.AksesuarAdi - (@item.AksesuarKodu)</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group form-float">
+                                        <div class="form-line">
+                                            <input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtAksesuarAdet" />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn bg-green btn-circle waves-effect waves-circle waves-float" id="btnAksesuarAdd" value="Add">
+                                        <i class="material-icons">add</i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <button type="submit" id="stoktanSiparisKaydetForm" class="btn bg-green waves-effect">KAYDET</button>
+                    <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("Stoktan", "Siparis")'">SİPARİŞ LİSTESİNE DÖN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

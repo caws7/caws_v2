@@ -1,0 +1,227 @@
+﻿@model CamSistemDataLayer.Models.DisTedarik
+@{
+    ViewBag.Title = "CamSistem - Tedarik Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<style>
+    .dropzone .dz-preview.dz-image-preview {
+        background: none;
+    }
+</style>
+<!-- Dropzone Css -->
+<link href="~/Scripts/dropzone/dropzone.css" rel="stylesheet" />
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+        $('#disTedarikDuzenleForm').click(function (e) {
+            e.preventDefault();
+
+            if ($("#form_validation").validate().form()) {
+                $("#form_validation").submit();
+            }
+        });
+    });
+
+    function DosyaSil(_id, _tedarikTurId) {
+        Swal.fire({
+            title: 'Emin misin?',
+            text: 'Bu kaydı silmek istediğine emin misin?',
+            icon: 'warning',
+            cancelButtonText: 'Vazgeç',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                     url: '@Url.Action("DosyaSil", "Tedarik")',
+                    dataType: 'json',
+                    data: { "DosyaId": _id, "TedarikTurId": _tedarikTurId, "TedarikTur": "Dis" },
+                    type: "POST"
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            title: 'Silindi!',
+                            text: 'Kayıt başarıyla silindi.',
+                            icon: 'success',
+                            timer: 1500
+                        }).then(() => {
+                            location.reload();
+                        });
+
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });
+    }
+</script>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Dış Tedarik Bilgisi Düzenleme
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("DisTedarikDuzenle", "Tedarik", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.SiparisId)
+                    @Html.HiddenFor(model => model.KayitTarihi)
+                    @Html.HiddenFor(model => model.DosyaIds)
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                            <p>
+                                <b>Tedarikçi Bilgisi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.TedarikciId, new SelectList(ViewBag.tedarikciler, "Id", "TedarikciAdi"), "Tedarikçi bilgisi Seçiniz...", new { @class = "form-control show-tick", @id = "TedarikciId", @required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <b>Sistem Bilgisi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.SistemBilgisi, new { @class = "form-control", @autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <p>
+                                <b>Tedarik Tarihi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="input-group date" id="bs_datepicker_component_container2">
+                                    <span class="input-group-addon">
+                                        <i class="material-icons">date_range</i>
+                                    </span>
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.TedarikTarihi, new { @class = "form-control", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <p>
+                                <b>Tedarik Fiyat</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.TedarikFiyat, null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <p>
+                                <b>Sistem Açıklaması</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.SistemAciklama, null, new { @class = "form-control", @placeholder = "Sistem Açıklaması" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <p>
+                                <b>Genel Açıklama</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.GenelAciklama, null, new { @class = "form-control", @placeholder = "Genel Açıklama" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div id="dZUploadDiger" class="dropzone">
+                                    <div class="dz-default dz-message">
+                                        <div class="drag-icon-cph">
+                                            <i class="material-icons">touch_app</i>
+                                        </div>
+                                        <h3>Belgeleri yüklemek için tıklayınız.</h3>
+                                        <em>(Dosyaları bu alana sürükle bırak yapabilirsiniz.)</em>
+                                        <div class="fallback">
+                                            <input name="file" id="file" type="file" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="ImageName" name="ImageName" />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Dosya Adı</th>
+                                    <th>Dosya Uzantısı</th>
+                                    <th>Yükleme Tarihi</th>
+                                    <th>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.yuklenenDosyaList)
+                                {
+                                    <tr>
+                                        <th>@item.Id</th>
+                                        <td>@item.DosyaAdi</td>
+                                        <td>@item.DosyaUzantisi</td>
+                                        <td>@item.YuklenmeTarihi</td>
+                                        <td>
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="Sil"
+                                                    onclick="DosyaSil('@item.Id', '@Model.Id')" class="btn btn-danger btn-circle waves-effect waves-circle waves-float">
+                                                <i class="material-icons">delete</i>
+                                            </button>
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="İndir"
+                                                    onclick="location.href='@Url.Action("DosyaIndir", "Siparis", new { Id = item.Id })'" class="btn bg-blue btn-circle waves-effect waves-circle waves-float">
+                                                <i class="material-icons">file_download</i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="body">
+                <div class="row clearfix">
+                    <button type="submit" id="disTedarikDuzenleForm" class="btn bg-green waves-effect">KAYDET</button>
+                    <button type="button" class="btn bg-orange waves-effect waves-light" onclick="location.href='@Url.Action("Index", "Siparis")'" data-dismiss="modal">SİPARİŞ LİSTESİNE DÖN</button>
+                    <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("Dis", "Tedarik")'" data-dismiss="modal">LİSTEYE GERİ DÖN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

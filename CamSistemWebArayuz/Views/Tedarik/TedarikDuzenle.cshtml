@@ -1,0 +1,68 @@
+﻿@model CamSistemDataLayer.Models.Tedarikci
+@{
+    ViewBag.Title = "CamSistem - Tedarik Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Tedarikçi Düzenleme
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("TedarikDuzenle", "Tedarik", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    @Html.HiddenFor(model => model.Id)
+
+                <div class="row clearfix">
+                    <div class="col-sm-6">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                @Html.TextBoxFor(model => model.TedarikciAdi, null, new { @class = "form-control", @name = "Tedarikçi Adı", @required = "required" })
+                                <label class="form-label">Tedarikçi Adı</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                @Html.TextBoxFor(model => model.Telefon, null, new { @class = "form-control mobile-phone-number", @name = "Telefon" })
+                                <label class="form-label">Telefon</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                @Html.TextBoxFor(model => model.Adres, null, new { @class = "form-control", @name = "Adres" })
+                                <label class="form-label">Adres</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Tedarikçi Türü</label>
+                        <div class="demo-radio-button form-group">
+                            @Html.RadioButtonFor(model => model.TedarikciTuru, "Cam", new { @class = "with-gap radio-col-green", @name = "cam", @required = "required", @id = "camButtonId" })
+                            <label for="camButtonId">Cam Tedarik</label>
+                            @Html.RadioButtonFor(model => model.TedarikciTuru, "Boya", new { @class = "with-gap radio-col-green", @name = "boya", @required = "required", @id = "boyaButtonId" })
+                            <label for="boyaButtonId">Boya Tedarik</label>
+                            @Html.RadioButtonFor(model => model.TedarikciTuru, "Dis", new { @class = "with-gap radio-col-green", @name = "dis", @required = "required", @id = "disButtonId" })
+                            <label for="disButtonId">Dış Tedarik</label>
+                        </div>
+                    </div>
+                </div>
+
+                    <button type="submit" class="btn bg-green waves-effect">KAYDET</button>
+                    <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("Index", "Tedarik")'" data-dismiss="modal">LİSTEYE GERİ DÖN</button>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>

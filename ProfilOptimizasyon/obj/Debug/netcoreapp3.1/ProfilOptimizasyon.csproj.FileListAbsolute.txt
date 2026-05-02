@@ -1,0 +1,12 @@
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/bin/Debug/netcoreapp3.1/ProfilOptimizasyon.deps.json
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/bin/Debug/netcoreapp3.1/ProfilOptimizasyon.runtimeconfig.json
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/bin/Debug/netcoreapp3.1/ProfilOptimizasyon.runtimeconfig.dev.json
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/bin/Debug/netcoreapp3.1/ProfilOptimizasyon.dll
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/bin/Debug/netcoreapp3.1/ProfilOptimizasyon.pdb
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/obj/Debug/netcoreapp3.1/ProfilOptimizasyon.csprojAssemblyReference.cache
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/obj/Debug/netcoreapp3.1/ProfilOptimizasyon.AssemblyInfoInputs.cache
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/obj/Debug/netcoreapp3.1/ProfilOptimizasyon.AssemblyInfo.cs
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/obj/Debug/netcoreapp3.1/ProfilOptimizasyon.csproj.CoreCompileInputs.cache
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/obj/Debug/netcoreapp3.1/ProfilOptimizasyon.dll
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/obj/Debug/netcoreapp3.1/ProfilOptimizasyon.pdb
+/Users/aedesium/Projects/ProfilOptimizasyon/ProfilOptimizasyon/obj/Debug/netcoreapp3.1/ProfilOptimizasyon.genruntimeconfig.cache

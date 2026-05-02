@@ -1,0 +1,45 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.ProfilBoy>
+@{
+    ViewBag.Title = "CamSistem - Anasayfa";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+<div class="block-header">
+    <h2>Veriler</h2>
+</div>
+
+<div class="home-rates-float">
+    <div class="home-rates-float__title">Güncel Döviz Kurları</div>
+    <div class="home-rates-float__row">
+        <span id="usdTry">USD/TRY: -</span>
+        <span id="eurTry">EUR/TRY: -</span>
+    </div>
+    <div class="home-rates-float__updated" id="ratesUpdatedAt"></div>
+</div>
+<script>
+    window.addEventListener('load', function () {
+        function fmt(n) { return Number(n).toFixed(4); }
+
+        function loadRates() {
+            $.ajax({
+                url: '@Url.Action("ExchangeRates", "Home")',
+                type: 'GET',
+                cache: false,
+                success: function (res) {
+                    if (!res || res.success !== true) return;
+
+                    var usdEl = document.getElementById('usdTry');
+                    var eurEl = document.getElementById('eurTry');
+                    var tsEl = document.getElementById('ratesUpdatedAt');
+
+                    if (usdEl) usdEl.textContent = 'USD/TRY: ' + fmt(res.usdTry);
+                    if (eurEl) eurEl.textContent = 'EUR/TRY: ' + fmt(res.eurTry);
+                    if (tsEl) tsEl.textContent = 'Güncelleme: ' + (res.ts || '');
+                }
+            });
+        }
+
+        loadRates();
+        setInterval(loadRates, 5 * 60 * 1000);
+    });
+</script>

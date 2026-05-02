@@ -1,0 +1,57 @@
+﻿@model CamSistemDataLayer.Models.Kullanici
+
+<div class="modal-header">
+    <h4 class="modal-title" id="largeModalLabel">Müşteri Kaydetme Ekranı</h4>
+</div>
+<div class="modal-body">
+    @using (Html.BeginForm("KullaniciKaydet", "Kullanici", FormMethod.Post, new { id = "form_validation" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row clearfix">
+            <div class="col-sm-6">
+                <div class="form-group form-float">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.KullaniciAdi, null, new { @class = "form-control", @name = "Kullanıcı Adı", @required = "required" })
+                        <label class="form-label">Kullanıcı Adı</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-float">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.KullaniciSoyadi, null, new { @class = "form-control", @name = "Kullanıcı Soyadı", @required = "required" })
+                        <label class="form-label">Kullanıcı Soyadı</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group form-float">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.KullaniciMail, null, new { @class = "form-control mail-input-mask", @name = "Kullanıcı Mail", @required = "required" })
+                        <label class="form-label">Kullanıcı Mail</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group form-float">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.Sifre, null, new { @class = "form-control", @name = "Şifre", @required = "required" })
+                        <label class="form-label">Şifre</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group form-float">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.KullaniciTelefon, null, new { @class = "form-control mobile-phone-number", @name = "Telefon" })
+                        <label class="form-label">Telefon</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn bg-green waves-effect">KAYDET</button>
+            <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
+        </div>
+    }
+</div>

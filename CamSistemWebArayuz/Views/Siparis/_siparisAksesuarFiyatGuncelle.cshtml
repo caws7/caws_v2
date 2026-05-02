@@ -1,0 +1,48 @@
+﻿@model CamSistemWebArayuz.Models.SiparisAksesuarFiyatModelList
+
+@using (Html.BeginForm("SiparisAksesuarFiyatDuzenleForm", "Siparis", FormMethod.Post, new { id = "form_validation" }))
+{
+    <div class="modal-body">
+        @Html.ValidationSummary(true)
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Aksesuar Adı</th>
+                    <th>Birim</th>
+                    <th>Birim Fiyat</th>
+                    <th>#</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.siparisAksesuarFiyatModels.Count(); i++)
+                {
+                    @Html.HiddenFor(model => Model.siparisAksesuarFiyatModels[i].siparisId)
+                    @Html.HiddenFor(model => Model.siparisAksesuarFiyatModels[i].siparisAksesuarId)
+                    <tr>
+                        <td class="No">
+                            <span>@Html.DisplayFor(modelItem => Model.siparisAksesuarFiyatModels[i].siparisAksesuarId)</span>
+                        </td>
+                        <td class="Aksesuar Adı">
+                            <span>@Html.DisplayFor(modelItem => Model.siparisAksesuarFiyatModels[i].malzeme)</span>
+                        </td>
+                        <td class="Birim">
+                            <span>@Html.DisplayFor(modelItem => Model.siparisAksesuarFiyatModels[i].birim)</span>
+                        </td>
+                        <td class="BirimFiyat">
+                            @Html.TextBoxFor(model => Model.siparisAksesuarFiyatModels[i].birimFiyat, null, new { @class = "form-control", @autocomplete = "off" })
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn bg-green waves-effect waves-light">KAYDET</button>
+        <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
+    </div>
+}

@@ -1,0 +1,437 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.DisSiparis>
+@using CamSistemDataLayer.Enums
+
+@{
+    ViewBag.Title = "CamSistem - Sipariş Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="~/plugins/sweetalert/sweetalert.min.js"></script>
+<link href="~/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script type="text/javascript">
+    function SiparisSil(_Id) {
+        Swal.fire({
+            title: 'Emin misin?',
+            text: 'Bu kaydı silmek istediğine emin misin?',
+            icon: 'warning',
+            cancelButtonText: 'Vazgeç',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                     url: '@Url.Action("DisSiparisSil", "Siparis")',
+                dataType: 'json',
+                data: { "Id": _Id },
+                    type: "POST"
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            title: 'Silindi!',
+                            text: 'Kayıt başarıyla silindi.',
+                            icon: 'success',
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = '@Url.Action("DisSiparis", "Siparis")';
+                        });
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });
+    }
+
+    function SiparisIslemAl(_Id) {
+        Swal.fire({
+            title: 'Fiş Numarası',
+            input: 'number',
+            inputLabel: 'Fiş Numarası',
+            showCancelButton: true,
+            cancelButtonText: 'Vazgeç',
+            confirmButtonText: 'İşleme Al',
+            inputPlaceholder: 'Fiş numarası giriniz...',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Bu alan boş geçilemez!'
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("DisSiparisIslemAl", "Siparis")',
+                    contentType: 'application/json; charset=utf-8',
+                    type: "POST",
+                    data: '{ "Id":"' + _Id + '", "FisNo":"' + result.value + '"}'
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            title: 'Tamamlandı!',
+                            icon: 'success',
+                            timer: 1500,
+                            text: 'Sipariş işleme alındı!',
+                        }).then(() => {
+                            window.location.href = '@Url.Action("DisSiparis", "Siparis")';
+                        })
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });
+    }
+
+    function SiparisFisNoDuzenle(_Id, _fisNo) {
+        Swal.fire({
+            title: 'Fiş Numarası',
+            input: 'number',
+            inputLabel: 'Fiş Numarası',
+            showCancelButton: true,
+            cancelButtonText: 'Vazgeç',
+            confirmButtonText: 'Kaydet',
+            inputPlaceholder: 'Fiş numarası giriniz...',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Bu alan boş geçilemez!'
+                }
+            },
+            inputValue: _fisNo
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("DisSiparisFisNoDuzenle", "Siparis")',
+                    contentType: 'application/json; charset=utf-8',
+                    type: "POST",
+                    data: '{ "Id":"' + _Id + '", "FisNo":"' + result.value + '"}'
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            title: 'Tamamlandı!',
+                            icon: 'success',
+                            timer: 1500,
+                            text: 'Fiş numarası değiştirildi!',
+                        }).then(() => {
+                            window.location.href = '@Url.Action("DisSiparis", "Siparis")';
+                        })
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });
+    }
+
+    function SiparisDurumGuncelle(buttonId) {
+        var onaylandiMi = false;
+        if (buttonId == 1) {
+            if (durumId == 2) {//imalattan geçti
+                //durumId = 4; // teslim edildiye çek
+                //------------------------//
+                onaylandiMi = true;
+                $('#modalDurumGuncelle').modal('toggle');
+                Swal.fire({
+                    title: 'Fiş Numarası',
+                    input: 'number',
+                    inputLabel: 'Fiş Numarası',
+                    showCancelButton: false,
+                    confirmButtonText: 'Bitir',
+                    inputPlaceholder: 'Fiş numarası giriniz...',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return 'Bu alan boş geçilemez!'
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("DisSiparisDurumGuncelleFisGir", "Siparis")',
+                            contentType: 'application/json; charset=utf-8',
+                            type: "POST",
+                            data: '{ "Id":"' + siparisId4Durum + '", "DurumId":"' + 4 + '", "FisNo":"' + result.value + '"}'
+                        }).done(function (data) {
+                            if (data == 'OK') {
+                                Swal.fire({
+                                    title: 'Tamamlandı!',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    text: 'Sipariş başarıyla tamamlandı!',
+                                }).then(() => {
+                                    window.location.href = '@Url.Action("DisSiparis", "Siparis")';
+                                })
+                            } else {
+                                Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                            }
+                        });
+                    }
+                });
+                //------------------------//
+            } else {
+                durumId = 2; // onaylandı butonuna basıldı onaylandıya setliyoruz.
+            }
+        } else if (buttonId == 2) {
+            durumId = 3; //reddet butonuna basıldı reddedildiye setliyoruz.
+        };
+        if (!onaylandiMi) {
+            $.ajax({
+            type: 'POST',
+            url: '/Siparis/DisSiparisDurumGuncelle',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: '{ "Id":"' + siparisId4Durum + '", "DurumId":"' + durumId + '"}',
+            success: function (result) {
+                    if (result == 'OK') {
+                        Swal.fire({
+                            title: 'Güncellendi!',
+                            text: 'Sipariş başarıyla onaylandı!',
+                            icon: 'success',
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = '@Url.Action("DisSiparis", "Siparis")';
+                        });
+                    } else if (result == 'NOK') {
+                        Swal.fire({
+                            title: 'İptal Edildi!',
+                            text: 'Sipariş iptal edildi!',
+                            icon: 'error',
+                            timer: 1500
+                        }).then(() => {
+                            window.location.href = '@Url.Action("DisSiparis", "Siparis")';
+                        });
+                    }
+                    $('#modalDurumGuncelle').modal('toggle');
+                    window.setTimeout(function () { location.reload() }, 1800)
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+    }
+
+    function DisSiparisDetayiGoruntule(_siparisId) {
+        var url = '@Url.Action("DisSiparisDetayGoruntule", "Siparis")';
+
+        $('#searchResults').load(url, { SiparisId: _siparisId });
+        $('#showGoruntuleModal').modal('show');
+    }
+
+    function DisSiparisAciklamaEkle(_siparisId) {
+        var _aciklama = $('#siparisAciklamaId').val();
+        $.ajax({
+            url: '@Url.Action("DisSiparisAciklamaKaydet", "Siparis")',
+            dataType: 'json',
+            data: { "SiparisId": _siparisId, "Aciklama": _aciklama },
+            type: "POST"
+        }).done(function (data) {
+            if (data == 'OK') {
+                Swal.fire({
+                    title: 'Kaydedildi!',
+                    text: 'Kayıt başarıyla güncellendi.',
+                    icon: 'success',
+                    timer: 1500
+                });
+            } else {
+                Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+            }
+        });
+    }
+
+    var durumId = null;
+    var siparisId4Durum = null;
+    $(document).ready(function () {
+        $('#modalDurumGuncelle').on('show.bs.modal', function (e) {
+            var siparisDurumIds = $(e.relatedTarget).data('id');
+            var siparisSplit = siparisDurumIds.split('+');
+
+            $('#siparisId').text(siparisSplit[0]);
+            siparisId4Durum = siparisSplit[0];
+            durumId = siparisSplit[1];
+            if (siparisSplit[1] == 2) {
+                $('#durumModalButton').text('SİPARİŞİ BİTİR');
+            } else if (siparisSplit[1] == 1) {
+                $('#durumModalButton').text('ONAYLA');
+            }
+        });
+    });
+</script>
+
+<div class="block-header">
+    <h2>
+        Sipariş Yönetimi
+        <small>Siparişlerinizle ilgili işlemleri yönetebileceğiniz sayfadır.</small>
+    </h2>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Dış Sipariş Listesi
+                </h2>
+            </div>
+            <div class="body">
+                <button type="button" onclick="location.href='@Url.Action("DisSiparisKaydet", "Siparis")'" class="btn btn-info waves-effect">
+                    <i class="material-icons">new_releases</i>
+                    <span>Yeni Sipariş Oluştur</span>
+                </button>
+
+                <div style="padding-top:10px;" class="table-responsive">
+                    <table id="siparisTablosu" class="table table-bordered table-striped table-hover dataTable js-exportable-siparis">
+                        <thead>
+                            <tr>
+                                <th>Sipariş No</th>
+                                <th>Fiş No</th>
+                                <th>Müşteri Adı Soyadı - Şirket Adı</th>
+                                <th>Sistem Bilgisi</th>
+                                <th>Tedarikçi Bilgisi</th>
+                                <th>Durum Bilgisi</th>
+                                <th>İşlem Durumu</th>
+                                <th>Onay / İptal Tarihi</th>
+                                <th>Onay / İptal Kullanıcısı</th>
+                                <th>Sipariş Oluşturma Tarihi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FisNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Musteri.AdSoyadSirketAdi)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SistemBilgisi)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Tedarikci.TedarikciAdi)
+                                </td>
+                                @{
+                                    switch ((int)item.DurumId)
+                                    {
+                                        case (int)Durumlar.Beklemede: @Html.Raw("<td class='bg-warning'><b>TEKLİF</b></td>");
+                                        break;
+                                        case (int)Durumlar.Onaylandı: @Html.Raw("<td class='bg-success'><b>ONAYLANDI</b></td>");
+                                        break;
+                                        case (int)Durumlar.Reddedildi: @Html.Raw("<td class='bg-danger'><b>REDDEDİLDİ</b></td>");
+                                        break;
+                                        case (int)Durumlar.TeslimEdildi: @Html.Raw("<td class='bg-success'><b>TESLİM EDİLDİ</b></td>");
+                                        break;
+                                        case (int)Durumlar.ImalataGonderildi: @Html.Raw("<td class='bg-info'><b>İMALATA GÖNDERİLDİ</b></td>");
+                                            break;
+                                        case (int)Durumlar.Sevkiyatta: @Html.Raw("<td class='bg-orange'><b>SEVKİYATA HAZIR</b></td>");
+                                        break;
+                                        case (int)Durumlar.SevkiyatOnaylandi: @Html.Raw("<td class='bg-green'><b>SEVKİYAT ONAYLANDI</b></td>");
+                                        break;
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                                @{
+                                    switch (item.IslemDurum)
+                                    {
+                                        case "İşlem Beklemede": @Html.Raw("<td class='bg-warning'><b>İŞLEM BEKLEMEDE</b></td>")
+                                        break;
+                                        case "İşlem Onaylandı": @Html.Raw("<td class='bg-success'><b>İŞLEM ONAYLANDI</b></td>")
+                                        break;
+
+                                        default: @Html.Raw("<td></td>")
+                                        break;
+                                    }
+                                }
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OnayIptalTarihi)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.KullaniciTamAdi)
+                                </td>
+                                <td>
+                                    @Html.Raw(string.Format("{0:dd/MM/yyyy}", item.KayitTarihi))
+                                </td>
+                                <td>
+                                    <button type="button" data-toggle="tooltip" data-placement="top" title="Görüntüle" onclick="DisSiparisDetayiGoruntule('@item.Id')"
+                                            class="btn bg-blue btn-circle waves-effect waves-circle waves-float">
+                                        <i class="material-icons">content_copy</i>
+                                    </button>
+                                    @if (item.IslemDurum == "İşlem Beklemede")
+                                    {
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="İşleme Al" onclick="SiparisIslemAl('@item.Id')"
+                                                class="btn bg-orange btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">verified_user</i>
+                                        </button>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Dış Sipariş Düzenle"
+                                                onclick="location.href='@Url.Action("DisSiparisDuzenle", "Siparis", new { Id = item.Id })'" class="btn btn-primary btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+                                    }
+                                    @if (item.IslemDurum == "İşlem Onaylandı" || item.FisNo != null)
+                                    {
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Fiş No Değiştir" onclick="SiparisFisNoDuzenle('@item.Id', '@item.FisNo')"
+                                                class="btn bg-teal btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">spellcheck</i>
+                                        </button>
+                                    }
+                                    @if ((int)item.DurumId == (int)Durumlar.Beklemede || (int)item.DurumId == (int)Durumlar.Reddedildi)
+                                    {
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Sil"
+                                                onclick="SiparisSil('@item.Id')" class="btn btn-danger btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                    }
+                                    @if ((int)item.DurumId == (int)Durumlar.Beklemede || (int)item.DurumId == (int)Durumlar.Onaylandı)
+                                    {
+                                        <span data-id="@item.Id+@item.DurumId" data-toggle="modal" data-target="#modalDurumGuncelle">
+                                            <a data-toggle="tooltip" class="btn btn-success btn-circle waves-effect waves-circle waves-float" data-placement="top" title="Onayla">
+                                                <i class="material-icons">update</i>
+                                            </a>
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="showGoruntuleModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div id="searchResults">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Guncelle -->
+<div class="modal fade" id="modalDurumGuncelle" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="modalDurumGuncelleTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="mod  al-title" id="modalDurumGuncelleTitle">Emin misiniz?</h5>
+            </div>
+            <div class="modal-body">
+                <p><font id="siparisId" style="font-weight:bold" class="text-danger"></font> sipariş numaralı kaydın durumunu güncellemek istediğinize emin misiniz?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="SiparisDurumGuncelle(1);" class="btn btn-success"><font id="durumModalButton"></font></button>
+                <button type="button" onclick="SiparisDurumGuncelle(2);" class="btn btn-danger">REDDET</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">VAZGEÇ</button>
+            </div>
+        </div>
+    </div>
+</div>

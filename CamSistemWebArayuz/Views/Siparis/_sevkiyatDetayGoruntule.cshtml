@@ -1,0 +1,234 @@
+﻿@model CamSistemWebArayuz.Models.SiparisSevkiyatProfilJoinModel
+
+<style>
+    .modal-body {
+        overflow: auto;
+    }
+
+    .nav {
+        padding-left: revert;
+    }
+</style>
+
+<ul class="nav nav-tabs tab-nav-right tab-col-red" role="tablist">
+    <li role="presentation" class="active"><a href="#sevkiyat" data-toggle="tab"><b>SEVKİYAT</b></a></li>
+    <li role="presentation"><a href="#dosya" data-toggle="tab"><b>YÜKLENMİŞ DOSYALAR</b></a></li>
+</ul>
+<!-- Tab panes -->
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade in active" id="sevkiyat">
+        <div class="modal-body">
+            <div id="sevkiyatDetayGoruntuleme">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan=2><img src="~/images/icons/icon.jpeg" /></th>
+                            <th colspan=4><center><h2><b>SEVKİYAT</b></h2></center></th>
+                            <th colspan=4 style="word-wrap: break-word;max-width: 250px;">@Html.DisplayFor(model => Model.Siparis.SistemTamami)</th>
+                        </tr>
+                        <tr>
+                            <th colspan=2>@Html.DisplayFor(model => Model.Siparis.MusteriTamAdi)</th>
+                            <th colspan=8>Adres: @Html.DisplayFor(model => Model.Siparis.MusteriAdres)</th>
+                        </tr>
+                        <tr>
+                            <th colspan=2>Sipariş No: @Html.DisplayFor(model => Model.Siparis.Id)</th>
+                            <th colspan=4>Sipariş Tarihi: @Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.Siparis.KayitTarihi))</th>
+                            <th colspan=4>Sevk Tarihi: @Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.Sevkiyat.SevkiyatTarihi))</th>
+                        </tr>
+                        <tr>
+                            <th>KOD</th>
+                            <th>Profil Kesit</th>
+                            <th>Profil Adı</th>
+                            <th>Birim Ağırlık (Kg)</th>
+                            <th>Birim</th>
+                            <th>Renk</th>
+                            <th>Ölçü (m)</th>
+                            <th>Miktar</th>
+                            <th>Toplam (m)</th>
+                            <th>Toplam (Kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.SevkiyatProfil)
+                        {
+                            <tr>
+                                @{
+                                    if (item.Profil.ProfilKodu.Split('-').Length > 2)
+                                    {
+                                        var kod = item.Profil.ProfilKodu.Split('-');
+                                        @Html.Raw("<td>")
+                                        @Html.Raw(kod[0] + "-" + kod[1])
+                                        @Html.Raw("</td>")
+                                        @Html.Raw("<td>")
+                                        @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + kod[0] + "-" + kod[1] + ".jpg") + "' />")
+                                        @Html.Raw("</td>")
+                                    }
+                                    else
+                                    {
+                                        if (item.Profil.ProfilFoto != null)
+                                        {
+                                            @Html.Raw("<td>")
+                                            @Html.Raw(item.Profil.ProfilKodu)
+                                            @Html.Raw("</td>")
+                                            @Html.Raw("<td>")
+                                            @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item.Profil.ProfilFoto) + "' />")
+                                            @Html.Raw("</td>")
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw("<td>" + item.Profil.ProfilKodu + "</td><td></td>")
+                                        }
+                                    }
+                                }
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Profil.ProfilAdi)
+                                </td>
+                                <td>
+                                    @string.Format("{0:N2}", ((double)item.Profil.BirimAgirlik / 1000))
+                                </td>
+                                <td>
+                                    BOY
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => Model.Siparis.Renk.RenkAdi)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProfilBoy)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProfilAdet)
+                                </td>
+                                <td>
+                                    @string.Format("{0:N2}", item.ToplamMetreS)
+                                </td>
+                                <td>
+                                    @string.Format("{0:N2}", item.ToplamKgS)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="9" class="text-right font-weight-bold">Toplam KG</td>
+                            <td colspan="2" class="text-right font-weight-bold">@string.Format("{0:N2}", Model.SevkiyatProfil.Sum(e => e.ToplamKgS))</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <br />
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>KOD</th>
+                            <th>GÖRSEL</th>
+                            <th>MALZEME</th>
+                            <th>BİRİM</th>
+                            <th>MİKTAR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.SevkiyatAksesuar)
+                        {
+                            <tr>
+                                @{
+                                    if (item.AksesuarId == -1)
+                                    {
+                                        @Html.Raw("<td>SB-101</td>")
+                                        @Html.Raw("<td>")
+                                        @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/SB-101.jpg") + "' />")
+                                        @Html.Raw("</td>")
+                                    }
+                                    else
+                                    {
+                                        if (item.Aksesuar.AksesuarGorsel != null)
+                                        {
+                                            @Html.Raw("<td>")
+                                            @Html.Raw(item.Aksesuar.AksesuarKodu)
+                                            @Html.Raw("</td>")
+                                            @Html.Raw("<td>")
+                                            @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/aksesuaricons/" + item.Aksesuar.AksesuarGorsel) + "' />")
+                                            @Html.Raw("</td>")
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw("<td>" + item.Aksesuar.AksesuarKodu + "</td><td></td>")
+                                        }
+                                    }
+
+                                }
+                                <td>
+                                    @if (item.AksesuarId == -1)
+                                    {
+                                        @Html.Raw("70'lik Sac Boru")
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayFor(modelItem => item.Aksesuar.AksesuarAdi)
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.AksesuarId == -1)
+                                    {
+                                        @Html.Raw("METRE")
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayFor(modelItem => item.Aksesuar.AksesuarBirim)
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AksesuarAdet)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class='alert alert-danger'><strong>@Model.Siparis.Id Nolu Siparişin Sevkiyat Açıklaması:</strong> @Model.Sevkiyat.Aciklama </div>
+
+            </div>
+            <button type="button" style="margin-right:10px;" onclick="PrintElem('sevkiyatDetayGoruntuleme')" class="btn bg-red waves-effect waves-light pull-right">
+                <i class="material-icons">print</i>
+                <span>YAZDIR</span>
+            </button>
+        </div>
+    </div>
+    <div role="tabpanel" class="tab-pane fade" id="dosya">
+        <div class="modal-body">
+            <div class="row clearfix">
+                <table id="aciklamaDatatable" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Dosya Adı</th>
+                            <th>Dosya Uzantısı</th>
+                            <th>Dosya Yükleme Tarihi</th>
+                            <th>#</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.yuklenenDosyaList != null)
+                        {
+                            foreach (var dosya in ViewBag.yuklenenDosyaList)
+                            {
+                                <tr>
+                                    <td>@dosya.DosyaAdi</td>
+                                    <td>@dosya.DosyaUzantisi</td>
+                                    <td>@Html.Raw(string.Format("{0:dd/MM/yyyy HH:mm:dd}", dosya.YuklenmeTarihi))</td>
+                                    <td>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="İndir"
+                                                onclick="location.href='@Url.Action("DosyaIndir", "Siparis", new { Id = dosya.Id })'" class="btn bg-blue btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">file_download</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
+</div>

@@ -1,0 +1,153 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.Kullanici>
+@{
+    ViewBag.Title = "CamSistem - Kullanıcı Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<style>
+    .row {
+        margin-right: 0px;
+    }
+</style>
+<script src="~/plugins/sweetalert/sweetalert.min.js"></script>
+<link href="~/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+<script type="text/javascript">
+    function deleteOrder(Id) {
+        swal({
+            title: "Emin misin?",
+            text: "Bu kaydı silmek istediğine emin misin?",
+            type: "warning",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            cancelButtonText: "İptal",
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Sil",
+            confirmButtonColor: "#ec6c62"
+        },
+        function () {
+            $.ajax({
+                url: '@Url.Action("KullaniciSil", "Kullanici")',
+                dataType: 'json',
+                data: { "Id": Id },
+                type: "POST"
+            })
+            .done(function (data) {
+                if (data == 'OK') {
+                    sweetAlert
+                        ({
+                            title: "Silindi!",
+                            text: "Kayıt başarıyla silindi!",
+                            type: "success",
+                            timer: 1500
+                        },
+                            function () {
+                                window.location.href = '@Url.Action("Index", "Kullanici")';
+                            });
+                } else {
+                    swal("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                }
+            })
+            .error(function (data) {
+                swal("Oops", "Beklenmedik hata oluştu!", "error");
+            });
+        });
+    }
+</script>
+
+<div id="showModalKullanici" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            @{
+                Html.RenderAction("KullaniciKaydet", "Kullanici");
+            }
+        </div>
+    </div>
+</div>
+
+<div class="block-header">
+    <h2>
+        Kullanıcı Yönetimi
+        <small>Sisteme giriş yapabilmesi için kullanıcılar ile ilgili işlemleri yönetebileceğiniz sayfadır.</small>
+    </h2>
+</div>
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Kullanıcı Listesi
+                </h2>
+            </div>
+            <div class="body">
+                <button type="button" data-toggle="modal" data-target="#showModalKullanici" class="btn btn-info waves-effect">
+                    <i class="material-icons">new_releases</i>
+                    <span>Yeni Kullanıcı Ekle</span>
+                </button>
+                <div style="padding-top:10px;" class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.KullaniciAdi)</th>
+                                <th>@Html.DisplayNameFor(model => model.KullaniciSoyadi)</th>
+                                <th>@Html.DisplayNameFor(model => model.KullaniciMail)</th>
+                                <th>@Html.DisplayNameFor(model => model.KullaniciTelefon)</th>
+                                <th>@Html.DisplayNameFor(model => model.AktifMi)</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.KullaniciAdi)</th>
+                                <th>@Html.DisplayNameFor(model => model.KullaniciSoyadi)</th>
+                                <th>@Html.DisplayNameFor(model => model.KullaniciMail)</th>
+                                <th>@Html.DisplayNameFor(model => model.KullaniciTelefon)</th>
+                                <th>@Html.DisplayNameFor(model => model.AktifMi)</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.KullaniciAdi)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.KullaniciSoyadi)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.KullaniciMail)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.KullaniciTelefon)
+                                    </td>
+                                    <td>
+                                        @if (item.AktifMi == true)
+                                        {
+                                            <span class="glyphicon glyphicon-ok col-green"></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="glyphicon glyphicon-remove col-red"></span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Düzenle" 
+                                                onclick="location.href='@Url.Action("KullaniciDuzenle", "Kullanici", new { Id = item.Id })'"
+                                                class="btn bg-green btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Sil"
+                                                onclick="deleteOrder('@item.Id')" class="btn btn-danger btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+﻿@model CamSistemDataLayer.Models.Profil
+
+@{
+    ViewBag.Title = "CamSistem - Profil Ekle";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<!-- Dropzone Css -->
+<link href="~/Scripts/dropzone/dropzone.css" rel="stylesheet" />
+<style>
+    .dropzone .dz-preview.dz-image-preview {
+        background: none;
+    }
+</style>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Yeni Profil Ekleme
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("YeniProfil", "Tanimlama", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="row clearfix">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="col-sm-6">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ProfilAdi, null, new { @class = "form-control", @name = "ProfilAdi", @required = "required" })
+                                    <label class="form-label">Profil Adı</label>
+                                    @Html.ValidationMessageFor(model => model.ProfilAdi, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ProfilKodu, null, new { @class = "form-control", @name = "ProfilKodu", @required = "required", @id = "ProfilKod" })
+                                    <label class="form-label">Profil Kodu</label>
+                                    @Html.ValidationMessageFor(model => model.ProfilKodu, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.BirimAgirlik, null, new { @class = "form-control", @name = "BirimAgirlik", @required = "required", @onkeypress = "return isNumberKey(event)" })
+                                    <label class="form-label">Birim Ağırlık</label>
+                                    @Html.ValidationMessageFor(model => model.BirimAgirlik, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.KalipNo, null, new { @class = "form-control", @name = "KalipNo" })
+                                    <label class="form-label">Kalıp No</label>
+                                    @Html.ValidationMessageFor(model => model.KalipNo, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div id="dZUpload" class="dropzone">
+                                    <div class="dz-default dz-message">
+                                        <div class="drag-icon-cph">
+                                            <i class="material-icons">touch_app</i>
+                                        </div>
+                                        <h3>Görseli yüklemek için tıklayınız.</h3>
+                                        <em>(Dosyayı bu alana sürükle bırak yapabilirsiniz.)</em>
+                                        <div class="fallback">
+                                            <input name="file" id="file" type="file" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="ImageName" name="ImageName" />
+                        <input type="hidden" id="ImageType" name="ImageType" value="P" />
+                        <button type="submit" class="btn bg-green waves-effect">KAYDET</button>
+                        <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("Profil", "Tanimlama")'" data-dismiss="modal">LİSTEYE GERİ DÖN</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

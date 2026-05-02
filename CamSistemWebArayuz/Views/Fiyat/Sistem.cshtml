@@ -1,0 +1,113 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.SistemAltSistemJoin>
+@{
+    ViewBag.Title = "CamSistem - Sistem Fiyatlandırma";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<style>
+    .row {
+        margin-right: 0px;
+    }
+</style>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+
+<script type="text/javascript">
+    function sistemFiyatla(_Id, _Fiyat) {
+        Swal.fire({
+            title: 'Fiyat düzenleme',
+            input: 'text',
+            inputLabel: 'Sistem için Fiyat',
+            showCancelButton: true,
+            cancelButtonText: 'Vazgeç',
+            confirmButtonText: 'Güncelle',
+            inputPlaceholder: 'Fiyat giriniz...',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Bu alan boş geçilemez!'
+                }
+            },
+            inputValue: _Fiyat
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("SistemFiyatla", "Fiyat")',
+                    dataType: 'json',
+                    data: { "Id": _Id, "Fiyat": result.value },
+                    type: "POST"
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            text: "Kayıt başarıyla güncellendi."
+                        }).then(() => {
+                            window.location.href = '@Url.Action("Sistem", "Fiyat")';
+                        })
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+<div class="block-header">
+    <h2>
+        Fiyatlandırma Yönetimi
+        <small>Fiyatlandırmayla ilgili işlemleri yönetebileceğiniz sayfadır.</small>
+    </h2>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Sistem Fiyat Listesi
+                </h2>
+            </div>
+            <div class="body">
+                <div style="padding-top:10px;" class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                        <thead>
+                            <tr>
+                                <th>Sistem Adı</th>
+                                <th>Sistem Tür Adı</th>
+                                <th>Alt Sistem Adı</th>
+                                <th>Birim Fiyat</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SistemAdi)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SistemTurAdi)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AltSistemAdi)
+                                </td>
+                                <td>
+                                    @Html.Raw(string.Format("{0:c}", item.BirimFiyat))
+                                </td>
+                                <td>
+                                    <button type="button" data-toggle="tooltip" data-placement="top" title="Düzenle"
+                                            onclick="sistemFiyatla('@item.Id', '@item.BirimFiyat')" class="btn bg-green btn-circle waves-effect waves-circle waves-float">
+                                        <i class="material-icons">edit</i>
+                                    </button>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

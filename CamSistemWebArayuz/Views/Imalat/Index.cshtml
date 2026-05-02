@@ -1,0 +1,409 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.Siparis>
+@{
+    ViewBag.Title = "CamSistem - İmalat Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<style>
+    .row {
+        margin-right: 0px;
+    }
+</style>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script>
+    $(document).ready(function () {
+        $('#imalatGonderButon').prop('disabled', true);
+
+        $("input.chk-col-green")
+            .change(function () {
+                var $input = $(this);
+                if ($input.is(":checked")) {
+                    $('#imalatGonderButon').prop('disabled', $('.chk-col-green:checked').length == 0);
+                } else {
+                    $('#imalatGonderButon').prop('disabled', $('.chk-col-green:checked').length == 0);
+                }
+            }).change();
+    });
+
+    function dogrudanImalataGonder(_siparisId) {
+        Swal.fire({
+            title: 'Bu işlemde stoktan düşme yapılmayacaktır. Devam etmek istiyor musunuz?',
+            showCancelButton: true,
+            cancelButtonText: `Hayır`,
+            confirmButtonText: `Evet`,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setTimeout(function () { $('.page-loader-wrapper').fadeIn(); }, 50);
+                var SiparisIds = [ _siparisId ];
+                $.ajax({
+                    url: '@Url.Action("ImalataGonder", "Imalat")',
+                    dataType: "json",
+                    data: { "siparisIds": SiparisIds, "fireKullanilsinMi": false, "stoktanDussunMu": false},
+                    type: 'POST',
+                    success: function (data) {
+                        if (data.Fire) {
+                            setTimeout(function () { $('.page-loader-wrapper').fadeOut(); }, 50);
+                            Swal.fire({
+                                title: data.Baslik + " numaralı siparişler için profil yetersiz!",
+                                html: `<pre><code>${data.HtmlResult}</code></pre>`,
+                                showCancelButton: true,
+                                cancelButtonText: 'KAPAT',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'STOK EKLE'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '@Url.Action("StokKaydet", "Stok")';
+                                }
+                            });
+                        }else {
+                            var url = '@Url.Action("ImalatKesimGoruntule", "Imalat")';
+
+                            $('#searchResultsImalat').load(url, {
+                                "hatalar": data.Result.hatalar, "kesimBicimiStok": data.Result.kesimBicimiStok, "kesimBicimiFireStok": data.Result.kesimBicimiFireStok,
+                                "toplamAtikUzunluk": data.Result.toplamAtikUzunluk, "fireStogaEklenenToplam": data.Result.fireStogaEklenenToplamUzunluk, "kullanilanToplamUzunlukAsil": data.Result.kullanilanToplamUzunlukAsil,
+                                "kullanilanToplamUzunlukFire": data.Result.kullanilanToplamUzunlukFire, "fireStogaEklenenToplamAgirlik": data.Result.fireStogaEklenenToplamAgirlik,
+                                "kullanilanToplamAgirlikAsil": data.Result.kullanilanToplamAgirlikAsil, "kullanilanToplamAgirlikFire": data.Result.kullanilanToplamAgirlikFire,
+                                "toplamAtikAgirlik": data.Result.toplamAtikAgirlik
+                            });
+                            $('#showStokModal').modal('show');
+                            setTimeout(function () { $('.page-loader-wrapper').fadeOut(); }, 50);
+                        }
+                    },
+                    error: function(errorObj) {
+                        alert(errorObj.toString());
+                    }
+                });
+            }
+        })
+    }
+
+    function imalatGonder() {
+        Swal.fire({
+            title: 'Fire stok kullanılsın mı?',
+            showDenyButton: true,
+            showCancelButton: true,
+            cancelButtonText: `Vazgeç`,
+            confirmButtonText: `Evet, kullanılsın`,
+            denyButtonText: `Hayır, kullanma`,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setTimeout(function () { $('.page-loader-wrapper').fadeIn(); }, 50);
+
+                var SiparisIds = {
+                    SeciliSiparisler: $('.chk-col-green:checkbox:checked').map(function () {
+                        return this.value;
+                    }).get()
+                };
+                $.ajax({
+                    url: '@Url.Action("ImalataGonder", "Imalat")',
+                    dataType: "json",
+                    data: { "siparisIds": SiparisIds.SeciliSiparisler, "fireKullanilsinMi": true, "stoktanDussunMu": true },
+                    type: 'POST',
+                    success: function (data) {
+                        if (data.Fire) {
+                            setTimeout(function () { $('.page-loader-wrapper').fadeOut(); }, 50);
+                            Swal.fire({
+                                title: data.Baslik + " numaralı siparişler için profil yetersiz!",
+                                html: `<pre><code>${data.HtmlResult}</code></pre>`,
+                                showCancelButton: true,
+                                cancelButtonText: 'KAPAT',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'STOK EKLE'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '@Url.Action("StokKaydet", "Stok")';
+                                }
+                            });
+                        }else {
+                            var url = '@Url.Action("ImalatKesimGoruntule", "Imalat")';
+
+                            $('#searchResultsImalat').load(url, {
+                                "hatalar": data.Result.hatalar, "kesimBicimiStok": data.Result.kesimBicimiStok, "kesimBicimiFireStok": data.Result.kesimBicimiFireStok,
+                                "toplamAtikUzunluk": data.Result.toplamAtikUzunluk, "fireStogaEklenenToplam": data.Result.fireStogaEklenenToplamUzunluk, "kullanilanToplamUzunlukAsil": data.Result.kullanilanToplamUzunlukAsil,
+                                "kullanilanToplamUzunlukFire": data.Result.kullanilanToplamUzunlukFire, "fireStogaEklenenToplamAgirlik": data.Result.fireStogaEklenenToplamAgirlik,
+                                "kullanilanToplamAgirlikAsil": data.Result.kullanilanToplamAgirlikAsil, "kullanilanToplamAgirlikFire": data.Result.kullanilanToplamAgirlikFire,
+                                "toplamAtikAgirlik": data.Result.toplamAtikAgirlik
+                            });
+                            $('#showStokModal').modal('show');
+                            setTimeout(function () { $('.page-loader-wrapper').fadeOut(); }, 50);
+                        }
+                    },
+                    error: function(errorObj) {
+                        alert(errorObj.toString());
+                    }
+                });
+            } else if (result.isDenied) {
+                setTimeout(function () { $('.page-loader-wrapper').fadeIn(); }, 50);
+
+                var SiparisIds = {
+                    SeciliSiparisler: $('.chk-col-green:checkbox:checked').map(function () {
+                        return this.value;
+                    }).get()
+                };
+                $.ajax({
+                    url: '@Url.Action("ImalataGonder", "Imalat")',
+                    dataType: "json",
+                    data: { "siparisIds": SiparisIds.SeciliSiparisler, "fireKullanilsinMi": false, "stoktanDussunMu": true},
+                    type: 'POST',
+                    success: function (data) {
+                        setTimeout(function () { $('.page-loader-wrapper').fadeOut(); }, 50);
+                        if (data.Fire) {
+                            Swal.fire({
+                                title: data.Baslik + " numaralı siparişler için profil yetersiz!",
+                                html: `<pre><code>${data.HtmlResult}</code></pre>`,
+                                showCancelButton: true,
+                                cancelButtonText: 'KAPAT',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'STOK EKLE'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '@Url.Action("StokKaydet", "Stok")';
+                                }
+                            });
+                        } else {
+                            @*$.ajax({
+                                type: "GET",
+                                dataType: "json",
+                                url: '@Url.Action("ImalatKesimGoruntule", "Imalat")',
+                                data: {
+                                    "hatalar": data.Result.hatalar, "kesimBicimiStok": data.Result.kesimBicimiStok, "kesimBicimiFireStok": data.Result.kesimBicimiFireStok,
+                                    "toplamAtikUzunluk": JSON.stringify(data.Result.toplamAtikUzunluk), "fireStogaEklenenToplam": JSON.stringify(data.Result.fireStogaEklenenToplamUzunluk),
+                                    "kullanilanToplamUzunlukAsil": JSON.stringify(data.Result.kullanilanToplamUzunlukAsil),
+                                    "kullanilanToplamUzunlukFire": JSON.stringify(data.Result.kullanilanToplamUzunlukFire), "fireStogaEklenenToplamAgirlik": JSON.stringify(data.Result.fireStogaEklenenToplamAgirlik),
+                                    "kullanilanToplamAgirlikAsil": JSON.stringify(data.Result.kullanilanToplamAgirlikAsil), "kullanilanToplamAgirlikFire": JSON.stringify(data.Result.kullanilanToplamAgirlikFire),
+                                    "toplamAtikAgirlik": JSON.stringify(data.Result.toplamAtikAgirlik)
+                                },
+                                success: function (data) {
+                                    $('#searchResultsImalat').html(data);
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    alert('Failed to retrieve books.');
+                                }
+                            });*@
+                            var url = '@Url.Action("ImalatKesimGoruntule", "Imalat")';
+
+                            $('#searchResultsImalat').load(url, {
+                                "hatalar": data.Result.hatalar, "kesimBicimiStok": data.Result.kesimBicimiStok, "kesimBicimiFireStok": data.Result.kesimBicimiFireStok,
+                                "toplamAtikUzunluk": JSON.stringify(data.Result.toplamAtikUzunluk), "fireStogaEklenenToplam": JSON.stringify(data.Result.fireStogaEklenenToplamUzunluk),
+                                "kullanilanToplamUzunlukAsil": JSON.stringify(data.Result.kullanilanToplamUzunlukAsil),
+                                "kullanilanToplamUzunlukFire": JSON.stringify(data.Result.kullanilanToplamUzunlukFire), "fireStogaEklenenToplamAgirlik": JSON.stringify(data.Result.fireStogaEklenenToplamAgirlik),
+                                "kullanilanToplamAgirlikAsil": JSON.stringify(data.Result.kullanilanToplamAgirlikAsil), "kullanilanToplamAgirlikFire": JSON.stringify(data.Result.kullanilanToplamAgirlikFire),
+                                "toplamAtikAgirlik": JSON.stringify(data.Result.toplamAtikAgirlik)
+                            });
+                            $('#showStokModal').modal('show');
+                            setTimeout(function () { $('.page-loader-wrapper').fadeOut(); }, 50);
+                        }
+                    },
+                    error: function(errorObj) {
+                        alert(errorObj.toString());
+                    }
+                });
+            }
+        })
+    }
+
+    function imalatOnayla() {
+        $('#showStokModal').modal('hide');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ImalatOnayla", "Imalat")',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (result) {
+                if (result == 'OK') {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'İmalat başarıyla onaylandı.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = '@Url.Action("Index", "Imalat")';
+                    })
+                } else if (result == 'NOK') {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Stok güncellemesi yapılmadan imalata gönderildi.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = '@Url.Action("Index", "Imalat")';
+                    })
+                }
+            },
+            error: function (err) {
+                alert(err);
+            }
+        });
+    }
+
+    function SiparisDurumGuncelle() {
+        $.ajax({
+            type: 'POST',
+            url: '/Siparis/SiparisDurumGuncelle',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: '{ "SiparisId":"' + siparisId4Durum + '", "DurumId":"' + 3 + '"}',
+            success: function (result) {
+                if (result == 'NOK') {
+                    Swal.fire({
+                        title: 'İptal Edildi!',
+                        text: 'Sipariş iptal edildi!',
+                        icon: 'error',
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = '@Url.Action("Index", "Imalat")';
+                    });
+                }
+                $('#modalDurumGuncelle').modal('toggle');
+                window.setTimeout(function () { location.reload() }, 1800)
+            },
+            error: function (err) {
+                alert(err);
+            }
+        });
+
+    }
+
+    var siparisId4Durum = null;
+
+    $(document).ready(function () {
+        $('#modalDurumGuncelle').on('show.bs.modal', function (e) {
+            var siparisDurumIds = $(e.relatedTarget).data('id');
+            var siparisSplit = siparisDurumIds.split('+');
+
+            $('#siparisId').text(siparisSplit[0]);
+            siparisId4Durum = siparisSplit[0];
+            durumId = siparisSplit[1];
+            if (siparisSplit[1] == 5) {
+                $('#durumModalButton').text('SİPARİŞİ BİTİR');
+            } else if (siparisSplit[1] == 1) {
+                $('#durumModalButton').text('ONAYLA');
+            }
+        });
+    });
+
+</script>
+<div class="block-header">
+    <h2>
+        İmalat Yönetimi
+        <small>Onaylanmış siparişlerin imalata geçmesi için ilgili işlemleri yönetebileceğiniz sayfadır.</small>
+    </h2>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    İmalata Gidecek Siparişler Listesi
+                </h2>
+            </div>
+            <div class="body">
+                <button type="button" id="imalatGonderButon" onclick="imalatGonder()" class="btn bg-green btn-block btn-lg waves-effect">İMALATA GÖNDER</button>
+                <div style="padding-top:10px;" class="table-responsive">
+                    <table id="imalatTablosu" class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sipariş No</th>
+                                <th>Müşteri Adı Soyadı - Şirket Adı</th>
+                                <th>Sistem Bilgisi</th>
+                                <th>Sistem En</th>
+                                <th>Sistem Boy</th>
+                                <th>Sistem Adet</th>
+                                <th>Tahmini Teslim Tarihi</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="demo-checkbox">
+                                            <input type="checkbox" value="@item.Id" id="@item.Id" class="chk-col-green" />
+                                            <label for="@item.Id"></label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Id)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.MusteriTamAdi)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SistemTamami)
+                                    </td>
+                                    <td>
+                                        @foreach (var item2 in item.enBoyAdetList)
+                                        {
+                                            @Html.DisplayFor(modelItem => item2.GirilenEn)
+                                            @Html.Raw("<br />")
+                                        }
+                                    </td>
+                                    <td>
+                                        @foreach (var item2 in item.enBoyAdetList)
+                                        {
+                                            @Html.DisplayFor(modelItem => item2.GirilenBoy)
+                                            @Html.Raw("<br />")
+                                        }
+                                    </td>
+                                    <td>
+                                        @foreach (var item2 in item.enBoyAdetList)
+                                        {
+                                            @Html.DisplayFor(modelItem => item2.GirilenAdet)
+                                            @Html.Raw("<br />")
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.Raw(string.Format("{0:dd/MM/yyyy}", item.TahminiTeslim))
+                                    </td>
+                                    <td>
+                                        <span data-id="@item.Id+@item.DurumId" data-toggle="modal" data-target="#modalDurumGuncelle">
+                                            <a data-toggle="tooltip" class="btn btn-success btn-circle waves-effect waves-circle waves-float" data-placement="top" title="İptal Et">
+                                                <i class="material-icons">update</i>
+                                            </a>
+                                        </span>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Doğrudan İmalata Gönder" onclick="dogrudanImalataGonder('@item.Id')"
+                                                class="btn bg-orange btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">call_missed_outgoing</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="showStokModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div id="searchResultsImalat">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Guncelle -->
+<div class="modal fade" id="modalDurumGuncelle" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="modalDurumGuncelleTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="mod  al-title" id="modalDurumGuncelleTitle">Emin misiniz?</h5>
+            </div>
+            <div class="modal-body">
+                <p><font id="siparisId" style="font-weight:bold" class="text-danger"></font> sipariş numaralı kaydın durumunu güncellemek istediğinize emin misiniz?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="SiparisDurumGuncelle();" class="btn btn-danger">SİPARİŞİ İPTAL ET</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">VAZGEÇ</button>
+            </div>
+        </div>
+    </div>
+</div>

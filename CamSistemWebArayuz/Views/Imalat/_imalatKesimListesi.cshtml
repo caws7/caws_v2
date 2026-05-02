@@ -1,0 +1,153 @@
+﻿@model CamSistemWebArayuz.Models.ImalatModel
+<style>
+    .modal-body {
+        overflow: auto;
+    }
+
+    .nav {
+        padding-left: revert;
+    }
+
+    .highlightred td {
+        /*
+      Since you're changing only the
+      border-color, you only need to
+      redefine the border-color.
+    */
+        border-color: red;
+    }
+</style>
+<ul class="nav nav-tabs tab-nav-right tab-col-red" role="tablist">
+    <li role="presentation" class="active"><a href="#sonuc" data-toggle="tab"><b>OPTİMİZASYON SONUCU</b></a></li>
+    @* <li role="presentation"><a href="#stok" data-toggle="tab"><b>STOK DURUMU</b></a></li>*@
+</ul>
+<!-- Tab panes -->
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade in active" id="sonuc">
+        <div id="imalatyazdir">
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Profil Kodu</th>
+                            <th>Profil Kesitleri</th>
+                            <th>Profil Adı</th>
+                            <th>Birim Ağırlık</th>
+                            <th>Kesilecek Profil</th>
+                            <th>Kesilecek Ölçüler</th>
+                            <th>Kesim Adeti</th>
+                            <th>Fire / Atık</th>
+                            <th>Kullanılan Stok</th>
+                            <th>Eksik Adet</th>
+                            <th>Mevcut Stok Miktarıl</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.optiSonuc)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.profil.ProfilKodu)
+                                </td>
+                                <td>
+                                    @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item.profil.ProfilFoto) + "' />")
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.profil.ProfilAdi)
+                                </td>
+                                <td>
+                                    @if (item.profil.BirimAgirlik > 0)
+                                    {
+                                        @Html.DisplayFor(modelItem => item.profil.BirimAgirlik)
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("-")
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.KullanilacakOlcu)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.KesileceklerOlcusu)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Adet)
+                                </td>
+                                @{
+                                    var limit = ViewBag.minimumFire;
+
+                                    if (item.FireAtik > limit)
+                                    {
+
+                                        @Html.Raw("<th class='bg-light-green'>")
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("<th class='bg-red'>")
+                                    }
+                                    @Html.Raw(item.FireAtik)
+                                    @Html.Raw("</th>")
+                                }
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.KullanilanAlan)
+                                </td>
+                                @if (item.eksikAdet != 0)
+                                {
+                                    <td style="border-top: 2px solid red; border-bottom: 2px solid red; border-left: 2px solid red; border-right: 2px solid red;"><b>@Html.DisplayFor(modelItem => item.eksikAdet)</b></td>
+                                }
+                                else
+                                {
+                                    <td>@Html.DisplayFor(modelItem => item.eksikAdet)</td>
+                                }
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.mevcutStokMiktari)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan=2>Toplam Atık</th>
+                            <th colspan=3>Fire Stoğa Eklenen Toplam</th>
+                            <th colspan=3>Asıl Stoktan Kullanılan Toplam</th>
+                            <th colspan=3>Fire Stoktan Kullanılan Toplam</th>
+                        </tr>
+                        <tr>
+                            <th>Uzunluk (Metre)</th>
+                            <th>Ağırlık (Kg)</th>
+                            <th>Uzunluk (Metre)</th>
+                            <th colspan=2>Ağırlık (Kg)</th>
+                            <th>Uzunluk (Metre)</th>
+                            <th colspan=2>Ağırlık (Kg)</th>
+                            <th>Uzunluk (Metre)</th>
+                            <th colspan=2>Ağırlık (Kg)</th>
+                        </tr>
+                        <tr>
+                            <th>@Html.Raw(string.Format("{0:N2}", Model.toplamAtikUzunluk))</th>
+                            <th>@Html.Raw(string.Format("{0:N2}", Model.toplamAtikAgirlik))</th>
+                            <th>@Html.Raw(string.Format("{0:N2}", Model.fireStogaEklenenToplam))</th>
+                            <th colspan=2>@Html.Raw(string.Format("{0:N2}", Model.fireStogaEklenenToplamAgirlik))</th>
+                            <th>@Html.Raw(string.Format("{0:N2}", Model.kullanilanToplamUzunlukAsil))</th>
+                            <th colspan=2>@Html.Raw(string.Format("{0:N2}", Model.kullanilanToplamAgirlikAsil))</th>
+                            <th>@Html.Raw(string.Format("{0:N2}", Model.kullanilanToplamUzunlukFire))</th>
+                            <th colspan=2>@Html.Raw(string.Format("{0:N2}", Model.kullanilanToplamAgirlikFire))</th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                @Html.Raw(ViewBag.SiparisAciklamasi)
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal-footer">
+    <button type="button" onclick="PrintElem('imalatyazdir')" class="btn bg-red waves-effect waves-light">
+        <i class="material-icons">print</i>
+        <span>YAZDIR</span>
+    </button>
+    <button type="button" class="btn bg-green waves-effect waves-light" onclick="imalatOnayla()">İMALATI ONAYLA</button>
+    <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
+</div>

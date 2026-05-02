@@ -1,0 +1,558 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="cws_ModelStoreContainer" CdmEntityContainer="cws_Entities">
+    <EntitySetMapping Name="Adres">
+      <EntityTypeMapping TypeName="cws_Model.Adres">
+        <MappingFragment StoreEntitySet="Adres">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="AcikAdres" ColumnName="AcikAdres" />
+          <ScalarProperty Name="PostaKodu" ColumnName="PostaKodu" />
+          <ScalarProperty Name="Il" ColumnName="Il" />
+          <ScalarProperty Name="Ilce" ColumnName="Ilce" />
+          <ScalarProperty Name="Ulke" ColumnName="Ulke" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Aksesuar">
+      <EntityTypeMapping TypeName="cws_Model.Aksesuar">
+        <MappingFragment StoreEntitySet="Aksesuar">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="AksesuarAdi" ColumnName="AksesuarAdi" />
+          <ScalarProperty Name="AksesuarKodu" ColumnName="AksesuarKodu" />
+          <ScalarProperty Name="AksesuarGorsel" ColumnName="AksesuarGorsel" />
+          <ScalarProperty Name="AksesuarKalipNo" ColumnName="AksesuarKalipNo" />
+          <ScalarProperty Name="AksesuarBirim" ColumnName="AksesuarBirim" />
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+          <ScalarProperty Name="Motor" ColumnName="Motor" />
+          <ScalarProperty Name="Kumanda" ColumnName="Kumanda" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AltSistem">
+      <EntityTypeMapping TypeName="cws_Model.AltSistem">
+        <MappingFragment StoreEntitySet="AltSistem">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="AltSistemAdi" ColumnName="AltSistemAdi" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="AtikStok">
+      <EntityTypeMapping TypeName="cws_Model.AtikStok">
+        <MappingFragment StoreEntitySet="AtikStok">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Olcu" ColumnName="Olcu" />
+          <ScalarProperty Name="Adet" ColumnName="Adet" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BoyaTedarik">
+      <EntityTypeMapping TypeName="cws_Model.BoyaTedarik">
+        <MappingFragment StoreEntitySet="BoyaTedarik">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TedarikciId" ColumnName="TedarikciId" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="BoyadanCikisKilosu" ColumnName="BoyadanCikisKilosu" />
+          <ScalarProperty Name="BoyadanGelisKilosu" ColumnName="BoyadanGelisKilosu" />
+          <ScalarProperty Name="CikisTarihi" ColumnName="CikisTarihi" />
+          <ScalarProperty Name="GelisTarihi" ColumnName="GelisTarihi" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CamKombinasyon">
+      <EntityTypeMapping TypeName="cws_Model.CamKombinasyon">
+        <MappingFragment StoreEntitySet="CamKombinasyon">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Kombinasyon" ColumnName="Kombinasyon" />
+          <ScalarProperty Name="Birim" ColumnName="Birim" />
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CamTedarik">
+      <EntityTypeMapping TypeName="cws_Model.CamTedarik">
+        <MappingFragment StoreEntitySet="CamTedarik">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TedarikciId" ColumnName="TedarikciId" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="SiparisOnayTarihi" ColumnName="SiparisOnayTarihi" />
+          <ScalarProperty Name="TerminTarihi" ColumnName="TerminTarihi" />
+          <ScalarProperty Name="GuncelDurum" ColumnName="GuncelDurum" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DisSiparis">
+      <EntityTypeMapping TypeName="cws_Model.DisSiparis">
+        <MappingFragment StoreEntitySet="DisSiparis">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="MusteriId" ColumnName="MusteriId" />
+          <ScalarProperty Name="FisNo" ColumnName="FisNo" />
+          <ScalarProperty Name="DurumId" ColumnName="DurumId" />
+          <ScalarProperty Name="SistemBilgisi" ColumnName="SistemBilgisi" />
+          <ScalarProperty Name="SistemAciklamasi" ColumnName="SistemAciklamasi" />
+          <ScalarProperty Name="IslemDurum" ColumnName="IslemDurum" />
+          <ScalarProperty Name="GenelAciklama" ColumnName="GenelAciklama" />
+          <ScalarProperty Name="OnayIptalTarihi" ColumnName="OnayIptalTarihi" />
+          <ScalarProperty Name="OnayIptalKullaniciId" ColumnName="OnayIptalKullaniciId" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="TedarikciId" ColumnName="TedarikciId" />
+          <ScalarProperty Name="TedarikFiyat" ColumnName="TedarikFiyat" />
+          <ScalarProperty Name="SiparisAciklama" ColumnName="SiparisAciklama" />
+          <ScalarProperty Name="SevkiyatId" ColumnName="SevkiyatId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="DisTedarik">
+      <EntityTypeMapping TypeName="cws_Model.DisTedarik">
+        <MappingFragment StoreEntitySet="DisTedarik">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TedarikciId" ColumnName="TedarikciId" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="SistemBilgisi" ColumnName="SistemBilgisi" />
+          <ScalarProperty Name="TedarikTarihi" ColumnName="TedarikTarihi" />
+          <ScalarProperty Name="TedarikFiyat" ColumnName="TedarikFiyat" />
+          <ScalarProperty Name="SistemAciklama" ColumnName="SistemAciklama" />
+          <ScalarProperty Name="GenelAciklama" ColumnName="GenelAciklama" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Durum">
+      <EntityTypeMapping TypeName="cws_Model.Durum">
+        <MappingFragment StoreEntitySet="Durum">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="DurumAdi" ColumnName="DurumAdi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ImalatDurum">
+      <EntityTypeMapping TypeName="cws_Model.ImalatDurum">
+        <MappingFragment StoreEntitySet="ImalatDurum">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="ImalatDurumAdi" ColumnName="ImalatDurumAdi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Kullanici">
+      <EntityTypeMapping TypeName="cws_Model.Kullanici">
+        <MappingFragment StoreEntitySet="Kullanici">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="KullaniciAdi" ColumnName="KullaniciAdi" />
+          <ScalarProperty Name="KullaniciSoyadi" ColumnName="KullaniciSoyadi" />
+          <ScalarProperty Name="KullaniciMail" ColumnName="KullaniciMail" />
+          <ScalarProperty Name="Sifre" ColumnName="Sifre" />
+          <ScalarProperty Name="KullaniciTelefon" ColumnName="KullaniciTelefon" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+          <ScalarProperty Name="RolId" ColumnName="RolId" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Musteri">
+      <EntityTypeMapping TypeName="cws_Model.Musteri">
+        <MappingFragment StoreEntitySet="Musteri">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="MusteriAdi" ColumnName="MusteriAdi" />
+          <ScalarProperty Name="MusteriSoyadi" ColumnName="MusteriSoyadi" />
+          <ScalarProperty Name="SirketAdi" ColumnName="SirketAdi" />
+          <ScalarProperty Name="MusteriTelefon" ColumnName="MusteriTelefon" />
+          <ScalarProperty Name="AdresId" ColumnName="AdresId" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OptimizasyonHesap">
+      <EntityTypeMapping TypeName="cws_Model.OptimizasyonHesap">
+        <MappingFragment StoreEntitySet="OptimizasyonHesap">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisIds" ColumnName="SiparisIds" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="ProfilBoy" ColumnName="ProfilBoy" />
+          <ScalarProperty Name="KesilecekOlculer" ColumnName="KesilecekOlculer" />
+          <ScalarProperty Name="KesimAdet" ColumnName="KesimAdet" />
+          <ScalarProperty Name="FireAtik" ColumnName="FireAtik" />
+          <ScalarProperty Name="ToplamAtikUzunluk" ColumnName="ToplamAtikUzunluk" />
+          <ScalarProperty Name="ToplamAtikAgirlik" ColumnName="ToplamAtikAgirlik" />
+          <ScalarProperty Name="FireyeEklenenToplamUzunluk" ColumnName="FireyeEklenenToplamUzunluk" />
+          <ScalarProperty Name="FireyeEklenenToplamAgirlik" ColumnName="FireyeEklenenToplamAgirlik" />
+          <ScalarProperty Name="AsilStoktanKullanilanToplamUzunluk" ColumnName="AsilStoktanKullanilanToplamUzunluk" />
+          <ScalarProperty Name="AsilStoktanKullanilanToplamAgirlik" ColumnName="AsilStoktanKullanilanToplamAgirlik" />
+          <ScalarProperty Name="FiredenKullanilanToplamUzunluk" ColumnName="FiredenKullanilanToplamUzunluk" />
+          <ScalarProperty Name="FiredenKullanilanToplamAgirlik" ColumnName="FiredenKullanilanToplamAgirlik" />
+          <ScalarProperty Name="KullanilanAlan" ColumnName="KullanilanAlan" />
+          <ScalarProperty Name="KayitTarih" ColumnName="KayitTarih" />
+          <ScalarProperty Name="KullaniciId" ColumnName="KullaniciId" />
+          <ScalarProperty Name="ImalatDurum" ColumnName="ImalatDurum" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Profil">
+      <EntityTypeMapping TypeName="cws_Model.Profil">
+        <MappingFragment StoreEntitySet="Profil">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="ProfilAdi" ColumnName="ProfilAdi" />
+          <ScalarProperty Name="ProfilKodu" ColumnName="ProfilKodu" />
+          <ScalarProperty Name="BirimAgirlik" ColumnName="BirimAgirlik" />
+          <ScalarProperty Name="KalipNo" ColumnName="KalipNo" />
+          <ScalarProperty Name="ProfilFoto" ColumnName="ProfilFoto" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ProfilBoy">
+      <EntityTypeMapping TypeName="cws_Model.ProfilBoy">
+        <MappingFragment StoreEntitySet="ProfilBoy">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="ProfilBoyu" ColumnName="ProfilBoyu" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Renk">
+      <EntityTypeMapping TypeName="cws_Model.Renk">
+        <MappingFragment StoreEntitySet="Renk">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="RenkAdi" ColumnName="RenkAdi" />
+          <ScalarProperty Name="RenkKodu" ColumnName="RenkKodu" />
+          <ScalarProperty Name="RenkImg" ColumnName="RenkImg" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sabitler">
+      <EntityTypeMapping TypeName="cws_Model.Sabitler">
+        <MappingFragment StoreEntitySet="Sabitler">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SabitDeger" ColumnName="SabitDeger" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sevkiyat">
+      <EntityTypeMapping TypeName="cws_Model.Sevkiyat">
+        <MappingFragment StoreEntitySet="Sevkiyat">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="SevkiyatBilgisi" ColumnName="SevkiyatBilgisi" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="SevkiyatTarihi" ColumnName="SevkiyatTarihi" />
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SevkiyatPaket">
+      <EntityTypeMapping TypeName="cws_Model.SevkiyatPaket">
+        <MappingFragment StoreEntitySet="SevkiyatPaket">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="PaketEn" ColumnName="PaketEn" />
+          <ScalarProperty Name="PaketBoy" ColumnName="PaketBoy" />
+          <ScalarProperty Name="PaketYukseklik" ColumnName="PaketYukseklik" />
+          <ScalarProperty Name="PaketAdet" ColumnName="PaketAdet" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Siparis">
+      <EntityTypeMapping TypeName="cws_Model.Siparis">
+        <MappingFragment StoreEntitySet="Siparis">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="MusteriId" ColumnName="MusteriId" />
+          <ScalarProperty Name="SistemId" ColumnName="SistemId" />
+          <ScalarProperty Name="SistemTurId" ColumnName="SistemTurId" />
+          <ScalarProperty Name="AltSistemId" ColumnName="AltSistemId" />
+          <ScalarProperty Name="RenkId" ColumnName="RenkId" />
+          <ScalarProperty Name="DurumId" ColumnName="DurumId" />
+          <ScalarProperty Name="IslemDurum" ColumnName="IslemDurum" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="TeslimTarihi" ColumnName="TeslimTarihi" />
+          <ScalarProperty Name="TahminiTeslim" ColumnName="TahminiTeslim" />
+          <ScalarProperty Name="OnayIptalTarihi" ColumnName="OnayIptalTarihi" />
+          <ScalarProperty Name="OnayIptalKullaniciId" ColumnName="OnayIptalKullaniciId" />
+          <ScalarProperty Name="SiparisTur" ColumnName="SiparisTur" />
+          <ScalarProperty Name="MotorMarkaId" ColumnName="MotorMarkaId" />
+          <ScalarProperty Name="KumandaMarkaId" ColumnName="KumandaMarkaId" />
+          <ScalarProperty Name="FisNo" ColumnName="FisNo" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="CamTedarikId" ColumnName="CamTedarikId" />
+          <ScalarProperty Name="BoyaTedarikId" ColumnName="BoyaTedarikId" />
+          <ScalarProperty Name="DisTedarikId" ColumnName="DisTedarikId" />
+          <ScalarProperty Name="SistemBirimFiyat" ColumnName="SistemBirimFiyat" />
+          <ScalarProperty Name="ToplamAluKg" ColumnName="ToplamAluKg" />
+          <ScalarProperty Name="ToplamAluKgFiyat" ColumnName="ToplamAluKgFiyat" />
+          <ScalarProperty Name="DosyaIds" ColumnName="DosyaIds" />
+          <ScalarProperty Name="ImalatDurum" ColumnName="ImalatDurum" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisAksesuar">
+      <EntityTypeMapping TypeName="cws_Model.SiparisAksesuar">
+        <MappingFragment StoreEntitySet="SiparisAksesuar">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisCam">
+      <EntityTypeMapping TypeName="cws_Model.SiparisCam">
+        <MappingFragment StoreEntitySet="SiparisCam">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="CamKombinasyon" ColumnName="CamKombinasyon" />
+          <ScalarProperty Name="OnCam" ColumnName="OnCam" />
+          <ScalarProperty Name="AraBosluk" ColumnName="AraBosluk" />
+          <ScalarProperty Name="ArkaCam" ColumnName="ArkaCam" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisEnBoyAdet">
+      <EntityTypeMapping TypeName="cws_Model.SiparisEnBoyAdet">
+        <MappingFragment StoreEntitySet="SiparisEnBoyAdet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="GirilenEn" ColumnName="GirilenEn" />
+          <ScalarProperty Name="GirilenSolEn" ColumnName="GirilenSolEn" />
+          <ScalarProperty Name="GirilenBoy" ColumnName="GirilenBoy" />
+          <ScalarProperty Name="GirilenAdet" ColumnName="GirilenAdet" />
+          <ScalarProperty Name="GirilenKanatAdet" ColumnName="GirilenKanatAdet" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisSevkiyatAksesuar">
+      <EntityTypeMapping TypeName="cws_Model.SiparisSevkiyatAksesuar">
+        <MappingFragment StoreEntitySet="SiparisSevkiyatAksesuar">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisEnBoyAdetId" ColumnName="SiparisEnBoyAdetId" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="AksesuarAdet" ColumnName="AksesuarAdet" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KullaniciId" ColumnName="KullaniciId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisSevkiyatProfil">
+      <EntityTypeMapping TypeName="cws_Model.SiparisSevkiyatProfil">
+        <MappingFragment StoreEntitySet="SiparisSevkiyatProfil">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisEnBoyAdetId" ColumnName="SiparisEnBoyAdetId" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="ProfilBoy" ColumnName="ProfilBoy" />
+          <ScalarProperty Name="ProfilAdet" ColumnName="ProfilAdet" />
+          <ScalarProperty Name="ToplamMetre" ColumnName="ToplamMetre" />
+          <ScalarProperty Name="ToplamKg" ColumnName="ToplamKg" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KullaniciId" ColumnName="KullaniciId" />
+          <ScalarProperty Name="Paket" ColumnName="Paket" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisStok">
+      <EntityTypeMapping TypeName="cws_Model.SiparisStok">
+        <MappingFragment StoreEntitySet="SiparisStok">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisId" ColumnName="SiparisId" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="ProfilBoyId" ColumnName="ProfilBoyId" />
+          <ScalarProperty Name="ProfilAdet" ColumnName="ProfilAdet" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="AksesuarAdet" ColumnName="AksesuarAdet" />
+          <ScalarProperty Name="MarkaId" ColumnName="MarkaId" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="IslemDurum" ColumnName="IslemDurum" />
+          <ScalarProperty Name="FisNo" ColumnName="FisNo" />
+          <ScalarProperty Name="GuncellemeTarihi" ColumnName="GuncellemeTarihi" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisTeklif">
+      <EntityTypeMapping TypeName="cws_Model.SiparisTeklif">
+        <MappingFragment StoreEntitySet="SiparisTeklif">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisEnBoyAdetId" ColumnName="SiparisEnBoyAdetId" />
+          <ScalarProperty Name="Malzeme" ColumnName="Malzeme" />
+          <ScalarProperty Name="Birim" ColumnName="Birim" />
+          <ScalarProperty Name="Miktar" ColumnName="Miktar" />
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+          <ScalarProperty Name="ToplamTutar" ColumnName="ToplamTutar" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SiparisTeklifToplamBilgisi">
+      <EntityTypeMapping TypeName="cws_Model.SiparisTeklifToplamBilgisi">
+        <MappingFragment StoreEntitySet="SiparisTeklifToplamBilgisi">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SiparisEnBoyAdetId" ColumnName="SiparisEnBoyAdetId" />
+          <ScalarProperty Name="ToplamMaliyet" ColumnName="ToplamMaliyet" />
+          <ScalarProperty Name="m2" ColumnName="m2" />
+          <ScalarProperty Name="Teklif" ColumnName="Teklif" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sistem">
+      <EntityTypeMapping TypeName="cws_Model.Sistem">
+        <MappingFragment StoreEntitySet="Sistem">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SistemAdi" ColumnName="SistemAdi" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SistemAksesuarJoin">
+      <EntityTypeMapping TypeName="cws_Model.SistemAksesuarJoin">
+        <MappingFragment StoreEntitySet="SistemAksesuarJoin">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SistemAltSistemJoinId" ColumnName="SistemAltSistemJoinId" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SistemAltSistemJoin">
+      <EntityTypeMapping TypeName="cws_Model.SistemAltSistemJoin">
+        <MappingFragment StoreEntitySet="SistemAltSistemJoin">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SistemId" ColumnName="SistemId" />
+          <ScalarProperty Name="SistemTurId" ColumnName="SistemTurId" />
+          <ScalarProperty Name="AltSistemId" ColumnName="AltSistemId" />
+          <ScalarProperty Name="BirimFiyat" ColumnName="BirimFiyat" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SistemProfilJoin">
+      <EntityTypeMapping TypeName="cws_Model.SistemProfilJoin">
+        <MappingFragment StoreEntitySet="SistemProfilJoin">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SistemAltSistemJoinId" ColumnName="SistemAltSistemJoinId" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SistemTur">
+      <EntityTypeMapping TypeName="cws_Model.SistemTur">
+        <MappingFragment StoreEntitySet="SistemTur">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TurAdi" ColumnName="TurAdi" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Stok">
+      <EntityTypeMapping TypeName="cws_Model.Stok">
+        <MappingFragment StoreEntitySet="Stok">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="ProfilId" ColumnName="ProfilId" />
+          <ScalarProperty Name="ProfilBoyId" ColumnName="ProfilBoyId" />
+          <ScalarProperty Name="OzelOlcu" ColumnName="OzelOlcu" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+          <ScalarProperty Name="StokAdet" ColumnName="StokAdet" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="StokAksesuar">
+      <EntityTypeMapping TypeName="cws_Model.StokAksesuar">
+        <MappingFragment StoreEntitySet="StokAksesuar">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="AksesuarId" ColumnName="AksesuarId" />
+          <ScalarProperty Name="StokAdet" ColumnName="StokAdet" />
+          <ScalarProperty Name="Aciklama" ColumnName="Aciklama" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Tedarikci">
+      <EntityTypeMapping TypeName="cws_Model.Tedarikci">
+        <MappingFragment StoreEntitySet="Tedarikci">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TedarikciAdi" ColumnName="TedarikciAdi" />
+          <ScalarProperty Name="Adres" ColumnName="Adres" />
+          <ScalarProperty Name="Telefon" ColumnName="Telefon" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="TedarikciTuru" ColumnName="TedarikciTuru" />
+          <ScalarProperty Name="AktifMi" ColumnName="AktifMi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="YuklenenDosyalar">
+      <EntityTypeMapping TypeName="cws_Model.YuklenenDosyalar">
+        <MappingFragment StoreEntitySet="YuklenenDosyalar">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="DosyaAdi" ColumnName="DosyaAdi" />
+          <ScalarProperty Name="DosyaUzantisi" ColumnName="DosyaUzantisi" />
+          <ScalarProperty Name="DosyaYolu" ColumnName="DosyaYolu" />
+          <ScalarProperty Name="YuklenmeTarihi" ColumnName="YuklenmeTarihi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="KullaniciRol">
+      <EntityTypeMapping TypeName="cws_Model.KullaniciRol">
+        <MappingFragment StoreEntitySet="KullaniciRol">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="KullaniciId" ColumnName="KullaniciId" />
+          <ScalarProperty Name="RolId" ColumnName="RolId" />
+          <ScalarProperty Name="EkleyenKullaniciId" ColumnName="EkleyenKullaniciId" />
+          <ScalarProperty Name="KayitTarihi" ColumnName="KayitTarihi" />
+          <ScalarProperty Name="DuzenlemeTarihi" ColumnName="DuzenlemeTarihi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Rol">
+      <EntityTypeMapping TypeName="cws_Model.Rol">
+        <MappingFragment StoreEntitySet="Rol">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="RolAdi" ColumnName="RolAdi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RolSayfaYetki">
+      <EntityTypeMapping TypeName="cws_Model.RolSayfaYetki">
+        <MappingFragment StoreEntitySet="RolSayfaYetki">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="RolId" ColumnName="RolId" />
+          <ScalarProperty Name="YetkiId" ColumnName="YetkiId" />
+          <ScalarProperty Name="SayfaId" ColumnName="SayfaId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sayfa">
+      <EntityTypeMapping TypeName="cws_Model.Sayfa">
+        <MappingFragment StoreEntitySet="Sayfa">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="SayfaAdi" ColumnName="SayfaAdi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Yetki">
+      <EntityTypeMapping TypeName="cws_Model.Yetki">
+        <MappingFragment StoreEntitySet="Yetki">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="YetkiAdi" ColumnName="YetkiAdi" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

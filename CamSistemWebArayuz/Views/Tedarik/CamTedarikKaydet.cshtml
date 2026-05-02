@@ -1,0 +1,115 @@
+﻿@model CamSistemDataLayer.Models.CamTedarik
+@{
+    ViewBag.Title = "CamSistem - Tedarik Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<style>
+    .dropzone .dz-preview.dz-image-preview {
+        background: none;
+    }
+</style>
+<!-- Dropzone Css -->
+<link href="~/Scripts/dropzone/dropzone.css" rel="stylesheet" />
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Cam Tedarik Bilgisi Kaydetme
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("CamTedarikKaydet", "Tedarik", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.ValidationSummary(true)
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.SiparisId, new { id = "CamTedarikSiparisId", Value = ViewBag.SiparisId })
+                    <div class="row clearfix">
+                        <div class="col-sm-6">
+                            <p>
+                                <b>Tedarikçi Bilgisi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.TedarikciId, new SelectList(ViewBag.tedarikciler, "Id", "TedarikciAdi"), "Tedarikçi bilgisi Seçiniz...", new { @class = "form-control show-tick", @id = "TedarikciId", @required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <b>Sipariş Onay Tarihi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="input-group date" id="bs_datepicker_component_container">
+                                    <span class="input-group-addon">
+                                        <i class="material-icons">date_range</i>
+                                    </span>
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.SiparisOnayTarihi, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <p>
+                                <b>Termin Tarihi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="input-group date" id="bs_datepicker_component_container2">
+                                    <span class="input-group-addon">
+                                        <i class="material-icons">date_range</i>
+                                    </span>
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.TerminTarihi, new { @class = "form-control", @required = "required", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <p>
+                                <b>Güncel Durum</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.GuncelDurum, null, new { @class = "form-control", @required = "required", @placeholder = "Güncel Durum" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <p>
+                                <b>Açıklama</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Aciklama, null, new { @class = "form-control", @placeholder = "Açıklama" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-md-12">
+                            <div id="dZUploadDiger" class="dropzone">
+                                <div class="dz-default dz-message">
+                                    <div class="drag-icon-cph">
+                                        <i class="material-icons">touch_app</i>
+                                    </div>
+                                    <h3>Belgeleri yüklemek için tıklayınız.</h3>
+                                    <em>(Dosyaları bu alana sürükle bırak yapabilirsiniz.)</em>
+                                    <div class="fallback">
+                                        <input name="file" id="file" type="file" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="ImageName" name="ImageName" />
+
+                    <button type="submit" class="btn bg-green waves-effect">KAYDET</button>
+                    <button type="button" class="btn bg-orange waves-effect waves-light" onclick="location.href='@Url.Action("Index", "Siparis")'" data-dismiss="modal">SİPARİŞ LİSTESİNE DÖN</button>
+                    <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>

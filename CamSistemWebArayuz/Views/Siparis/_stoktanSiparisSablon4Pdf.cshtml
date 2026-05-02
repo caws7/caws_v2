@@ -1,0 +1,131 @@
+﻿@model CamSistemWebArayuz.Models.SiparisStokSablon
+
+<table id="pdfYazdirStoktan" class="table table-bordered">
+    <tbody>
+        <tr>
+            <td colspan="2" rowspan="3" class="align-middle"><img src="~/images/icons/icon.jpeg" /></td>
+            <td colspan="4" rowspan="3" class="align-middle text-center"><h2>PROFORMA</h2></td>
+            <td colspan="6" class="font-weight-bold text-center">ANKARA</td>
+        </tr>
+        <tr>
+            <td colspan="3" class="font-weight-bold">TEL. 0312 000 00 00</td>
+            <td colspan="3" class="font-weight-bold">CEP: 0530 000 00 00</td>
+        </tr>
+        <tr>
+            <td colspan="6" class="font-weight-bold text-center">mail@mail.com</td>
+        </tr>
+        <tr>
+            <td colspan="2" class="align-middle text-center font-weight-bold">@Model.SirketAd</td>
+            <td class="font-weight-bold">ADRES :</td>
+            <td colspan="9">@Model.SirketAdres</td>
+        </tr>
+        <tr>
+            <td colspan="2" class="font-weight-bold text-right">SİPARİŞ NUMARASI :</td>
+            <td>@Model.SiparisId</td>
+            <td></td>
+            <td colspan="2" class="font-weight-bold text-right">SİPARİŞ TARİHİ :</td>
+            <td colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.SiparisTarih))</td>
+            <td colspan="2" class="font-weight-bold text-right">TESLİM TARİHİ :</td>
+            <td colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.TeslimTarihi))</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold align-middle">KOD</td>
+            <td class="font-weight-bold align-middle">Profil Adı</td>
+            <td class="font-weight-bold align-middle">Profil Kesit</td>
+            <td class="font-weight-bold align-middle">Birim Ağırlık (Kg)</td>
+            <td class="font-weight-bold align-middle">BİRİM</td>
+            <td class="font-weight-bold align-middle">RENK</td>
+            <td class="font-weight-bold align-middle">ÖLÇÜ (m)</td>
+            <td class="font-weight-bold align-middle">MİKTAR</td>
+            <td class="font-weight-bold align-middle">TOPLAM (m)</td>
+            <td class="font-weight-bold align-middle">TOPLAM (Kg)</td>
+            <td class="font-weight-bold align-middle">BİRİM FİYAT (Kg/m)</td>
+            <td class="font-weight-bold align-middle">TOPLAM FİYAT</td>
+        </tr>
+        @foreach (var item in Model.profilList)
+        {
+            <tr>
+
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Kodu)</td>
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Adi)</td>
+                <td class="align-middle">@Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item.Kesit) + "' />")</td>
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.BirimAgirlik)</td>
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Birim)</td>
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Renk)</td>
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Olcu)</td>
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Miktar)</td>
+                <td class="align-middle">@Html.Raw(string.Format("{0:0.00}", item.ToplamMetre))</td>
+                <td class="align-middle">@Html.Raw(string.Format("{0:0.00}", item.ToplamKg))</td>
+                <td class="align-middle">@Html.Raw(string.Format("{0:C2}", item.BirimFiyatKgM))</td>
+                <td class="align-middle">@Html.Raw(string.Format("{0:C2}", item.ToplamTutar))</td>
+
+            </tr>
+        }
+        <tr>
+            <td colspan="8"></td>
+            <td class="font-weight-bold">TOPLAM:</td>
+            <td class="font-weight-bold">@Html.Raw(string.Format("{0:0.00}", Model.ProfilToplamKg)) Kg</td>
+            <td></td>
+            <td class="font-weight-bold">@Html.Raw(string.Format("{0:C2}", Model.ProfilToplamTutar))</td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold align-middle">KOD</td>
+            <td class="font-weight-bold align-middle">MALZEME</td>
+            <td class="font-weight-bold align-middle">GÖRSELİ</td>
+            <td class="font-weight-bold align-middle">BİRİM</td>
+            <td class="font-weight-bold align-middle">MİKTAR</td>
+            <td class="font-weight-bold align-middle" colspan="5"></td>
+            <td class="font-weight-bold align-middle">BİRİM FİYAT</td>
+            <td class="font-weight-bold align-middle">TOPLAM FİYAT</td>
+        </tr>
+        @foreach (var item in Model.aksesuarList)
+        {
+            <tr>
+
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Kodu)</td>
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Adi)</td>
+                <td></td>
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Birim)</td>
+                <td class="align-middle">@Html.DisplayFor(modelItem => item.Miktar)</td>
+                <td class="align-middle" colspan="5"></td>
+                <td class="align-middle">@Html.Raw(string.Format("{0:C2}", item.BirimFiyat))</td>
+                <td class="align-middle">@Html.Raw(string.Format("{0:C2}", item.ToplamTutar))</td>
+
+            </tr>
+        }
+        <tr>
+            <td colspan="10"></td>
+            <td class="font-weight-bold">TOPLAM</td>
+            <td class="font-weight-bold">@Html.Raw(string.Format("{0:C}", Model.AksesuarToplamTutar))</td>
+        </tr>
+        <tr>
+            <td colspan="12"></td>
+        </tr>
+        <tr>
+            <td colspan="9" class="align-middle text-left" rowspan="4">
+                <ul>
+                    <li>Sevk işlemlerinin yapılabilmesi için açık hesaplarınızın acilen kapanması gerekmektedir.</li>
+                    <li>Bedeli tamamen tahsil edilmemiş malzemeler için, teslimat tarihindeki fiyatlar geçerlidir.</li>
+                    <li>Tarafımıza yazılı olarak onayı gönderilmeyen siparişler işleme alınmayacaktır.</li>
+                    <li>Piyasalardaki hızlı değişimlerden dolayı verilen bu fiyatlar anlıktır. Son onaydan önce fiyatların teyit edilmesi gerekmektedir.</li>
+                    <li>Fiyatlarımız fabrika teslimdir.</li>
+                </ul>
+            </td>
+            <td colspan="2">GENEL TOPLAM</td>
+            <td>@Html.Raw(string.Format("{0:C2}", (Model.AksesuarToplamTutar + Model.ProfilToplamTutar)))</td>
+        </tr>
+        <tr>
+            <td colspan="2">K.D.V. (%20)</td>
+            <td>@Html.Raw(string.Format("{0:C2}", ((Model.AksesuarToplamTutar + Model.ProfilToplamTutar) * 20 / 100)))</td>
+        </tr>
+        <tr>
+            <td colspan="2" rowspan="2" class="align-middle">K.D.V. DAHİL TOPLAM TUTAR</td>
+            <td rowspan="2" class="align-middle">@Html.Raw(string.Format("{0:C}", (((Model.AksesuarToplamTutar + Model.ProfilToplamTutar) * 20 / 100) + Model.AksesuarToplamTutar + Model.ProfilToplamTutar)))</td>
+        </tr>
+        <tr>
+        </tr>
+        <tr>
+            <td colspan="12" class="align-middle text-center">HESAP NUMARAMIZ - IBAN : TR 00 0000 0000 0000 0000 0000 00</td>
+        </tr>
+    </tbody>
+</table>

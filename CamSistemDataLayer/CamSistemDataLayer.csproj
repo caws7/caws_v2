@@ -1,0 +1,437 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5673C7A0-31B4-4F07-9C3B-A40E1CF7E916}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CamSistemDataLayer</RootNamespace>
+    <AssemblyName>CamSistemDataLayer</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BussinesLogic\DigerSistem\3luGiyotinPlusIsicamliSilinirSistem.cs" />
+    <Compile Include="BussinesLogic\DigerSistem\3luGiyotinPlusTekcamSilinirSistem.cs" />
+    <Compile Include="BussinesLogic\DigerSistem\GiyotinTemizlenebilirSistem.cs" />
+    <Compile Include="BussinesLogic\DigerSistem\GiyotinSabitSistem.cs" />
+    <Compile Include="BussinesLogic\DigerSistem\AuraPlus.cs" />
+    <Compile Include="BussinesLogic\DigerSistem\AuraSilinebilirSistem.cs" />
+    <Compile Include="BussinesLogic\DigerSistem\BioklimatikSistem.cs" />
+    <Compile Include="BussinesLogic\DigerSistem\CamCatiSistem.cs" />
+    <Compile Include="BussinesLogic\DigerSistem\WintentSistem.cs" />
+    <Compile Include="BussinesLogic\DigerSistem\ZipPerdeSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\GiyotinSilinirSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\2liGiyotinIsicamliSilinirSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\2liGiyotinIsicamliKlasikSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\2liGiyotinIsicamliStandartSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\2liGiyotinIsicamliStandartSistemAltBazali.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\2liGiyotinIsicamliVasistasliSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\2liGiyotinTekCamGenisSeriStandartSistemAltBazali.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\2liGiyotinTekCamGenisSeriVasistasliSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\2liGiyotinTekCamStandartSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\2liGiyotinTekCamStandartSistemAltBazali.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\3luGiyotinIsicamliKlasikSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\3luGiyotinIsicamliSilinirSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\3luGiyotinIsicamliSilinirSistemAltBazali.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\3luGiyotinIsicamliStandartSistemAltBazali.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\3luGiyotinIsicamliVasistasliSilinirSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\3luGiyotinIsicamliVasistasliSilinirSistemAltCamSabit.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\3luGiyotinIsicamliVasistasliSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\3luGiyotinIsicamliStandartSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\2liTekCamGenisSeriKlasikSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\3luGiyotinTekCamGenisSeriStandartSistemAltBazali.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\3luGiyotinTekCamGenisSeriVasistasliSilinirSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\3luGiyotinTekCamStandartSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\3luGiyotinTekCamStandartSistemAltBazali.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\3luGiyotinTekCamStandartSistemAltBazaSabitDegiskenOlculu.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\3luTekCamGenisSeriKlasikSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\3luTekCamGenisSeriSilinirSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\3luTekCamGenisSeriStandartSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Isicam\4luGiyotinIsicamliStandartSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\4luGiyotinTekCamStandartSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\2liGiyotinTekCamGenisSeriStandartSistem.cs" />
+    <Compile Include="BussinesLogic\GiyotinSistem\Tekcam\GioXTekCamGriyajli.cs" />
+    <Compile Include="BussinesLogic\MaliyetHesapla.cs" />
+    <Compile Include="BussinesLogic\RuzgarKirici\ManuelSistem.cs" />
+    <Compile Include="BussinesLogic\RuzgarKirici\MotorluSistem.cs" />
+    <Compile Include="BussinesLogic\RuzgarKirici\PistonluSistem.cs" />
+    <Compile Include="BussinesLogic\RuzgarKirici\ProfilsizPistonluSistem.cs" />
+    <Compile Include="BussinesLogic\SiparisHesaplamalari.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\2arti2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\3arti2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\3arti3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\4arti3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\4arti4luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\4luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\90Derece3Sag2SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\90Derece3Sag3SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\90Derece4Sag3SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Isicam\90Derece4Sag4SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\3arti2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\3arti3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\4arti3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\4arti4luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\4luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\90Derece3Sag2SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\90Derece3Sag3SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\90Derece4Sag3SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistemEsiksiz\Tekcam\90Derece4Sag4SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\2arti2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\3arti2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\3arti3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\4arti3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\4arti4luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\4luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\5arti5liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\5liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\90Derece3Sag2SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\90Derece3Sag3SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\90Derece4Sag3SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Isicam\90Derece4Sag4SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\3arti2liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\3arti3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\4arti3luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\4arti4luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\4luSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\5arti5liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\5liSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\90Derece3Sag2SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\90Derece3Sag3SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\90Derece4Sag3SolSurmeSistem.cs" />
+    <Compile Include="BussinesLogic\SurmeSistem\Tekcam\90Derece4Sag4SolSurmeSistem.cs" />
+    <Compile Include="Enums\Durumlar.cs" />
+    <Compile Include="Models\Adres.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Aksesuar.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AltSistem.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CamSistemDbEntities.cs" />
+    <Compile Include="Models\AtikStok.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AtikStokPartial.cs" />
+    <Compile Include="Models\BoyaTedarik.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\BoyaTedarikPartial.cs" />
+    <Compile Include="Models\CamBilgileri.cs" />
+    <Compile Include="Models\CamDetayBilgileri.cs" />
+    <Compile Include="Models\CamKombinasyon.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CamSistemModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CamSistemModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CamSistemModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CamSistemModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CamSistemModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CamTedarik.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CamTedarikPartial.cs" />
+    <Compile Include="Models\DisSiparis.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DisTedarik.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DisTedarikPartial.cs" />
+    <Compile Include="Models\Durum.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ImalatDurum.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Kullanici.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\KullaniciPartial.cs" />
+    <Compile Include="Models\KullaniciRol.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\KullaniciRolPartial.cs" />
+    <Compile Include="Models\Musteri.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\OptimizasyonHesap.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Profil.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ProfilBoy.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Renk.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Rol.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\RolSayfaYetki.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\RolSayfaYetkiPartial.cs" />
+    <Compile Include="Models\Maliyet.cs" />
+    <Compile Include="Models\MaliyetToplam.cs" />
+    <Compile Include="Models\OptimizasyonHesapPartial.cs" />
+    <Compile Include="Models\ProfilDetayBilgileri.cs" />
+    <Compile Include="Models\EnBoyAdetPartial.cs" />
+    <Compile Include="Models\GenericRepo\GenericRepository.cs" />
+    <Compile Include="Models\GenericRepo\IGenericRepository.cs" />
+    <Compile Include="Models\MusteriPartial.cs" />
+    <Compile Include="Models\ProfilBoyPartial.cs" />
+    <Compile Include="Models\ProfilPartial.cs" />
+    <Compile Include="Models\Sabitler.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Sayfa.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Sevkiyat.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SevkiyatPaket.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SevkiyatPartial.cs" />
+    <Compile Include="Models\DisSiparisPartial.cs" />
+    <Compile Include="Models\Siparis.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SiparisAksesuar.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SiparisCam.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SiparisEnBoyAdet.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SiparisPartial.cs" />
+    <Compile Include="Models\SiparisSevkiyatAksesuar.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SiparisSevkiyatAksesuarPartial.cs" />
+    <Compile Include="Models\SiparisSevkiyatProfil.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SiparisSevkiyatProfilPartial.cs" />
+    <Compile Include="Models\SiparisStok.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SiparisStokPartial.cs" />
+    <Compile Include="Models\SiparisTeklif.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SiparisTeklifToplamBilgisi.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Sistem.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SistemAksesuarJoin.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SistemAltSistemJoin.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SistemAltSistemJoinPartial.cs" />
+    <Compile Include="Models\SistemProfilJoin.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SistemTur.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Stok.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\StokAksesuar.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\StokAksesuarPartial.cs" />
+    <Compile Include="Models\StokPartial.cs" />
+    <Compile Include="Models\Tedarikci.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Yetki.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\YuklenenDosyalar.cs">
+      <DependentUpon>CamSistemModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Repos\AdresRepo.cs" />
+    <Compile Include="Repos\AksesuarRepo.cs" />
+    <Compile Include="Repos\AltSistemRepo.cs" />
+    <Compile Include="Repos\AtikStokRepo.cs" />
+    <Compile Include="Repos\BoyaTedarikRepo.cs" />
+    <Compile Include="Repos\CamKombinasyonRepo.cs" />
+    <Compile Include="Repos\CamTedarikRepo.cs" />
+    <Compile Include="Repos\DisSiparisRepo.cs" />
+    <Compile Include="Repos\DisTedarikRepo.cs" />
+    <Compile Include="Repos\DosyaRepo.cs" />
+    <Compile Include="Repos\KullaniciRolRepo.cs" />
+    <Compile Include="Repos\RolSayfaYetkiRepo.cs" />
+    <Compile Include="Repos\MusteriRepo.cs" />
+    <Compile Include="Repos\KullaniciRepo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repos\OptimizasyonHesapRepo.cs" />
+    <Compile Include="Repos\ProfilBoyRepo.cs" />
+    <Compile Include="Repos\ProfilRepo.cs" />
+    <Compile Include="Repos\RenkRepo.cs" />
+    <Compile Include="Repos\RolRepo.cs" />
+    <Compile Include="Repos\SabitRepo.cs" />
+    <Compile Include="Repos\SayfaRepo.cs" />
+    <Compile Include="Repos\SevkiyatPaketRepo.cs" />
+    <Compile Include="Repos\SevkiyatRepo.cs" />
+    <Compile Include="Repos\SiparisAksesuarRepo.cs" />
+    <Compile Include="Repos\SiparisCamRepo.cs" />
+    <Compile Include="Repos\SiparisEnBoyAdetRepo.cs" />
+    <Compile Include="Repos\SiparisRepo.cs" />
+    <Compile Include="Repos\SiparisSevkiyatAksesuarRepo.cs" />
+    <Compile Include="Repos\SiparisSevkiyatProfilRepo.cs" />
+    <Compile Include="Repos\SiparisStokRepo.cs" />
+    <Compile Include="Repos\SiparisTeklifRepo.cs" />
+    <Compile Include="Repos\SiparisTeklifToplamBilgisiRepo.cs" />
+    <Compile Include="Repos\SistemAksesuarJoinRepo.cs" />
+    <Compile Include="Repos\SistemAltSistemJoinRepo.cs" />
+    <Compile Include="Repos\SistemProfilJoinRepo.cs" />
+    <Compile Include="Repos\SistemRepo.cs" />
+    <Compile Include="Repos\SistemTurRepo.cs" />
+    <Compile Include="Repos\StokAksesuarRepo.cs" />
+    <Compile Include="Repos\StokRepo.cs" />
+    <Compile Include="Repos\TedarikRepo.cs" />
+    <Compile Include="Repos\YetkiRepo.cs" />
+    <Compile Include="ValidationClass\MusteriMetadata.cs" />
+    <Compile Include="ValidationClass\SiparisMetadata.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <EntityDeploy Include="Models\CamSistemModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>CamSistemModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Models\CamSistemModel.edmx.diagram">
+      <DependentUpon>CamSistemModel.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\CamSistemModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>CamSistemModel.edmx</DependentUpon>
+      <LastGenOutput>CamSistemModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\CamSistemModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>CamSistemModel.edmx</DependentUpon>
+      <LastGenOutput>CamSistemModel.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

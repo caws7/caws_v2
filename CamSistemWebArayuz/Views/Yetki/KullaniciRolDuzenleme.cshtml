@@ -1,0 +1,42 @@
+﻿@model CamSistemDataLayer.Models.KullaniciRol
+
+<div class="modal-header">
+    <h4 class="modal-title" id="largeModalLabel">Kullanıcı Rol Tanımlama</h4>
+</div>
+<div class="modal-body">
+    @using (Html.BeginForm("KullaniciRolDuzenleme", "Yetki", FormMethod.Post, new { id = "form_validation" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.KullaniciId)
+        @Html.HiddenFor(model => model.EkleyenKullaniciId)
+        @Html.HiddenFor(model => model.KayitTarihi)
+        <div class="row clearfix">
+            <div class="col-md-6">
+                <p>
+                    <b>Kullanıcı Listesi</b>
+                </p>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.DropDownListFor(model => model.KullaniciId, ViewBag.Kullanicilar as List<SelectListItem>, new { @class = "form-control show-tick", @id = "KullaniciId", @required = "required", @disabled = "disabled" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <p>
+                    <b>Rol Listesi</b>
+                </p>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.DropDownListFor(model => model.RolId, ViewBag.Roller as List<SelectListItem>, new { @class = "form-control show-tick", @id = "RolId", @required = "required" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn bg-green waves-effect">KAYDET</button>
+            <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
+        </div>
+    }
+</div>

@@ -1,0 +1,122 @@
+﻿@model CamSistemDataLayer.Models.RolSayfaYetki
+
+@{
+    ViewBag.Title = "CamSistem - Yetki Yönetimi | Rol Tanımlama";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+@*<link href="~/plugins/jstree/dist/themes/default/style.min.css" rel="stylesheet" />
+*@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+<script language="javascript" type="text/javascript">
+    $(function () {
+        $('#jstree').jstree({
+            "core": {
+                "multiple": true,
+                "check_callback": true,
+                "themes": {
+                        "responsive": false,
+                        "variant": "large",
+                        "stripes": false,
+                        "dots": false
+                    },
+                "data":  @Html.Raw(ViewBag.SayfaYetkiTree),
+
+                },
+            "types": {
+                "default": {
+                    "icon": "fa fa-folder icon-state-warning icon-lg"
+                },
+                "file": {
+                    "icon": "fa fa-file icon-state-warning icon-lg"
+                }
+            },
+        "plugins": ["wholerow", "checkbox", "types"],
+        });
+
+      
+        $('#jstree').on('changed.jstree', function (e, data) {
+            var i, j;
+            var selectedItems = [];
+            var seciliKayitSayisi = @Html.Raw(ViewBag.SeciliKayitSayisi);
+            j = data.selected.length;
+           
+            for (i = 0; i < j; i++) {
+                
+                var id = data.selected[i];
+
+                if (id.indexOf('-') != -1) {
+                    id = id.split("-")[1];
+                }
+                
+                selectedItems.push({
+                    text: data.instance.get_node(data.selected[i]).text,
+                    id: id,
+                    parent: data.node.parents[0]
+                });
+                
+            }
+
+            $('#selectedItems').val(JSON.stringify(selectedItems));
+            console.log('selected: ' + JSON.stringify(selectedItems))
+        }).on('loaded.jstree', function () {
+            var selectedRecords = @Html.Raw(ViewBag.SeciliKayitlar);
+            var oTree = $('#jstree').jstree(true);
+
+            jQuery.each(selectedRecords, function (i, ent) {
+                oTree.select_node(ent.id);
+            });
+            
+        });
+    });
+</script>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Rol Tanımlama
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("RolDuzenleme", "Yetki", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    <input type="hidden" name="selectedItems" id="selectedItems" />                    
+                    @Html.HiddenFor(model => model.RolId)
+                    @Html.ValidationSummary(true)
+                    @Html.AntiForgeryToken()
+                    <div class="row clearfix">
+                        @if (ViewData["error"] != null)
+                        {
+                            <div class="alert alert-warning alert-dismissible" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                Aynı isimde rol bulunmaktadır! Farklı bir isimde rol oluşturmanız gerekmektedir.
+                            </div>
+                        }
+                        <div class="col-sm-12">
+                            <p>
+                                <b>Rol Adı</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input id="RolAdi" name="RolAdi" type="text" value="@ViewBag.SelectedRolAdi" class="form-control" autocomplete="off" required />
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Tree gelecek -->
+                        <div class="col-sm-12">
+                            <div id="jstree">
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn bg-green waves-effect">KAYDET</button>
+                    <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("Index", "Yetki")'" data-dismiss="modal">LİSTEYE GERİ DÖN</button>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,94 @@
+﻿@model CamSistemDataLayer.Models.DisSiparis
+
+@{
+    ViewBag.Title = "CamSistem - Sipariş Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Dış Sipariş Güncelle
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("DisSiparisDuzenle", "Siparis", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.IslemDurum)
+                    @Html.HiddenFor(model => model.FisNo)
+                    @Html.HiddenFor(model => model.DurumId)
+                    @Html.HiddenFor(model => model.KayitTarihi)
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <p>
+                            <b>Müşteri Listesi</b>
+                        </p>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.DropDownListFor(model => model.MusteriId, new SelectList(ViewBag.Musteriler, "Id", "AdSoyadSirketAdi"), "Müşteri Seçiniz...", new { @class = "form-control show-tick", @id = "MusteriId", @required = "required", data_live_search = "true" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <b>Tedarikçi Listesi</b>
+                        </p>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.DropDownListFor(model => model.TedarikciId, new SelectList(ViewBag.Tedarikciler, "Id", "TedarikciAdi"), "Tedarikçi Seçiniz...", new { @class = "form-control show-tick", @id = "TedarikciId", @required = "required", data_live_search = "true" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <b>Sistem Bilgisi</b>
+                        </p>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.TextBoxFor(model => model.SistemBilgisi, null, new { @class = "form-control", @required = "required", @placeholder = "Sistem Bilgisi" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <b>Tedarik Fiyatı</b>
+                        </p>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.TextBoxFor(model => model.TedarikFiyat, null, new { @class = "form-control", @required = "required", @placeholder = "Tedarikçi Fiyatı" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <b>Sistem Açıklaması</b>
+                        </p>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.TextAreaFor(model => model.SistemAciklamasi, new { @class = "form-control", @required = "required", @placeholder = "Sistem Açıklaması" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <b>Genel Açıklama</b>
+                        </p>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.TextAreaFor(model => model.GenelAciklama, new { @class = "form-control", @required = "required", @placeholder = "Genel Açıklama" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <button type="submit" id="disSiparisKaydetForm" class="btn bg-green waves-effect">GÜNCELLE</button>
+                    <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("DisSiparis", "Siparis")'">SİPARİŞ LİSTESİNE DÖN</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,113 @@
+﻿@model CamSistemDataLayer.Models.AtikStok
+@using CamSistemDataLayer.Models
+@{
+    ViewBag.Title = "CamSistem - Stok Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<script src="~/plugins/sweetalert/sweetalert.min.js"></script>
+<link href="~/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script>
+    $(document).ready(function () {
+        $(function () {
+            $('#fireStokKaydetId').click(function (e) {
+                e.preventDefault();
+                var FireStokModel = {
+                    ProfilId: $('#ProfilId').val(),
+                    Olcu: $('#OlcuId').val(),
+                    Adet: $('#ProfilAdetId').val()
+                }
+                if ($("#form_validation").validate().form()) {
+                    $.ajax({
+                        type: 'POST',
+                        data: JSON.stringify({ fireStok: FireStokModel }),
+                        url: '@Url.Action("FireStokKaydet", "Stok")',
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            if (data == 'UPDATE') {
+                                sweetAlert
+                                    ({
+                                        title: "Güncellendi!",
+                                        text: "Stok başarıyla güncellendi!",
+                                        type: "success",
+                                        timer: 1500
+                                    },
+                                    function () {
+                                        window.location.href = '@Url.Action("FireStokKaydet", "Stok")';
+                                    });
+                            } else if (data == 'INSERT') {
+                                sweetAlert
+                                    ({
+                                        title: "Eklendi!",
+                                        text: "Stok başarıyla eklendi!",
+                                        type: "success",
+                                        timer: 1500
+                                    },
+                                    function () {
+                                        window.location.href = '@Url.Action("FireStokKaydet", "Stok")';
+                                    });
+                            }
+                        },
+                        error: function (errorObj) {
+                            alert(errorObj.toString());
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Fire Stok Kaydetme
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("FireStokKaydet", "Stok", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.ValidationSummary(true)
+                    <div class="row clearfix">
+                        <div class="col-sm-4">
+                            <label for="ProfilId">Profil</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <select id="ProfilId" title="Select your surfboard" class="selectpicker form-control show-tick required" data-live-search="true" required>
+                                        @foreach (Profil item in ViewBag.ProfilList)
+                                        {
+                                            if (item.ProfilFoto != null)
+                                            {
+                                                <option value="@item.Id" data-thumbnail="/images/profilicons/@item.ProfilFoto">@item.ProfilAdi - (@item.ProfilKodu)</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="ProfilAdetId">Stok Adet</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Adet, new { @class = "form-control", @required = "required", @id = "ProfilAdetId", @onkeypress = "return isNumberKey(event)" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="OlcuId">Ölçü Boyu (mm cinsinden)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Olcu, new { @class = "form-control", @required = "required", @id = "OlcuId", @onkeypress = "return isNumberKey(event)" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <button type="submit" id="fireStokKaydetId" class="btn bg-green waves-effect">KAYDET</button>
+                <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("Fire", "Stok")'">LİSTEYE GERİ DÖN</button>
+            </div>
+        </div>
+    </div>
+</div>

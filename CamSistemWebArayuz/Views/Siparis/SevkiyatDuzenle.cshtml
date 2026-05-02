@@ -1,0 +1,917 @@
+﻿@model CamSistemWebArayuz.Models.SiparisSevkiyatProfilJoinModel
+@using CamSistemDataLayer.Models
+@{
+    ViewBag.Title = "CamSistem - Sipariş Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+<style>
+    .dropzone .dz-preview.dz-image-preview {
+        background: none;
+    }
+</style>
+<!-- Dropzone Css -->
+<link href="~/Scripts/dropzone/dropzone.css" rel="stylesheet" />
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+        $(function () {
+            $('#sevkiyatGuncelleButtonId').click(function (e) {
+                e.preventDefault();
+                var profilItems = new Array();
+                var profilItem = {};
+                $("#sevkiyatProfilListesiId TBODY TR").each(function () {
+                    var row = $(this);
+                    profilItem = {};
+                    profilItem.SiparisEnBoyAdetId = $('#siparisId').val();
+                    profilItem.ProfilId = row.find("TD").eq(2).find("#profilLabelId").text();
+                    profilItem.ProfilBoy = row.find("TD").eq(7).find("input[type='text']").val();
+                    profilItem.ProfilAdet = row.find("TD").eq(8).find("input[type='text']").val();
+                    profilItems.push(profilItem);
+                });
+
+                var aksesuarItems = new Array();
+                var aksesuarItem = {};
+                $("#sevkiyatAksesuarListesiId TBODY TR").each(function () {
+                    var row = $(this);
+                    aksesuarItem = {};
+                    aksesuarItem.SiparisEnBoyAdetId = $('#siparisId').val();
+                    aksesuarItem.AksesuarId = row.find("TD").eq(3).find("#aksesuarLabelId").text();
+                    aksesuarItem.AksesuarAdet = row.find("TD").eq(5).find("input[type='text']").val();
+                    aksesuarItems.push(aksesuarItem);
+                });
+
+                var paketItems = new Array();
+                var paketItem = {};
+                $("#sevkiyatPaketListesiId TBODY TR").each(function () {
+                    var row = $(this);
+                    paketItem = {};
+                    paketItem.SiparisId = $('#siparisId').val();
+                    paketItem.PaketEn = row.find("TD").eq(0).find("input[type='text']").val();
+                    paketItem.PaketBoy = row.find("TD").eq(1).find("input[type='text']").val();
+                    paketItem.PaketYukseklik = row.find("TD").eq(2).find("input[type='text']").val();
+                    paketItem.PaketAdet = row.find("TD").eq(3).find("input[type='text']").val();
+                    if (paketItem.PaketEn != "" && paketItem.PaketBoy != "" && paketItem.PaketYukseklik != "") {
+                        paketItems.push(paketItem);
+                    }
+                });
+
+                var Sevkiyat = {
+                    Id: $('#SevkiyatId').val(),
+                    Aciklama: $('#AciklamaId').val(),
+                    SiparisId: $('#siparisId').val(),
+                    SevkiyatTarihi: $('#@Html.IdFor(m=>m.Sevkiyat.SevkiyatTarihi)').val()
+                }
+
+                var Siparis = {
+                    Id: $('#siparisId').val()
+                }
+
+                var model = {
+                    Sevkiyat: Sevkiyat,
+                    Siparis: Siparis,
+                    SevkiyatAksesuar: aksesuarItems,
+                    SevkiyatProfil: profilItems,
+                    SevkiyatPaket: paketItems
+                }
+
+                if ($("#form_validation").validate().form()) {
+                    $.ajax({
+                        type: 'POST',
+                        data: JSON.stringify({ model: model }),
+                        url: '@Url.Action("SevkiyatDuzenle", "Siparis")',
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        success: function(data) {
+                            if (data == 'OK') {
+                                location.href = '/Siparis/Sevkiyat';
+                            }
+                        },
+                        error: function(errorObj) {
+                            alert(errorObj.toString());
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    function DosyaSil(_id, _tedarikTurId) {
+        Swal.fire({
+            title: 'Emin misin?',
+            text: 'Bu kaydı silmek istediğine emin misin?',
+            icon: 'warning',
+            cancelButtonText: 'Vazgeç',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                     url: '@Url.Action("DosyaSil", "Tedarik")',
+                    dataType: 'json',
+                    data: { "DosyaId": _id, "TedarikTurId": _tedarikTurId, "TedarikTur": "Sevkiyat" },
+                    type: "POST"
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            title: 'Silindi!',
+                            text: 'Kayıt başarıyla silindi.',
+                            icon: 'success',
+                            timer: 1500
+                        }).then(() => {
+                            location.reload();
+                        });
+
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });
+    }
+
+    function ProfilEkle() {
+        var profilId = $('option:selected', "#ProfilId");
+        var txtProfilBoy = $("#txtProfilBoy");
+        var txtProfilAdet = $("#txtProfilAdet");
+
+        var _kod = "";
+        var _kesit = "";
+        var _adi = "";
+        var _birimAgirlik = "";
+        var _birim = "BOY";
+        var _renk = "";
+
+        var _toplamMetre = 0;
+        var _toplamKg = 0;
+
+        if (profilId.val() != "" && txtProfilBoy.val() != "" && txtProfilAdet.val() != "") {
+
+            //seçilen profilin detay bilgisini alıyoruz.
+            $.ajax({
+                url: '@Url.Action("ProfilDetayBilgisiGetir", "Siparis")',
+                contentType: 'application/json; charset=utf-8',
+                type: "POST",
+                data: '{ "ProfilId":"' + profilId.val() + '", "SiparisId":"' + @Model.Siparis.Id + '"}'
+            }).done(function (data) {
+                if (data.result == 'NOK') {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Profil bulunamadı!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    _id = data.result.Id;
+                    _kod = data.result.ProfilKodu;
+                    _kesit = data.result.ProfilFoto;
+                    _adi = data.result.ProfilAdi;
+                    _birimAgirlik = (data.result.BirimAgirlik / 1000).toFixed(2);
+                    _renk = data.siparisRenk;
+                    _toplamMetre = ((txtProfilBoy.val() / 1000) * txtProfilAdet.val()).toFixed(2);
+                    _toplamKg = (_toplamMetre * _birimAgirlik).toFixed(2);
+
+                    var tBody = $("#sevkiyatProfilListesiId > TBODY")[0];
+                    var row = tBody.insertRow(-1);
+
+                    //PROFİL KODU
+                    var cell = $(row.insertCell(-1));
+                    cell.html(_kod);
+
+                    //Profil Kesit
+                    cell = $(row.insertCell(-1));
+                    cell.html("<img class='img-responsive img-thumbnailProf' src='../images/profilicons/" + _kesit + "' />");
+
+                    //Profil Id
+                    cell = $(row.insertCell(-1));
+                    cell.html("<label id='profilLabelId'>" + _id + "<label/>").css("display", "none");
+
+                    //Profil Adı
+                    cell = $(row.insertCell(-1));
+                    cell.html(_adi);
+
+                    //Birim Ağırlık (Kg)
+                    cell = $(row.insertCell(-1));
+                    cell.html(_birimAgirlik);
+
+                    //Birim
+                    cell = $(row.insertCell(-1));
+                    cell.html(_birim);
+
+                    //Renk
+                    cell = $(row.insertCell(-1));
+                    cell.html(_renk);
+
+                    //Ölçü (m)
+                    cell = $(row.insertCell(-1));
+                    cell.html("<input type='text' class='form-control' value='" + (txtProfilBoy.val() / 1000).toFixed(2).replace(".", ",") + "' />");
+
+                    //Miktar
+                    cell = $(row.insertCell(-1));
+                    cell.html("<input type='text' class='form-control' value='" + txtProfilAdet.val() + "' />");
+
+                    ////Paket
+                    //cell = $(row.insertCell(-1));
+                    //cell.html("<input type='text' class='form-control' value='0' onkeypress='return isNumberKey(event)' />");
+
+                    //Toplam (m)
+                    cell = $(row.insertCell(-1));
+                    cell.html(_toplamMetre);
+
+                    //Toplam (Kg)
+                    cell = $(row.insertCell(-1));
+                    cell.html(_toplamKg);
+
+                    cell = $(row.insertCell(-1));
+                    var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>");
+                    btnRemove.attr("type", "button");
+                    btnRemove.attr("onclick", "ProfilRemove(this);");
+                    btnRemove.val("Remove");
+                    cell.append(btnRemove);
+                }
+            });
+        } else {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Lütfen tüm alanlarını doldurunuz!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
+    function AksesuarEkle() {
+        var aksesuarId = $('option:selected', "#AksesuarId");
+        var txtAksesuarAdet = $("#txtAksesuarAdet");
+
+        var _kod = "";
+        var _kesit = "";
+        var _adi = "";
+        var _birim = "";
+
+        if (aksesuarId.val() != "" && txtAksesuarAdet.val() != "") {
+
+            //seçilen aksesuarın detay bilgisini alıyoruz.
+            $.ajax({
+                url: '@Url.Action("AksesuarDetayBilgisiGetir", "Siparis")',
+                contentType: 'application/json; charset=utf-8',
+                type: "POST",
+                data: '{ "AksesuarId":"' + aksesuarId.val() + '", "SiparisId":"' + @Model.Siparis.Id + '"}'
+            }).done(function (data) {
+                if (data.result == 'NOK') {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Aksesuar bulunamadı!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    _id = data.result.Id;
+                    _kod = data.result.AksesuarKodu;
+                    _kesit = data.result.AksesuarGorsel;
+                    _adi = data.result.AksesuarAdi;
+                    _birim = data.result.AksesuarBirim;
+
+                    var tBody = $("#sevkiyatAksesuarListesiId > TBODY")[0];
+                    var row = tBody.insertRow(-1);
+
+                    //Aksesuar Kodu
+                    var cell = $(row.insertCell(-1));
+                    cell.html(_kod);
+
+                    //Kesit
+                    cell = $(row.insertCell(-1));
+                    cell.html("<img class='img-responsive img-thumbnailProf' src='../images/aksesuaricons/" + _kesit + "' />");
+
+                    //Aksesuar Adı
+                    cell = $(row.insertCell(-1));
+                    cell.html(_adi);
+
+                    //Aksesuar Id
+                    cell = $(row.insertCell(-1));
+                    cell.html("<label id='aksesuarLabelId'>" + _id + "</label>").css("display", "none");
+
+                    //Birim
+                    cell = $(row.insertCell(-1));
+                    cell.html(_birim);
+
+                    //Miktar
+                    cell = $(row.insertCell(-1));
+                    cell.html("<input type='text' class='form-control' value='" + txtAksesuarAdet.val() + "' />");
+
+                    cell = $(row.insertCell(-1));
+                    var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>");
+                    btnRemove.attr("type", "button");
+                    btnRemove.attr("onclick", "AksesuarRemove(this);");
+                    btnRemove.val("Remove");
+                    cell.append(btnRemove);
+                }
+            });
+        } else {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Lütfen tüm alanlarını doldurunuz!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }
+
+    function PaketEkle() {
+        var tBody = $("#sevkiyatPaketListesiId > TBODY")[0];
+        var row = tBody.insertRow(-1);
+
+        //En
+        var cell = $(row.insertCell(-1));
+        cell.html("<input type='text' class='form-control' />");
+
+        //Boy
+        cell = $(row.insertCell(-1));
+        cell.html("<input type='text' class='form-control' />");
+
+        //Yükseklik
+        cell = $(row.insertCell(-1));
+        cell.html("<input type='text' class='form-control' />");
+
+        //Adet
+        cell = $(row.insertCell(-1));
+        cell.html("<input type='text' class='form-control' />");
+
+        cell = $(row.insertCell(-1));
+        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>");
+        btnRemove.attr("type", "button");
+        btnRemove.attr("onclick", "PaketRemove(this);");
+        btnRemove.val("Remove");
+        cell.append(btnRemove);
+    }
+
+    function ProfilRemove(button) {
+        //Determine the reference of the Row using the Button.
+        var row = $(button).closest("TR");
+        if (confirm("Seçili satırı silmek istediğinize emin misiniz?")) {
+            //Get the reference of the Table.
+            var table = $("#sevkiyatProfilListesiId")[0];
+
+            //Delete the Table row using it's Index.
+            table.deleteRow(row[0].rowIndex);
+        }
+    };
+
+    function AksesuarRemove(button) {
+        var row = $(button).closest("TR");
+
+        if (confirm("Seçili satırı silmek istediğinize emin misiniz?")) {
+            var table = $("#sevkiyatAksesuarListesiId")[0];
+            table.deleteRow(row[0].rowIndex);
+        }
+    };
+
+    function PaketRemove(button) {
+        var row = $(button).closest("TR");
+
+        if (confirm("Seçili satırı silmek istediğinize emin misiniz?")) {
+            var table = $("#sevkiyatPaketListesiId")[0];
+            table.deleteRow(row[0].rowIndex);
+        }
+    };
+</script>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Sevkiyat Bilgisi Kaydetme
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("SevkiyatDuzenle", "Siparis", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.ValidationSummary(true)
+                    @Html.HiddenFor(model => model.Sevkiyat.Id, new { @id = "SevkiyatId" })
+                    @Html.HiddenFor(model => model.Siparis.Id, new { @id = "siparisId" })
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <p>
+                                <b>Sevkiyat Tarihi</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="input-group date" id="bs_datepicker_component_container">
+                                    <span class="input-group-addon">
+                                        <i class="material-icons">date_range</i>
+                                    </span>
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.Sevkiyat.SevkiyatTarihi, new { @class = "form-control", @required = "required", @autocomplete = "off", Value = String.Format("{0:dd/MM/yyyy}", Model.Sevkiyat.SevkiyatTarihi) })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <p>
+                                <b>Açıklama</b>
+                            </p>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Sevkiyat.Aciklama, null, new { @class = "form-control", @id = "AciklamaId", @placeholder = "Açıklama", @autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div id="dZUploadDiger" class="dropzone">
+                                <div class="dz-default dz-message">
+                                    <div class="drag-icon-cph">
+                                        <i class="material-icons">touch_app</i>
+                                    </div>
+                                    <h3>Belgeleri yüklemek için tıklayınız.</h3>
+                                    <em>(Dosyaları bu alana sürükle bırak yapabilirsiniz.)</em>
+                                    <div class="fallback">
+                                        <input name="file" id="file" type="file" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="ImageName" name="ImageName" />
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="body">
+                                    <div class="row clearfix">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Dosya Adı</th>
+                                                        <th>Dosya Uzantısı</th>
+                                                        <th>Yükleme Tarihi</th>
+                                                        <th>#</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in ViewBag.yuklenenDosyaList)
+                                                    {
+                                                        <tr>
+                                                            <th>@item.Id</th>
+                                                            <td>@item.DosyaAdi</td>
+                                                            <td>@item.DosyaUzantisi</td>
+                                                            <td>@item.YuklenmeTarihi</td>
+                                                            <td>
+                                                                <button type="button" data-toggle="tooltip" data-placement="top" title="Sil"
+                                                                        onclick="DosyaSil('@item.Id', '@Model.Sevkiyat.Id')" class="btn btn-danger btn-circle waves-effect waves-circle waves-float">
+                                                                    <i class="material-icons">delete</i>
+                                                                </button>
+                                                                <button type="button" data-toggle="tooltip" data-placement="top" title="İndir"
+                                                                        onclick="location.href='@Url.Action("DosyaIndir", "Siparis", new { Id = item.Id })'" class="btn bg-blue btn-circle waves-effect waves-circle waves-float">
+                                                                    <i class="material-icons">file_download</i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="panel-group" id="accordion_17" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-col-pink">
+                                    <div class="panel-heading" role="tab" id="headingOne_17">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion_17" href="#collapseOne_17" aria-expanded="true" aria-controls="collapseOne_17">
+                                                Profil Listesi
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne_17" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne_17">
+                                        <div class="panel-body">
+                                            <!-- Tab panes -->
+                                            <div class="tab-content">
+                                                <table class="table table-bordered" id="sevkiyatProfilListesiId">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan=3><img src="~/images/icons/icon.jpeg" /></th>
+                                                            <th colspan=4><center><h2><b>SEVKİYAT</b></h2></center></th>
+                                                            <th colspan=4 style="word-wrap: break-word;max-width: 250px;">@Html.DisplayFor(model => Model.Siparis.SistemTamami)</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th colspan=3>@Html.DisplayFor(model => Model.Siparis.MusteriTamAdi)</th>
+                                                            <th colspan=4>Adres</th>
+                                                            <th colspan=4>@Html.DisplayFor(model => Model.Siparis.MusteriAdres)</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>KOD</th>
+                                                            <th>Profil Kesit</th>
+                                                            <th>Profil Adı</th>
+                                                            <th>Birim Ağırlık (Kg)</th>
+                                                            <th>Birim</th>
+                                                            <th>Renk</th>
+                                                            <th>Ölçü (m)</th>
+                                                            <th>Miktar</th>
+                                                            <th>Toplam (m)</th>
+                                                            <th>Toplam (Kg)</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for (int i = 0; i < Model.SevkiyatProfil.Count(); i++)
+                                                        {
+                                                            @Html.HiddenFor(model => Model.SevkiyatProfil[i].Id)
+                                                            @Html.HiddenFor(model => Model.SevkiyatProfil[i].SiparisEnBoyAdetId)
+                                                            @Html.HiddenFor(model => Model.SevkiyatProfil[i].ProfilId)
+                                                            @Html.HiddenFor(model => Model.SevkiyatProfil[i].KayitTarihi)
+                                                            <tr>
+                                                                @{
+
+                                                                    if (Model.SevkiyatProfil[i].Profil.ProfilKodu.Split('-').Length > 2)
+                                                                    {
+                                                                        var kod = Model.SevkiyatProfil[i].Profil.ProfilKodu.Split('-');
+                                                                        @Html.Raw("<td>")
+                                                                        @Html.Raw(kod[0] + "-" + kod[1])
+                                                                        @Html.Raw("</td>")
+                                                                        @Html.Raw("<td>")
+                                                                        @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + kod[0] + "-" + kod[1] + ".jpg") + "' />")
+                                                                        @Html.Raw("</td>")
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (Model.SevkiyatProfil[i].Profil.ProfilFoto != null)
+                                                                        {
+                                                                            @Html.Raw("<td>")
+                                                                            @Html.Raw(Model.SevkiyatProfil[i].Profil.ProfilKodu)
+                                                                            @Html.Raw("</td>")
+                                                                            @Html.Raw("<td>")
+                                                                            @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + Model.SevkiyatProfil[i].Profil.ProfilFoto) + "' />")
+                                                                            @Html.Raw("</td>")
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            @Html.Raw("<td>" + Model.SevkiyatProfil[i].Profil.ProfilKodu + "</td><td></td>")
+                                                                        }
+                                                                    }
+                                                                }
+                                                                <td style="display:none">
+                                                                    <label id="profilLabelId">@Model.SevkiyatProfil[i].Profil.Id</label>
+                                                                </td>
+                                                                <td>
+                                                                    @Model.SevkiyatProfil[i].Profil.ProfilAdi
+                                                                </td>
+                                                                <td>
+                                                                    @string.Format("{0:N2}", ((double)Model.SevkiyatProfil[i].Profil.BirimAgirlik / 1000))
+                                                                </td>
+                                                                <td>
+                                                                    BOY
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DisplayFor(modelItem => Model.Siparis.Renk.RenkAdi)
+                                                                </td>
+                                                                <td>
+                                                                    @Html.TextBoxFor(modelItem => Model.SevkiyatProfil[i].ProfilBoy, new { @class = "form-control", @autocomplete = "off" })
+                                                                </td>
+                                                                <td>
+                                                                    @Html.TextBoxFor(modelItem => Model.SevkiyatProfil[i].ProfilAdet, new { @class = "form-control", @autocomplete = "off" })
+                                                                </td>
+                                                                <td>
+                                                                    @string.Format("{0:N2}", (Model.SevkiyatProfil[i].ProfilAdet * ((double)Model.SevkiyatProfil[i].ProfilBoy)))
+                                                                </td>
+                                                                <td>
+                                                                    @string.Format("{0:N2}", ((Model.SevkiyatProfil[i].ProfilAdet * ((double)Model.SevkiyatProfil[i].ProfilBoy)) * ((double)Model.SevkiyatProfil[i].Profil.BirimAgirlik / 1000)))
+                                                                </td>
+                                                                <td>
+                                                                    <button onclick="ProfilRemove(this);" class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+
+                                                <button type="button" id="profilEkleButon" data-toggle="modal" data-target="#sevkiyatProfilDuzenleModal" class="btn bg-pink btn-block btn-lg waves-effect">PROFİL EKLE</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-col-teal">
+                                    <div class="panel-heading" role="tab" id="headingFour_17">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion_17" href="#collapseFour_17" aria-expanded="false" aria-controls="collapseFour_17">
+                                                Aksesuar Listesi
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFour_17" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour_17">
+                                        <div class="panel-body">
+                                            <!-- Tab panes -->
+                                            <div class="tab-content">
+                                                <table class="table table-bordered" id="sevkiyatAksesuarListesiId">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan=2><img src="~/images/icons/icon.jpeg" /></th>
+                                                            <th colspan=2><center><h2><b>SEVKİYAT</b></h2></center></th>
+                                                            <th colspan=2 style="word-wrap: break-word;max-width: 250px;">@Html.DisplayFor(model => Model.Siparis.SistemTamami)</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th colspan=2>@Html.DisplayFor(model => Model.Siparis.MusteriTamAdi)</th>
+                                                            <th colspan=2>Adres</th>
+                                                            <th colspan=2>@Html.DisplayFor(model => Model.Siparis.MusteriAdres)</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>KOD</th>
+                                                            <th>Aksesuar Görseli</th>
+                                                            <th>Malzeme</th>
+                                                            <th>Birim</th>
+                                                            <th>Miktar</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for (int i = 0; i < Model.SevkiyatAksesuar.Count(); i++)
+                                                        {
+                                                            @Html.HiddenFor(model => Model.SevkiyatAksesuar[i].Id)
+                                                            @Html.HiddenFor(model => Model.SevkiyatAksesuar[i].SiparisEnBoyAdetId)
+                                                            @Html.HiddenFor(model => Model.SevkiyatAksesuar[i].AksesuarId)
+                                                            @Html.HiddenFor(model => Model.SevkiyatAksesuar[i].KayitTarihi)
+                                                            <tr>
+                                                                @{
+                                                                    if (Model.SevkiyatAksesuar[i].AksesuarId == -1)
+                                                                    {
+                                                                        @Html.Raw("<td>SB-101</td>")
+                                                                        @Html.Raw("<td>")
+                                                                        @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/SB-101.jpg") + "' />")
+                                                                        @Html.Raw("</td>")
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (Model.SevkiyatAksesuar[i].Aksesuar.AksesuarKodu.Split('-').Length > 2)
+                                                                        {
+                                                                            var kod = Model.SevkiyatAksesuar[i].Aksesuar.AksesuarKodu.Split('-');
+                                                                            @Html.Raw("<td>")
+                                                                            @Html.Raw(kod[0] + "-" + kod[1])
+                                                                            @Html.Raw("</td>")
+                                                                            @Html.Raw("<td>")
+                                                                            @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/aksesuaricons/" + kod[0] + "-" + kod[1] + ".jpg") + "' />")
+                                                                            @Html.Raw("</td>")
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (Model.SevkiyatAksesuar[i].Aksesuar.AksesuarGorsel != null)
+                                                                            {
+                                                                                @Html.Raw("<td>")
+                                                                                @Html.Raw(Model.SevkiyatAksesuar[i].Aksesuar.AksesuarKodu)
+                                                                                @Html.Raw("</td>")
+                                                                                @Html.Raw("<td>")
+                                                                                @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/aksesuaricons/" + Model.SevkiyatAksesuar[i].Aksesuar.AksesuarGorsel) + "' />")
+                                                                                @Html.Raw("</td>")
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                @Html.Raw("<td>" + Model.SevkiyatAksesuar[i].Aksesuar.AksesuarKodu + "</td><td></td>")
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                }
+                                                                <td>
+                                                                    @if (Model.SevkiyatAksesuar[i].Aksesuar == null)
+                                                                    {
+                                                                        @Html.Raw("70lik Sac Boru")
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Model.SevkiyatAksesuar[i].Aksesuar.AksesuarAdi
+                                                                    }
+                                                                </td>
+                                                                <td style="display:none">
+                                                                    @if (Model.SevkiyatAksesuar[i].Aksesuar == null)
+                                                                    {
+                                                                        <label id="aksesuarLabelId">-1</label>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <label id="aksesuarLabelId">@Model.SevkiyatAksesuar[i].Aksesuar.Id</label>
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    @if (Model.SevkiyatAksesuar[i].Aksesuar == null)
+                                                                    {
+                                                                        @Html.Raw("Metre")
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.DisplayFor(modelItem => Model.SevkiyatAksesuar[i].Aksesuar.AksesuarBirim)
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    @Html.TextBoxFor(modelItem => Model.SevkiyatAksesuar[i].AksesuarAdet, new { @class = "form-control", @autocomplete = "off" })
+                                                                </td>
+                                                                <td>
+                                                                    <button onclick="AksesuarRemove(this);" class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+
+                                                <button type="button" id="aksesuarEkleButon" data-toggle="modal" data-target="#sevkiyatAksesuarDuzenleModal" class="btn bg-teal btn-block btn-lg waves-effect">AKSESUAR EKLE</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-col-blue-grey">
+                                    <div class="panel-heading" role="tab" id="headingTwo_17">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion_17" href="#collapseTwo_17" aria-expanded="true" aria-controls="collapseTwo_17">
+                                                Paket Listesi
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo_17" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo_17">
+                                        <div class="panel-body">
+                                            @Html.HiddenFor(model => model.Siparis.Id)
+                                            <table class="table table-bordered" id="sevkiyatPaketListesiId">
+                                                <thead>
+                                                    <tr>
+                                                        <th><img src="~/images/icons/icon.jpeg" /></th>
+                                                        <th colspan=2><center><h2><b>SEVKİYAT</b></h2></center></th>
+                                                        <th colspan=2 style="word-wrap: break-word;max-width: 250px;">@Html.DisplayFor(model => Model.Siparis.SistemTamami)</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>@Html.DisplayFor(model => Model.Siparis.MusteriTamAdi)</th>
+                                                        <th colspan=2>Adres</th>
+                                                        <th colspan=2>@Html.DisplayFor(model => Model.Siparis.MusteriAdres)</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>EN (mm)</th>
+                                                        <th>BOY (mm)</th>
+                                                        <th>YÜKSEKLİK (mm)</th>
+                                                        <th>ADET</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (int i = 0; i < Model.SevkiyatPaket.Count(); i++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.TextBoxFor(modelItem => Model.SevkiyatPaket[i].PaketEn, new { @class = "form-control", @autocomplete = "off", @id = "txtEn" })
+                                                            </td>
+                                                            <td>
+                                                                @Html.TextBoxFor(modelItem => Model.SevkiyatPaket[i].PaketBoy, new { @class = "form-control", @autocomplete = "off", @id = "txtBoy" })
+                                                            </td>
+                                                            <td>
+                                                                @Html.TextBoxFor(modelItem => Model.SevkiyatPaket[i].PaketYukseklik, new { @class = "form-control", @autocomplete = "off", @id = "txtYukseklik" })
+                                                            </td>
+                                                            <td>
+                                                                @Html.TextBoxFor(modelItem => Model.SevkiyatPaket[i].PaketAdet, new { @class = "form-control", @autocomplete = "off", @id = "txtAdet" })
+                                                            </td>
+                                                            <td>
+                                                                <button onclick="PaketRemove(this);" class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                            <button type="button" onclick="PaketEkle()" id="btnPaketEkle" class="btn bg-blue-grey btn-block btn-lg waves-effect">PAKET EKLE</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="sevkiyatGuncelleButtonId" class="btn bg-green waves-effect">KAYDET</button>
+                    <button type="button" class="btn bg-orange waves-effect waves-light" onclick="location.href='@Url.Action("Index", "Siparis")'" data-dismiss="modal">SİPARİŞ LİSTESİNE DÖN</button>
+                    <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("Sevkiyat", "Siparis")'" data-dismiss="modal">SEVKİYAT LİSTEYE GERİ DÖN</button>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sevkiyatProfilDuzenleModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Profil Ekleme Ekranı</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table id="tblProfiles" class="table" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Profil Adı - (Profil Kodu)</th>
+                            <th>Profil Boy (mm)</th>
+                            <th>Profil Adet</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <select id="ProfilId" title="Profil seçiniz..." data-live-search="true" class="selectpicker form-control show-tick">
+                                            @foreach (Profil item in ViewBag.ProfilList)
+                                            {
+                                                if (item.ProfilFoto != null)
+                                                {
+                                                    <option value="@item.Id" data-thumbnail="/images/profilicons/@item.ProfilFoto">@item.ProfilAdi - (@item.ProfilKodu)</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Id">@item.ProfilAdi - (@item.ProfilKodu)</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" autocomplete="off" onkeypress="return isNumberKey(event)" id="txtProfilBoy" />
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" autocomplete="off" onkeypress="return isNumberKey(event)" id="txtProfilAdet" />
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-green waves-effect waves-light" onclick="ProfilEkle()">EKLE</button>
+                <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sevkiyatAksesuarDuzenleModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Aksesuar Ekleme Ekranı</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table id="tblAksesuars" class="table" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Aksesuar Adı - (Aksesuar Kodu)</th>
+                            <th>Aksesuar Adet</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <select id="AksesuarId" title="Select your surfboard" data-size="6" data-live-search="true" class="selectpicker form-control show-tick">
+                                            @foreach (Aksesuar item in ViewBag.AksesuarList)
+                                            {
+                                                if (item.AksesuarGorsel != null)
+                                                {
+                                                    <option value="@item.Id" data-thumbnail="/images/aksesuaricons/@item.AksesuarGorsel">@item.AksesuarAdi - (@item.AksesuarKodu)</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@item.Id">@item.AksesuarAdi - (@item.AksesuarKodu)</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" autocomplete="off" id="txtAksesuarAdet" />
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-green waves-effect waves-light" onclick="AksesuarEkle()">EKLE</button>
+                <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
+            </div>
+        </div>
+    </div>
+</div>

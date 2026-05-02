@@ -1,0 +1,109 @@
+﻿@model CamSistemDataLayer.Models.StokAksesuar
+@using CamSistemDataLayer.Models
+@{
+    ViewBag.Title = "CamSistem - Stok Yönetimi";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<script src="~/plugins/sweetalert/sweetalert.min.js"></script>
+<link href="~/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script>
+    $(document).ready(function () {
+        $(function () {
+            $('#aksesuarStokKaydetId').click(function (e) {
+                e.preventDefault();
+
+        var AksesuarStokModel = {
+            AksesuarId: $('#AksesuarId').val(),
+            StokAdet: $('#aksesuarStokAdetId').val()
+        }
+                if ($("#form_validation").validate().form()) {
+                    $.ajax({
+                        type: 'POST',
+                        data: JSON.stringify({ stokAksesuar: AksesuarStokModel }),
+                        url: '@Url.Action("AksesuarStokKaydet", "Stok")',
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            if (data == 'UPDATE') {
+                                sweetAlert
+                                    ({
+                                        title: "Güncellendi!",
+                                        text: "Stok başarıyla güncellendi!",
+                                        type: "success",
+                                        timer: 1500
+                                    },
+                                    function () {
+                                        window.location.href = '@Url.Action("AksesuarStokKaydet", "Stok")';
+                                    });
+                            } else if (data == 'INSERT') {
+                                sweetAlert
+                                    ({
+                                        title: "Eklendi!",
+                                        text: "Stok başarıyla eklendi!",
+                                        type: "success",
+                                        timer: 1500
+                                    },
+                                    function () {
+                                        window.location.href = '@Url.Action("AksesuarStokKaydet", "Stok")';
+                                    });
+                            }
+                        },
+                        error: function (errorObj) {
+                            alert(errorObj.toString());
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Aksesuar Stok Kaydetme
+                </h2>
+            </div>
+            <div class="body">
+                @using (Html.BeginForm("AksesuarStokKaydet", "Stok", FormMethod.Post, new { id = "form_validation" }))
+                {
+                    @Html.ValidationSummary(true)
+                    <div class="row clearfix">
+                        <div class="col-sm-4">
+                            <label for="ProfilId">Aksesuar</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <select id="AksesuarId" title="Aksesuar seçiniz..." class="selectpicker form-control show-tick" data-live-search="true">
+                                        @foreach (Aksesuar item in ViewBag.AksesuarList)
+                                        {
+                                            if (item.AksesuarGorsel != null)
+                                            {
+                                                <option value="@item.Id" data-thumbnail="/images/profilicons/@item.AksesuarGorsel">@item.AksesuarAdi - (@item.AksesuarKodu)</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Id">@item.AksesuarAdi</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="ProfilAdetId">Stok Adet</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.StokAdet, new { @class = "form-control", @required = "required", @id = "aksesuarStokAdetId", @onkeypress = "return isNumberKey(event)" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <button type="submit" id="aksesuarStokKaydetId" class="btn bg-green waves-effect">KAYDET</button>
+                <button type="button" class="btn bg-black waves-effect waves-light" onclick="location.href='@Url.Action("Aksesuar", "Stok")'">LİSTEYE GERİ DÖN</button>
+            </div>
+        </div>
+    </div>
+</div>

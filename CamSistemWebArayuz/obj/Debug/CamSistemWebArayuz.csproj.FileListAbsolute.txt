@@ -1,0 +1,268 @@
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.SqlServer.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EPPlus.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.pdfa.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.xmlworker.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.IO.RecyclableMemoryStream.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.Web.Infrastructure.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Helpers.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Mvc.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Razor.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Deployment.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Razor.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.pdb
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.dll.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.SqlServer.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EPPlus.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.IO.RecyclableMemoryStream.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.pdb
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.exe.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Helpers.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Mvc.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Razor.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Deployment.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Razor.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.AssemblyReference.cache
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.CoreCompileInputs.cache
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSiste.FB97F6EF.Up2Date
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.pdb
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.dll.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.pdb
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.exe.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.rsp
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csi.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csi.rsp
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CSharp.Core.targets
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.VisualBasic.Core.targets
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.AppContext.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Collections.Immutable.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Diagnostics.StackTrace.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.IO.FileSystem.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.IO.FileSystem.Primitives.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Reflection.Metadata.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.exe.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.rsp
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\VBCSCompiler.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\VBCSCompiler.exe.config
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.dll.config
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.pdb
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.exe
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.exe.config
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.rsp
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csi.exe
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csi.rsp
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CSharp.Core.targets
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.VisualBasic.Core.targets
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.AppContext.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Collections.Immutable.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Diagnostics.StackTrace.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.IO.FileSystem.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.IO.FileSystem.Primitives.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Reflection.Metadata.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.exe
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.exe.config
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.rsp
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\VBCSCompiler.exe
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\VBCSCompiler.exe.config
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.SqlServer.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EPPlus.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.pdfa.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.xmlworker.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.IO.RecyclableMemoryStream.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.Web.Infrastructure.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.exe
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Helpers.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Mvc.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Razor.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Deployment.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Razor.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.pdb
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.dll.config
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.SqlServer.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EPPlus.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.IO.RecyclableMemoryStream.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.pdb
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.exe.config
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Helpers.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Mvc.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Razor.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Deployment.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Razor.xml
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.AssemblyReference.cache
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.CoreCompileInputs.cache
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.CopyComplete
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.dll
+G:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.pdb
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.dll.config
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.pdb
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.exe
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.exe.config
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.rsp
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csi.exe
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csi.rsp
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.AppContext.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Diagnostics.StackTrace.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.IO.FileSystem.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.IO.FileSystem.Primitives.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.exe
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.exe.config
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.rsp
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\VBCSCompiler.exe
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.SqlServer.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EPPlus.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.pdfa.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.xmlworker.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.IO.RecyclableMemoryStream.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.exe
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Helpers.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Mvc.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Razor.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Deployment.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Razor.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.pdb
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.dll.config
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.SqlServer.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EPPlus.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.IO.RecyclableMemoryStream.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.pdb
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.exe.config
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Helpers.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Mvc.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Razor.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Deployment.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Razor.xml
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.AssemblyReference.cache
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.CoreCompileInputs.cache
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.CopyComplete
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.dll
+C:\Users\cafe_\OneDrive\Masaüstü\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.pdb
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.dll.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemWebArayuz.pdb
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.exe.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csc.rsp
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csi.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\csi.rsp
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.CSharp.Core.targets
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\Microsoft.VisualBasic.Core.targets
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.AppContext.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Collections.Immutable.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Diagnostics.StackTrace.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.IO.FileSystem.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.IO.FileSystem.Primitives.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\System.Reflection.Metadata.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.exe.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\vbc.rsp
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\VBCSCompiler.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\roslyn\VBCSCompiler.exe.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.SqlServer.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EPPlus.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.pdfa.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.xmlworker.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.IO.RecyclableMemoryStream.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.Web.Infrastructure.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.exe
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Helpers.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Mvc.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Razor.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Deployment.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Razor.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.pdb
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\CamSistemDataLayer.dll.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EntityFramework.SqlServer.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\EPPlus.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\itextsharp.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\Microsoft.IO.RecyclableMemoryStream.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.pdb
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\ProfilOptimizasyonDataLayer.exe.config
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Helpers.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Mvc.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.Razor.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Deployment.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\bin\System.Web.WebPages.Razor.xml
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.AssemblyReference.cache
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.csproj.CoreCompileInputs.cache
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSiste.FB97F6EF.Up2Date
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.dll
+D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemWebArayuz\obj\Debug\CamSistemWebArayuz.pdb

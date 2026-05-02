@@ -1,0 +1,108 @@
+﻿@model IEnumerable<CamSistemDataLayer.Models.Sabitler>
+
+@{
+    ViewBag.Title = "CamSistem - Sabit Tanımlama";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<style>
+    .row {
+        margin-right: 0px;
+    }
+</style>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+@*<script src="~/plugins/jquery/jquery.min.js"></script>*@
+<script>
+    function sabitDuzenle(_SabitId, _SabitDeger) {
+        Swal.fire({
+            title: 'Sabit düzenleme',
+            input: 'number',
+            inputLabel: 'Sabit Değeri',
+            showCancelButton: true,
+            cancelButtonText: 'Vazgeç',
+            confirmButtonText: 'Güncelle',
+            inputPlaceholder: 'Değer giriniz...',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Bu alan boş geçilemez!'
+                }
+            },
+            inputValue: _SabitDeger
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("SabitGuncelle", "Tanimlama")',
+                    dataType: 'json',
+                    data: { "SabitId": _SabitId, "SabitDeger": result.value },
+                    type: "POST"
+                }).done(function (data) {
+                    if (data == 'OK') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            text: "Kayıt başarıyla güncellendi."
+                        }).then(() => {
+                            window.location.href = '@Url.Action("Sabitler", "Tanimlama")';
+                        })
+                    } else {
+                        Swal.fire("Oops", "Beklenmedik hata oluştu! Hata: " + data, "error");
+                    }
+                });
+            }
+        });
+    }
+</script>
+<div class="block-header">
+    <h2>
+        Sabit Tanımlama
+        <small>Her alanda aynı veri üzerinden işlem yapılması için tanımlayabileceğiniz ve mevcut sabitleri düzenleyebileceğiniz sayfadır.</small>
+    </h2>
+</div>
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2>
+                    Sabit Listesi
+                </h2>
+            </div>
+            <div class="body">
+                <div style="padding-top:10px;" class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Sabit Deger</th>
+                                <th>Sabit Açıklama</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Id)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SabitDeger)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Aciklama)
+                                    </td>
+                                    <td>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="Düzenle"
+                                                onclick="sabitDuzenle('@item.Id', '@item.SabitDeger')" class="btn bg-green btn-circle waves-effect waves-circle waves-float">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

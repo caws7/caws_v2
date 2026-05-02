@@ -1,0 +1,55 @@
+﻿@model IList<CamSistemDataLayer.Models.OptimizasyonHesap>
+
+@if (Model == null || Model.Count == 0)
+{
+    <div class="alert alert-warning">Optimizasyon kaydı bulunamadı.</div>
+    return;
+}
+
+@{
+    var first = Model[0];
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ProfilId</th>
+            <th>ProfilBoy</th>
+            <th>Kesilecek Ölçüler</th>
+            <th>Kesim Adet</th>
+            <th>Fire / Atık</th>
+            <th>Kullanılan Alan</th>
+        </tr>
+    </thead>
+
+    <tfoot>
+        <tr>
+            <th colspan="6">TOPLAMLAR</th>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <b>Toplam Atık:</b> @first.ToplamAtikUzunluk m / @first.ToplamAtikAgirlik kg
+                &nbsp; | &nbsp;
+                <b>Fireye Eklenen:</b> @first.FireyeEklenenToplamUzunluk m / @first.FireyeEklenenToplamAgirlik kg
+                &nbsp; | &nbsp;
+                <b>Asıl Stok Kullanılan:</b> @first.AsilStoktanKullanilanToplamUzunluk m / @first.AsilStoktanKullanilanToplamAgirlik kg
+                &nbsp; | &nbsp;
+                <b>Fire Stok Kullanılan:</b> @first.FiredenKullanilanToplamUzunluk m / @first.FiredenKullanilanToplamAgirlik kg
+            </td>
+        </tr>
+    </tfoot>
+
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.ProfilId</td>
+                <td>@r.ProfilBoy</td>
+                <td style="word-break: break-word;">@r.KesilecekOlculer</td>
+                <td>@r.KesimAdet</td>
+                <td>@r.FireAtik</td>
+                <td>@r.KullanilanAlan</td>
+            </tr>
+        }
+    </tbody>
+</table>
