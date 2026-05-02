@@ -649,7 +649,6 @@ namespace CamSistemWebArayuz.Controllers
                 // PROFİL GÖNDERİM -> OPTİMİZASYON HESAPLA ve DB'ye yaz
                 if (siparisEntity.SiparisTur == "Profil Gönderim")
                 {
-<<<<<<< HEAD
                     try
                     {
                         var output = RunOptimizerForSiparis(new List<long> { siparisEntity.Id }, fireKullanilsinMi: false);
@@ -662,33 +661,6 @@ namespace CamSistemWebArayuz.Controllers
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine("[SiparisKaydet] Profil optimizasyon hatası SiparisId=" + siparisEntity.Id + ": " + ex.Message);
-=======
-                    var output = RunOptimizerForSiparis(new List<long> { siparisEntity.Id }, fireKullanilsinMi: false);
-                    var optimizasyonRepo = new OptimizasyonHesapRepo();
-                    var currentUser2 = (Kullanici)Session["CurrentUser"];
-
-                    if (output != null && !output.hata)
-                    {
-                        // Asıl stok kesim listesini kaydet (kesim detayları dahil)
-                        if (output.kesimBicimiStok != null)
-                        {
-                            foreach (var kbs in output.kesimBicimiStok)
-                            {
-                                var hesap = ParseKesimBicimiToHesap(kbs, "Asıl Stok", siparisEntity.Id, output, currentUser2.Id);
-                                if (hesap != null) optimizasyonRepo.AddAndSave(hesap);
-                            }
-                        }
-
-                        // Fire stok kesim listesini kaydet (kesim detayları dahil)
-                        if (output.kesimBicimiFireStok != null)
-                        {
-                            foreach (var kbf in output.kesimBicimiFireStok)
-                            {
-                                var hesap = ParseKesimBicimiToHesap(kbf, "Fire Stok", siparisEntity.Id, output, currentUser2.Id);
-                                if (hesap != null) optimizasyonRepo.AddAndSave(hesap);
-                            }
-                        }
->>>>>>> copilot/fix-optimization-issues
                     }
                 }
 
@@ -919,33 +891,6 @@ namespace CamSistemWebArayuz.Controllers
                 siparisTumDetay.Add(ent);
             }
 
-<<<<<<< HEAD
-            // Optimizasyon kayıtlarını mevcut DB'den yükle (varsa ilk kayda ata, görünümde kullanılır)
-            if (siparisTumDetay.Any())
-            {
-                try
-                {
-                    string siparisIdStr = siparis.Id.ToString();
-                    var optimizasyonRepo = new OptimizasyonHesapRepo();
-                    var optiKayitlar = optimizasyonRepo.FindBy(x => x.SiparisIds != null && x.SiparisIds.Contains(siparisIdStr)).ToList()
-                        .Where(x => x.SiparisIds.Split(',').Select(s => s.Trim()).Any(id => id == siparisIdStr))
-                        .OrderByDescending(x => x.Id)
-                        .ToList();
-                    siparisTumDetay[0].optimizasyonList = optiKayitlar;
-                    ViewBag.optiVarMi = optiKayitlar.Any();
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] Optimizasyon yükleme hatası: " + ex.Message);
-                    siparisTumDetay[0].optimizasyonList = new List<OptimizasyonHesap>();
-                    ViewBag.optiVarMi = false;
-                }
-            }
-            else
-            {
-                ViewBag.optiVarMi = false;
-            }
-=======
             // Optimizasyon verilerini DB'den çekip modele ekle
             var optimizasyonHesapRepo = new OptimizasyonHesapRepo();
             string siparisIdStr = siparis.Id.ToString();
@@ -960,7 +905,6 @@ namespace CamSistemWebArayuz.Controllers
                 ent.optimizasyonList = optimizasyonKayitlar;
 
             ViewBag.optiVarMi = optimizasyonKayitlar.Any();
->>>>>>> copilot/fix-optimization-issues
 
             if (string.IsNullOrWhiteSpace(siparis.Aciklama))
                 ViewBag.SiparisAciklamasi = "";
