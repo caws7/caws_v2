@@ -30,14 +30,13 @@
                     <thead>
                         <tr>
                             <th>Profil Kodu</th>
-                            <th>Profil Kesitleri</th>
+                            <th>Profil Kesit</th>
                             <th>Profil Adı</th>
-                            <th>Birim Ağırlık</th>
-                            <th>Kesilecek Profil</th>
-                            <th>Kesilecek Ölçüler</th>
-                            <th>Kesim Adeti</th>
+                            <th>Birim Ağırlık (gr)</th>
+                            <th>Kesilecek Profil Boy (mm)</th>
+                            <th>Kesim Ölçüleri (mm)</th>
+                            <th>Kesilecek Profil Boy Adedi</th>
                             <th>Fire / Atık</th>
-                            <th>Kullanılan Stok</th>
                             <th>Eksik Adet</th>
                             <th>Mevcut Stok Miktarıl</th>
                         </tr>
@@ -89,10 +88,7 @@
                                     @Html.Raw(item.FireAtik)
                                     @Html.Raw("</th>")
                                 }
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.KullanilanAlan)
-                                </td>
-                                @if (item.eksikAdet != 0)
+                                 @if (item.eksikAdet != 0)
                                 {
                                     <td style="border-top: 2px solid red; border-bottom: 2px solid red; border-left: 2px solid red; border-right: 2px solid red;"><b>@Html.DisplayFor(modelItem => item.eksikAdet)</b></td>
                                 }
