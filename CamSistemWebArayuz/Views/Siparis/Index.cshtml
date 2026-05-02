@@ -566,7 +566,7 @@
         if (!onaylandiMi) {
             $.ajax({
                 type: 'POST',
-                url: '@Url.Action("SiparisDurumGuncelle","Siparis")'
+                url: '@Url.Action("SiparisDurumGuncelle","Siparis")',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 data: '{ "SiparisId":"' + siparisId4Durum + '", "DurumId":"' + durumId + '"}',
