@@ -13,7 +13,7 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>ProfilId</th>
+            <th>Profil</th>
             <th>ProfilBoy</th>
             <th>Kesilecek Ölçüler</th>
             <th>Kesim Adet</th>
@@ -43,7 +43,13 @@
         @foreach (var r in Model)
         {
             <tr>
-                <td>@r.ProfilId</td>
+                <td>
+                    @if (r.profil != null && !string.IsNullOrEmpty(r.profil.ProfilFoto))
+                    {
+                        <img class="img-responsive img-thumbnailProf" src="@Url.Content("~/images/profilicons/" + r.profil.ProfilFoto)" />
+                    }
+                    <div style="margin-top:4px;">@(r.profil != null ? r.profil.ProfilKodu : r.ProfilId.ToString())</div>
+                </td>
                 <td>@r.ProfilBoy</td>
                 <td style="word-break: break-word;">@r.KesilecekOlculer</td>
                 <td>@r.KesimAdet</td>

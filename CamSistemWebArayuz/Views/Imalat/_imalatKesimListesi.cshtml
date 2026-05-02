@@ -29,33 +29,32 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th style="text-align:center;vertical-align:middle;min-width:60px;max-width:80px;padding:4px 3px;">Profil Kodu</th>
-                            <th style="text-align:center;vertical-align:middle;">Profil Kesit</th>
-                            <th style="text-align:center;vertical-align:middle;">Profil Adı</th>
-                            <th style="text-align:center;vertical-align:middle;">Birim Ağırlık (gr)</th>
-                            <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy (mm)</th>
-                            <th style="text-align:center;vertical-align:middle;">Kesim Planı</th>
-                            <th style="text-align:center;vertical-align:middle;">Kesim Ölçüleri (mm)</th>
-                            <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy Adedi</th>
-                            <th style="text-align:center;vertical-align:middle;min-width:50px;max-width:70px;padding:4px 3px;">Fire / Atık</th>
-                            <th style="text-align:center;vertical-align:middle;">Eksik Adet</th>
-                            <th style="text-align:center;vertical-align:middle;">Mevcut Stok Miktarı</th>
+                            <th>Profil Kodu</th>
+                            <th>Profil Kesit</th>
+                            <th>Profil Adı</th>
+                            <th>Birim Ağırlık (gr)</th>
+                            <th>Kesilecek Profil Boy (mm)</th>
+                            <th>Kesim Ölçüleri (mm)</th>
+                            <th>Kesilecek Profil Boy Adedi</th>
+                            <th>Fire / Atık</th>
+                            <th>Eksik Adet</th>
+                            <th>Mevcut Stok Miktarıl</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model.optiSonuc)
                         {
                             <tr>
-                                <td style="text-align:center;vertical-align:middle;min-width:60px;max-width:80px;padding:4px 3px;">
+                                <td>
                                     @Html.DisplayFor(modelItem => item.profil.ProfilKodu)
                                 </td>
-                                <td style="text-align:center;vertical-align:middle;">
+                                <td>
                                     @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item.profil.ProfilFoto) + "' />")
                                 </td>
-                                <td style="text-align:center;vertical-align:middle;">
+                                <td>
                                     @Html.DisplayFor(modelItem => item.profil.ProfilAdi)
                                 </td>
-                                <td style="text-align:center;vertical-align:middle;">
+                                <td>
                                     @if (item.profil.BirimAgirlik > 0)
                                     {
                                         @Html.DisplayFor(modelItem => item.profil.BirimAgirlik)
@@ -65,14 +64,13 @@
                                         @Html.Raw("-")
                                     }
                                 </td>
-                                <td style="text-align:center;vertical-align:middle;">
+                                <td>
                                     @Html.DisplayFor(modelItem => item.KullanilacakOlcu)
                                 </td>
-                                <td style="text-align:center;vertical-align:middle;"></td>
-                                <td style="text-align:center;vertical-align:middle;word-wrap:break-word;min-width:120px;max-width:200px;">
-                                    @OptimizasyonHelper.FormatKesimOlculeri(item.KesileceklerOlcusu)
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.KesileceklerOlcusu)
                                 </td>
-                                <td style="text-align:center;vertical-align:middle;">
+                                <td>
                                     @Html.DisplayFor(modelItem => item.Adet)
                                 </td>
                                 @{
@@ -81,24 +79,24 @@
                                     if (item.FireAtik > limit)
                                     {
 
-                                        @Html.Raw("<th class='bg-light-green' style='text-align:center;vertical-align:middle;min-width:50px;max-width:70px;padding:4px 3px;'>")
+                                        @Html.Raw("<th class='bg-light-green'>")
                                     }
                                     else
                                     {
-                                        @Html.Raw("<th class='bg-red' style='text-align:center;vertical-align:middle;min-width:50px;max-width:70px;padding:4px 3px;'>")
+                                        @Html.Raw("<th class='bg-red'>")
                                     }
                                     @Html.Raw(item.FireAtik)
                                     @Html.Raw("</th>")
                                 }
-                                @if (item.eksikAdet != 0)
+                                 @if (item.eksikAdet != 0)
                                 {
-                                    <td style="text-align:center;vertical-align:middle;border-top: 2px solid red; border-bottom: 2px solid red; border-left: 2px solid red; border-right: 2px solid red;"><b>@Html.DisplayFor(modelItem => item.eksikAdet)</b></td>
+                                    <td style="border-top: 2px solid red; border-bottom: 2px solid red; border-left: 2px solid red; border-right: 2px solid red;"><b>@Html.DisplayFor(modelItem => item.eksikAdet)</b></td>
                                 }
                                 else
                                 {
-                                    <td style="text-align:center;vertical-align:middle;">@Html.DisplayFor(modelItem => item.eksikAdet)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.eksikAdet)</td>
                                 }
-                                <td style="text-align:center;vertical-align:middle;">
+                                <td>
                                     @Html.DisplayFor(modelItem => item.mevcutStokMiktari)
                                 </td>
                             </tr>
