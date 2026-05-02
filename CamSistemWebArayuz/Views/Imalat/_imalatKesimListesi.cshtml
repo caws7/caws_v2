@@ -70,7 +70,7 @@
                                 </td>
                                 <td style="text-align:center;vertical-align:middle;"></td>
                                 <td style="text-align:center;vertical-align:middle;word-wrap:break-word;min-width:120px;max-width:200px;">
-                                    @FormatKesimOlculeri(item.KesileceklerOlcusu)
+                                    @OptimizasyonHelper.FormatKesimOlculeri(item.KesileceklerOlcusu)
                                 </td>
                                 <td style="text-align:center;vertical-align:middle;">
                                     @Html.DisplayFor(modelItem => item.Adet)
@@ -149,17 +149,3 @@
     <button type="button" class="btn bg-green waves-effect waves-light" onclick="imalatOnayla()">İMALATI ONAYLA</button>
     <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
 </div>
-
-@functions {
-    static string FormatKesimOlculeri(string olcular)
-    {
-        if (string.IsNullOrWhiteSpace(olcular)) return "";
-        var parts = olcular.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
-        var groups = parts
-            .GroupBy(x => x.Trim())
-            .OrderByDescending(g => g.Count())
-            .ThenBy(g => g.Key)
-            .Select(g => string.Format("{0}x{1}", g.Count(), g.Key));
-        return string.Join(", ", groups);
-    }
-}
