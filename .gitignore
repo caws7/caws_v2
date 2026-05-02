@@ -2,7 +2,7 @@
 # Bu .gitignore dosyası Microsoft(R) Visual Studio tarafından otomatik olarak oluşturulmuştur.
 ################################################################################
 
-/CamSistemDataLayer/BussinesLogic/MaliyetHesapla.cs
+
 .nuget/
 ProfilOptimizasyon/obj/
 CamSistemDataLayer/obj/
