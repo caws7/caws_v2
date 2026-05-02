@@ -75,3 +75,7 @@ D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamS
 D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemDataLayer\obj\Debug\CamSiste.1258C334.Up2Date
 D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.dll
 D:\PİMEKS\05.12.2025 YEDEK\Cafer\CamSistem - cws\CamSistem - cws\CamSistem\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.pdb
+C:\GitHub\caws_v2\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.csproj.AssemblyReference.cache
+C:\GitHub\caws_v2\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.csproj.CoreCompileInputs.cache
+C:\GitHub\caws_v2\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.dll
+C:\GitHub\caws_v2\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.pdb
