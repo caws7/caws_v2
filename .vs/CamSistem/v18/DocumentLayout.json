@@ -1,12 +1,37 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\GitHub\\caws_v2\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{061268B2-0E84-4C80-8DEF-685D5A385672}|CamSistemWebArayuz\\CamSistemWebArayuz.csproj|c:\\github\\caws_v2\\camsistemwebarayuz\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{061268B2-0E84-4C80-8DEF-685D5A385672}|CamSistemWebArayuz\\CamSistemWebArayuz.csproj|solutionrelative:camsistemwebarayuz\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\GitHub\\caws_v2\\CamSistemWebArayuz\\Web.config",
+              "RelativeDocumentMoniker": "CamSistemWebArayuz\\Web.config",
+              "ToolTip": "C:\\GitHub\\caws_v2\\CamSistemWebArayuz\\Web.config",
+              "RelativeToolTip": "CamSistemWebArayuz\\Web.config",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAAAFUAAAA0AQAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2026-05-02T17:43:22.647Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
