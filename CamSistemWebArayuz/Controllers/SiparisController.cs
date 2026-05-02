@@ -790,6 +790,12 @@ namespace CamSistemWebArayuz.Controllers
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
                 Kullanici kullaniciModel = (Kullanici)Session["CurrentUser"];
 
+                if (siparis == null)
+                    return Json("NOK", JsonRequestBehavior.AllowGet);
+
+                if (kullaniciModel == null)
+                    return Json("LOGIN", JsonRequestBehavior.AllowGet);
+
                 if (DurumId == (int)Durumlar.Onaylandı)
                 {
                     siparis.OnayIptalKullaniciId = kullaniciModel.Id;
@@ -844,7 +850,7 @@ namespace CamSistemWebArayuz.Controllers
                     }
 
                     //Fire stok için de kontrol yapılacak 
-                    if (siparis.SiparisTur.Equals("Demonte Gönderim"))
+                    if (!string.IsNullOrWhiteSpace(siparis.SiparisTur) && siparis.SiparisTur.Equals("Demonte Gönderim"))
                     {
 
                     }
@@ -898,7 +904,9 @@ namespace CamSistemWebArayuz.Controllers
             {
                 siparisRepo = new SiparisRepo();
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
-                Kullanici kullaniciModel = (Kullanici)Session["CurrentUser"];
+
+                if (siparis == null)
+                    return Json("NOK", JsonRequestBehavior.AllowGet);
 
                 string imalatDurum = string.Empty;
                 switch (Durum)
@@ -935,6 +943,9 @@ namespace CamSistemWebArayuz.Controllers
                 siparisRepo = new SiparisRepo();
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
 
+                if (siparis == null)
+                    return Json("NOK", JsonRequestBehavior.AllowGet);
+
                 if (DurumId == (int)Durumlar.TeslimEdildi)
                 {
                     siparis.FisNo = FisNo;
@@ -962,6 +973,9 @@ namespace CamSistemWebArayuz.Controllers
                 siparisRepo = new SiparisRepo();
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
 
+                if (siparis == null)
+                    return Json("NOK", JsonRequestBehavior.AllowGet);
+
                 siparis.FisNo = FisNo;
                 siparis.IslemDurum = "İşlem Onaylandı";
                 siparis.GuncellemeTarihi = DateTime.Now;
@@ -983,6 +997,9 @@ namespace CamSistemWebArayuz.Controllers
                 siparisRepo = new SiparisRepo();
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
 
+                if (siparis == null)
+                    return Json("NOK", JsonRequestBehavior.AllowGet);
+
                 siparis.FisNo = FisNo;
                 siparis.GuncellemeTarihi = DateTime.Now;
                 siparisRepo.EditAndSave(siparis);
@@ -1003,6 +1020,9 @@ namespace CamSistemWebArayuz.Controllers
                 siparisRepo = new SiparisRepo();
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
 
+                if (siparis == null)
+                    return Json("NOK", JsonRequestBehavior.AllowGet);
+
                 siparis.SistemBirimFiyat = BirimFiyat;
                 siparis.GuncellemeTarihi = DateTime.Now;
                 siparisRepo.EditAndSave(siparis);
@@ -1022,6 +1042,12 @@ namespace CamSistemWebArayuz.Controllers
             {
                 siparisRepo = new SiparisRepo();
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
+
+                if (siparis == null)
+                    return Json("NOK", JsonRequestBehavior.AllowGet);
+
+                if (Bilgiler == null || Bilgiler.Length < 3)
+                    return Json("NOK", JsonRequestBehavior.AllowGet);
 
                 //profil gönderiminde ve stoktan siparişte alü kg fiyatı güncelleniyor.
                 if (Bilgiler[0] != "")
