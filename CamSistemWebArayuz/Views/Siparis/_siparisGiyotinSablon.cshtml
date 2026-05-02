@@ -667,14 +667,13 @@
                                 </tr>
                                 <tr>
                                     <th>Profil Kodu</th>
-                                    <th>Profil Kesitleri</th>
+                                    <th>Profil Kesit</th>
                                     <th>Profil Adı</th>
-                                    <th>Birim Ağırlık</th>
-                                    <th>Kesilecek Profil</th>
-                                    <th>Kesilecek Ölçüler</th>
-                                    <th>Kesim Adeti</th>
+                                    <th>Birim Ağırlık (gr)</th>
+                                    <th>Kesilecek Profil Boy (mm)</th>
+                                    <th>Kesim Ölçüleri (mm)</th>
+                                    <th>Kesilecek Profil Boy Adedi</th>
                                     <th>Fire / Atık</th>
-                                    <th>Kullanılan Stok</th>
                                 </tr>
                             </thead>
                             <tfoot>
@@ -741,9 +740,6 @@
         @Html.Raw("<th class='bg-red'>") }
         @Html.Raw(item2.FireAtik)
                             @Html.Raw("</th>") }
-                    <td>
-                        @Html.DisplayFor(modelItem => item2.KullanilanAlan)
-                    </td>
                 </tr>
         }
                             </tbody>
