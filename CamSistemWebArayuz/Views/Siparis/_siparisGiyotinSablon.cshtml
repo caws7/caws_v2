@@ -14,6 +14,25 @@
     }
 </style>
 <script>
+    function OptimizasyonHesapla(siparisId) {
+        if (!siparisId) {
+            Swal.fire("Hata", "Sipariş ID bulunamadı.", "error");
+            return;
+        }
+
+        $("#optimizasyonContent").html("Hesaplanıyor...");
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("OptimizasyonHesapla", "Siparis")',
+            data: { SiparisId: siparisId }
+        }).done(function (html) {
+            $("#optimizasyonContent").html(html);
+        }).fail(function (xhr) {
+            $("#optimizasyonContent").html("Hata: " + xhr.status + " " + xhr.statusText);
+        });
+    }
+
     function dosyaSil(_this, _Id, _siparisId, _tur) {
         Swal.fire({
             title: 'Emin misin?',
@@ -614,8 +633,7 @@
     </div>
     @if (ViewBag.optiVarMi)
     {
-        <div role="tabpanel" class="tab-pane fade" id="optimizasyon">
-            <div class="modal-body">
+        <div role="tabpanel" class="tab-pane fade" id="optimizasyon">            <div class="modal-body">
                 <div class="tab-content">
                     <div id="optimizasyonyazdir">
                         <table class="table table-bordered">
@@ -736,6 +754,28 @@
                         <span>YAZDIR</span>
                     </button>
                 </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div role="tabpanel" class="tab-pane fade" id="optimizasyon">
+            <div class="modal-body">
+                @{
+                    var firstItem = Model != null ? Model.FirstOrDefault() : null;
+                }
+                <div class="alert alert-warning">
+                    Bu sipariş için optimizasyon kaydı bulunamadı. Teklif aşamasında da görüntülemek için aşağıdaki buton ile hesaplayabilirsiniz.
+                </div>
+                @if (!(ViewBag.raporMu ?? false))
+                {
+                    <button type="button"
+                            class="btn bg-blue waves-effect"
+                            onclick="OptimizasyonHesapla('@(firstItem != null && firstItem.siparisModel != null ? firstItem.siparisModel.Id.ToString() : "")')">
+                        OPTİMİZASYON HESAPLA
+                    </button>
+                }
+                <div id="optimizasyonContent"></div>
             </div>
         </div>
     }
