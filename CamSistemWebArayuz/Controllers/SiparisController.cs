@@ -85,6 +85,38 @@ namespace CamSistemWebArayuz.Controllers
         #endregion
 
         #region Optimizasyon (Yeni sistem)
+        private OptimizasyonHesap ParseKesimBicimiToHesap(string kesimBicimi, string kullanilanAlan, long siparisId, OptOutput output, int kullaniciId)
+        {
+            string[] parts = kesimBicimi.Split('#');
+            if (parts.Length < 5) return null;
+            int profilId, profilBoy, fireAtik, kesimAdet;
+            if (!int.TryParse(parts[0].Trim(), out profilId) ||
+                !int.TryParse(parts[1].Trim(), out profilBoy) ||
+                !int.TryParse(parts[3].Trim(), out fireAtik) ||
+                !int.TryParse(parts[4].Trim(), out kesimAdet))
+                return null;
+            return new OptimizasyonHesap
+            {
+                SiparisIds = siparisId.ToString(),
+                ProfilId = profilId,
+                ProfilBoy = profilBoy,
+                KesilecekOlculer = parts[2],
+                FireAtik = fireAtik,
+                KesimAdet = kesimAdet,
+                KullanilanAlan = kullanilanAlan,
+                ToplamAtikUzunluk = (decimal)output.toplamAtikUzunluk,
+                ToplamAtikAgirlik = (decimal)output.toplamAtikAgirlik,
+                FireyeEklenenToplamUzunluk = (decimal)output.fireStogaEklenenToplamUzunluk,
+                FireyeEklenenToplamAgirlik = (decimal)output.fireStogaEklenenToplamAgirlik,
+                AsilStoktanKullanilanToplamUzunluk = (decimal)output.kullanilanToplamUzunlukAsil,
+                AsilStoktanKullanilanToplamAgirlik = (decimal)output.kullanilanToplamAgirlikAsil,
+                FiredenKullanilanToplamUzunluk = (decimal)output.kullanilanToplamUzunlukFire,
+                FiredenKullanilanToplamAgirlik = (decimal)output.kullanilanToplamAgirlikFire,
+                KayitTarih = DateTime.Now,
+                KullaniciId = kullaniciId
+            };
+        }
+
         private OptOutput RunOptimizerForSiparis(List<long> siparisIds, bool fireKullanilsinMi)
         {
             // ImalatController.ImalataGonder içindeki kodun birebir aynısı
@@ -617,6 +649,7 @@ namespace CamSistemWebArayuz.Controllers
                 // PROFİL GÖNDERİM -> OPTİMİZASYON HESAPLA ve DB'ye yaz
                 if (siparisEntity.SiparisTur == "Profil Gönderim")
                 {
+<<<<<<< HEAD
                     try
                     {
                         var output = RunOptimizerForSiparis(new List<long> { siparisEntity.Id }, fireKullanilsinMi: false);
@@ -629,6 +662,33 @@ namespace CamSistemWebArayuz.Controllers
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine("[SiparisKaydet] Profil optimizasyon hatası SiparisId=" + siparisEntity.Id + ": " + ex.Message);
+=======
+                    var output = RunOptimizerForSiparis(new List<long> { siparisEntity.Id }, fireKullanilsinMi: false);
+                    var optimizasyonRepo = new OptimizasyonHesapRepo();
+                    var currentUser2 = (Kullanici)Session["CurrentUser"];
+
+                    if (output != null && !output.hata)
+                    {
+                        // Asıl stok kesim listesini kaydet (kesim detayları dahil)
+                        if (output.kesimBicimiStok != null)
+                        {
+                            foreach (var kbs in output.kesimBicimiStok)
+                            {
+                                var hesap = ParseKesimBicimiToHesap(kbs, "Asıl Stok", siparisEntity.Id, output, currentUser2.Id);
+                                if (hesap != null) optimizasyonRepo.AddAndSave(hesap);
+                            }
+                        }
+
+                        // Fire stok kesim listesini kaydet (kesim detayları dahil)
+                        if (output.kesimBicimiFireStok != null)
+                        {
+                            foreach (var kbf in output.kesimBicimiFireStok)
+                            {
+                                var hesap = ParseKesimBicimiToHesap(kbf, "Fire Stok", siparisEntity.Id, output, currentUser2.Id);
+                                if (hesap != null) optimizasyonRepo.AddAndSave(hesap);
+                            }
+                        }
+>>>>>>> copilot/fix-optimization-issues
                     }
                 }
 
@@ -859,6 +919,7 @@ namespace CamSistemWebArayuz.Controllers
                 siparisTumDetay.Add(ent);
             }
 
+<<<<<<< HEAD
             // Optimizasyon kayıtlarını mevcut DB'den yükle (varsa ilk kayda ata, görünümde kullanılır)
             if (siparisTumDetay.Any())
             {
@@ -884,6 +945,22 @@ namespace CamSistemWebArayuz.Controllers
             {
                 ViewBag.optiVarMi = false;
             }
+=======
+            // Optimizasyon verilerini DB'den çekip modele ekle
+            var optimizasyonHesapRepo = new OptimizasyonHesapRepo();
+            string siparisIdStr = siparis.Id.ToString();
+            var optimizasyonKayitlar = optimizasyonHesapRepo.GetAll()
+                .Where(x => !string.IsNullOrWhiteSpace(x.SiparisIds) &&
+                            x.SiparisIds.Split(',')
+                                .Select(s => s.Trim())
+                                .Any(id => id == siparisIdStr))
+                .OrderByDescending(x => x.Id)
+                .ToList();
+            foreach (var ent in siparisTumDetay)
+                ent.optimizasyonList = optimizasyonKayitlar;
+
+            ViewBag.optiVarMi = optimizasyonKayitlar.Any();
+>>>>>>> copilot/fix-optimization-issues
 
             if (string.IsNullOrWhiteSpace(siparis.Aciklama))
                 ViewBag.SiparisAciklamasi = "";
