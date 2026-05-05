@@ -90,3 +90,16 @@ C:/GitHub/caws_v2/CamSistemDataLayer/obj/Debug/CamSistemDataLayer.csproj.CoreCom
 C:/GitHub/caws_v2/CamSistemDataLayer/obj/Debug/CamSiste.1258C334.Up2Date
 C:/GitHub/caws_v2/CamSistemDataLayer/obj/Debug/CamSistemDataLayer.dll
 C:/GitHub/caws_v2/CamSistemDataLayer/obj/Debug/CamSistemDataLayer.pdb
+C:\GitHub\caws_v2\CamSistemDataLayer\bin\Debug\CamSistemDataLayer.dll.config
+C:\GitHub\caws_v2\CamSistemDataLayer\bin\Debug\CamSistemDataLayer.dll
+C:\GitHub\caws_v2\CamSistemDataLayer\bin\Debug\CamSistemDataLayer.pdb
+C:\GitHub\caws_v2\CamSistemDataLayer\bin\Debug\EntityFramework.dll
+C:\GitHub\caws_v2\CamSistemDataLayer\bin\Debug\EntityFramework.SqlServer.dll
+C:\GitHub\caws_v2\CamSistemDataLayer\bin\Debug\System.Security.dll
+C:\GitHub\caws_v2\CamSistemDataLayer\bin\Debug\EntityFramework.xml
+C:\GitHub\caws_v2\CamSistemDataLayer\bin\Debug\EntityFramework.SqlServer.xml
+C:\GitHub\caws_v2\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.csproj.AssemblyReference.cache
+C:\GitHub\caws_v2\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.csproj.CoreCompileInputs.cache
+C:\GitHub\caws_v2\CamSistemDataLayer\obj\Debug\CamSiste.1258C334.Up2Date
+C:\GitHub\caws_v2\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.dll
+C:\GitHub\caws_v2\CamSistemDataLayer\obj\Debug\CamSistemDataLayer.pdb
