@@ -242,11 +242,13 @@ namespace CamSistemDataLayer.BussinesLogic
                 int joinTablosuId = 0;
                 if (effectiveSistemId != null && effectiveAltSistemId != null && effectiveAltSistemId != -1 && effectiveSistemTurId != null && effectiveSistemTurId != -1)
                 {
-                    joinTablosuId = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && e.AltSistemId == effectiveAltSistemId && e.SistemTurId == effectiveSistemTurId).FirstOrDefault().Id;
+                    var join = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && e.AltSistemId == effectiveAltSistemId && e.SistemTurId == effectiveSistemTurId).FirstOrDefault();
+                    if (join != null) joinTablosuId = join.Id;
                 }
                 else if (effectiveSistemId != null && effectiveAltSistemId != null && effectiveAltSistemId != -1 && (effectiveSistemTurId == -1 || effectiveSistemTurId == null))
                 {
-                    joinTablosuId = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && e.AltSistemId == effectiveAltSistemId && e.SistemTurId == null).FirstOrDefault().Id;
+                    var join = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && e.AltSistemId == effectiveAltSistemId && e.SistemTurId == null).FirstOrDefault();
+                    if (join != null) joinTablosuId = join.Id;
                 }
                 else if (effectiveSistemId != null
                     && (effectiveAltSistemId == -1 || effectiveAltSistemId == null)
@@ -264,7 +266,8 @@ namespace CamSistemDataLayer.BussinesLogic
 
                 else if (effectiveSistemId != null && (effectiveAltSistemId == -1 || effectiveAltSistemId == null) && (effectiveSistemTurId == -1 || effectiveSistemTurId == null))
                 {
-                    joinTablosuId = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && (e.AltSistemId == null || e.AltSistemId == -1) && (e.SistemTurId == null || e.SistemTurId == -1)).FirstOrDefault().Id;
+                    var join = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && (e.AltSistemId == null || e.AltSistemId == -1) && (e.SistemTurId == null || e.SistemTurId == -1)).FirstOrDefault();
+                    if (join != null) joinTablosuId = join.Id;
                 }
 
                 //join tablosından gelen id ile sistemprofildeki joinidsiyle eşleştirip listeyi çekeceğiz ve profil tablosundaki karşılıklarını alacağız.
