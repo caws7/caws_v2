@@ -31,6 +31,9 @@ namespace CamSistemWebArayuz.Controllers
     [AuthLog(Roles = "SİPARİS")]
     public class SiparisController : Controller
     {
+        // Her kesimden önce ve sonra eklenen bıçak payı (mm)
+        private const int BICHAK_PAYI = 4;
+
         SiparisRepo siparisRepo;
         MusteriRepo musteriRepo;
         RenkRepo renkRepo;
@@ -139,9 +142,11 @@ namespace CamSistemWebArayuz.Controllers
             fire.minDeger = fireMinDeger;
             foreach (AtikStok item in atikStok)
             {
+                int fireVirtualBoy = (int)item.Olcu - BICHAK_PAYI;
+                if (fireVirtualBoy <= 0) continue;
                 Optimizasyon.Profil profil = new Optimizasyon.Profil();
                 profil.Adet = (int)item.Adet;
-                profil.Boy = (int)item.Olcu;
+                profil.Boy = fireVirtualBoy;
                 profil.Profil_Kod = (int)item.ProfilId;
                 fireler.Add(profil);
             }
@@ -207,7 +212,23 @@ namespace CamSistemWebArayuz.Controllers
                 }
             }
 
-            stok.Stoktaki_Profiller = stoktakiProfiller;
+            // Bıçak payı hesabı: her profil boyunu BICHAK_PAYI kadar kısaltarak optimizer'a ver
+            var stoktakiProfillerBicakPayili = new Dictionary<int, Dictionary<int, int>>();
+            foreach (var kvp in stoktakiProfiller)
+            {
+                var innerDeflated = new Dictionary<int, int>();
+                foreach (var barKvp in kvp.Value)
+                {
+                    int deflatedBar = barKvp.Key - BICHAK_PAYI;
+                    if (deflatedBar <= 0) continue;
+                    if (!innerDeflated.ContainsKey(deflatedBar))
+                        innerDeflated[deflatedBar] = barKvp.Value;
+                    else
+                        innerDeflated[deflatedBar] += barKvp.Value;
+                }
+                stoktakiProfillerBicakPayili[kvp.Key] = innerDeflated;
+            }
+            stok.Stoktaki_Profiller = stoktakiProfillerBicakPayili;
             input.Stok = stok;
             input.ProfilBirimAgirlik = dicProfilBirimAgirlik;
 
@@ -242,8 +263,9 @@ namespace CamSistemWebArayuz.Controllers
                 foreach (var item2 in item.Key)
                 {
                     Optimizasyon.Profil profil = new Optimizasyon.Profil();
+                    // Bıçak payı: her kesim ölçüsünü BICHAK_PAYI kadar artır
                     profil.Adet = item2.KesimAdet;
-                    profil.Boy = item2.KesimOlcusu;
+                    profil.Boy = item2.KesimOlcusu + BICHAK_PAYI;
 
                     // ImalatController’daki profil kod mapping (aynı)
                     if (item2.ProfilKodu.Contains("AP-101") || item2.ProfilKodu.Contains("BC-108") || item2.ProfilKodu.Contains("BC-107") || item2.ProfilKodu.Contains("BC-103") || item2.ProfilKodu.Contains("BC-102")
@@ -307,12 +329,17 @@ namespace CamSistemWebArayuz.Controllers
                         // Format: profil_id#barSize#cuts#waste#count#missing
                         string[] split = item.Split('#');
                         if (split.Length < 6) continue;
+                        // Bıçak payı: optimizer'a verilen kesim ölçüleri BICHAK_PAYI kadar artırılmıştı,
+                        // kaydederken orijinal ölçülere döndür (her kesimden BICHAK_PAYI çıkar)
+                        string kesilecekOlculer = DeflateKesimOlculer(split[2]);
+                        // Bar boyu da BICHAK_PAYI kadar küçültülmüştü, gerçek boy'a döndür
+                        int profilBoy = int.Parse(split[1].Trim()) + BICHAK_PAYI;
                         repo.AddAndSave(new OptimizasyonHesap
                         {
                             SiparisIds = siparisIdStr,
                             ProfilId = int.Parse(split[0].Trim()),
-                            ProfilBoy = int.Parse(split[1].Trim()),
-                            KesilecekOlculer = split[2],
+                            ProfilBoy = profilBoy,
+                            KesilecekOlculer = kesilecekOlculer,
                             FireAtik = int.TryParse(split[3].Trim(), out int fa) ? fa : 0,
                             KesimAdet = int.TryParse(split[4].Trim(), out int ka) ? ka : 0,
                             KullanilanAlan = "Asıl Stok",
@@ -344,12 +371,17 @@ namespace CamSistemWebArayuz.Controllers
                         // Format: profil_id#barSize#cuts#waste#count#missing
                         string[] split = item.Split('#');
                         if (split.Length < 6) continue;
+                        // Bıçak payı: optimizer'a verilen kesim ölçüleri BICHAK_PAYI kadar artırılmıştı,
+                        // kaydederken orijinal ölçülere döndür (her kesimden BICHAK_PAYI çıkar)
+                        string kesilecekOlculer = DeflateKesimOlculer(split[2]);
+                        // Bar boyu da BICHAK_PAYI kadar küçültülmüştü, gerçek boy'a döndür
+                        int profilBoy = int.Parse(split[1].Trim()) + BICHAK_PAYI;
                         repo.AddAndSave(new OptimizasyonHesap
                         {
                             SiparisIds = siparisIdStr,
                             ProfilId = int.Parse(split[0].Trim()),
-                            ProfilBoy = int.Parse(split[1].Trim()),
-                            KesilecekOlculer = split[2],
+                            ProfilBoy = profilBoy,
+                            KesilecekOlculer = kesilecekOlculer,
                             FireAtik = int.TryParse(split[3].Trim(), out int fa) ? fa : 0,
                             KesimAdet = int.TryParse(split[4].Trim(), out int ka) ? ka : 0,
                             KullanilanAlan = "Fire Stok",
@@ -371,6 +403,20 @@ namespace CamSistemWebArayuz.Controllers
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Optimizer çıktısındaki kesim ölçülerinden bıçak payını (BICHAK_PAYI) çıkararak
+        /// gerçek kesim ölçülerini döner.
+        /// </summary>
+        private string DeflateKesimOlculer(string olcular)
+        {
+            if (string.IsNullOrEmpty(olcular)) return olcular;
+            var deflated = olcular.Split(',')
+                .Select(s => s.Trim())
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Select(s => int.TryParse(s, out int v) ? Math.Max(0, v - BICHAK_PAYI).ToString() : s);
+            return string.Join(",", deflated);
         }
 
         /// <summary>
