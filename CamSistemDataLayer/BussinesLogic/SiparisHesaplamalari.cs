@@ -18,19 +18,29 @@ namespace CamSistemDataLayer.BussinesLogic
 
         public static List<CamBilgileri> CamYukseklikHesapla(int sistemId, int turId, int altSistemId, int boy, int en, int solEn, int adet)
         {
+            if (sistemId <= 0) return new List<CamBilgileri>();
+
             sistemRepo = new SistemRepo();
             asRepo = new AltSistemRepo();
             tRepo = new SistemTurRepo();
 
-            string sistem = sistemRepo.FindBy(e => e.Id == sistemId).FirstOrDefault().SistemAdi;
+            var sistemEntity = sistemRepo.FindBy(e => e.Id == sistemId).FirstOrDefault();
+            if (sistemEntity == null) return new List<CamBilgileri>();
+            string sistem = sistemEntity.SistemAdi;
 
             string tur = "";
             string altsistem = "";
 
-            if (turId != -1)
-                tur = tRepo.FindBy(e => e.Id == turId).FirstOrDefault().TurAdi;
-            if (altSistemId != -1)
-                altsistem = asRepo.FindBy(e => e.Id == altSistemId).FirstOrDefault().AltSistemAdi;
+            if (turId > 0)
+            {
+                var turEntity = tRepo.FindBy(e => e.Id == turId).FirstOrDefault();
+                if (turEntity != null) tur = turEntity.TurAdi;
+            }
+            if (altSistemId > 0)
+            {
+                var altSistemEntity = asRepo.FindBy(e => e.Id == altSistemId).FirstOrDefault();
+                if (altSistemEntity != null) altsistem = altSistemEntity.AltSistemAdi;
+            }
 
             List<CamBilgileri> camEntityList = new List<CamBilgileri>();
             CamBilgileri camModel = new CamBilgileri();

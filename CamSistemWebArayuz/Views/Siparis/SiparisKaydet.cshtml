@@ -58,6 +58,51 @@
                 <h2>Yeni Sipariş Oluştur</h2>
             </div>
             <div class="body">
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <p><b>Müşteri Listesi</b></p>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.DropDownListFor(model => model.MusteriId, new SelectList(ViewBag.Musteriler, "Id", "AdSoyadSirketAdi"), "Müşteri Seçiniz...", new { @class = "form-control show-tick", @id = "MusteriId", data_live_search = "true" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p><b>Renk Listesi</b></p>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.DropDownListFor(model => model.RenkId, new SelectList(ViewBag.Renkler, "Id", "RenkAdi"), "Renk Seçiniz...", new { @class = "form-control show-tick", @id = "RenkId" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p><b>Tahmini Teslim Tarihi</b></p>
+                        <div class="form-group">
+                            <div class="form-line">
+                                @Html.TextBoxFor(model => model.TahminiTeslim, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date", @id = "TahminiTeslim" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p><b>Aksesuarlar</b></p>
+                        <div class="form-group">
+                            @Html.ListBox("SeciliAksesuarlar", ViewBag.Aksesuarlar as MultiSelectList, new { @class = "form-control", @id = "custom-headers", @multiple = "multiple", @size = "4" })
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <p><b>Sipariş Türü</b></p>
+                        <div class="form-group">
+                            <label class="radio">
+                                <input type="radio" class="siparisTur" name="siparisTur" value="tur_profil" checked="checked" /> Profil Gönderim
+                            </label>
+                            &nbsp;&nbsp;
+                            <label class="radio">
+                                <input type="radio" class="siparisTur" name="siparisTur" value="tur_demonte" /> Demonte Gönderim
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr />
                 <div id="siparisRowsContainer" class="siparis-rows-container">
                     <!-- Rows will be added here by JS -->
                 </div>

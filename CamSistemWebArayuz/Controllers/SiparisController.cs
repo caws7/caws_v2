@@ -839,6 +839,7 @@ namespace CamSistemWebArayuz.Controllers
                     ent.camList = new List<CamBilgileri>();
                 }
 
+                if (profilList == null) profilList = new List<Profil>();
                 profilDetay.ToplamPresKG = profilList.Sum(e => e.ToplamAgirlik);
                 profilDetay.ToplamBoyaliKG = profilDetay.ToplamPresKG * 1.035;
 
