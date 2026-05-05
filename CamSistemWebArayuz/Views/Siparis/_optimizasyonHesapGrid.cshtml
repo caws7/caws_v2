@@ -46,7 +46,6 @@ else
                 <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy (mm)</th>
                 <th style="text-align:center;vertical-align:middle;">Kesim Planı</th>
                 <th style="text-align:center;vertical-align:middle;">Kesim Ölçüleri (mm)</th>
-                <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy Adedi</th>
                 <th style="text-align:center;vertical-align:middle;width:60px;">Fire / Atık</th>
             </tr>
         </thead>
@@ -56,7 +55,7 @@ else
                 <th colspan="2">Toplam Atık</th>
                 <th colspan="2">Fire Stoğa Eklenen Toplam</th>
                 <th colspan="2">Asıl Stoktan Kullanılan Toplam</th>
-                <th colspan="3">Fire Stoktan Kullanılan Toplam</th>
+                <th colspan="2">Fire Stoktan Kullanılan Toplam</th>
             </tr>
             <tr>
                 <th>Uzunluk (Metre)</th>
@@ -66,7 +65,7 @@ else
                 <th>Uzunluk (Metre)</th>
                 <th>Ağırlık (Kg)</th>
                 <th>Uzunluk (Metre)</th>
-                <th colspan="2">Ağırlık (Kg)</th>
+                <th>Ağırlık (Kg)</th>
             </tr>
             <tr>
                 <th>@string.Format("{0:N2}", first.ToplamAtikUzunluk)</th>
@@ -76,7 +75,7 @@ else
                 <th>@string.Format("{0:N2}", first.AsilStoktanKullanilanToplamUzunluk)</th>
                 <th>@string.Format("{0:N2}", first.AsilStoktanKullanilanToplamAgirlik)</th>
                 <th>@string.Format("{0:N2}", first.FiredenKullanilanToplamUzunluk)</th>
-                <th colspan="2">@string.Format("{0:N2}", first.FiredenKullanilanToplamAgirlik)</th>
+                <th>@string.Format("{0:N2}", first.FiredenKullanilanToplamAgirlik)</th>
             </tr>
         </tfoot>
 
@@ -100,14 +99,13 @@ else
                     <td style="text-align:center;vertical-align:middle;">
                         @(r.profil != null ? r.profil.BirimAgirlik?.ToString() ?? "" : "")
                     </td>
-                    <td style="text-align:center;vertical-align:middle;">@r.ProfilBoy</td>
+                    <td style="text-align:center;vertical-align:middle;">@(r.KesimAdet + "x" + r.ProfilBoy)</td>
                     <td style="word-wrap:break-word;min-width:160px;max-width:220px;vertical-align:middle;">
                         @Html.Raw(FormatKesimPlani(r.KesilecekOlculer))
                     </td>
                     <td style="word-wrap:break-word;min-width:140px;max-width:180px;vertical-align:middle;">
                         @FormatKesimOlculer(r.KesilecekOlculer)
                     </td>
-                    <td style="text-align:center;vertical-align:middle;">@r.KesimAdet</td>
                     <td class="@fireColor" style="text-align:center;vertical-align:middle;">@r.FireAtik</td>
                 </tr>
             }

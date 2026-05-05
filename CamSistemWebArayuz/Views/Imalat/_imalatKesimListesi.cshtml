@@ -35,7 +35,6 @@
                             <th>Birim Ağırlık (gr)</th>
                             <th>Kesilecek Profil Boy (mm)</th>
                             <th>Kesim Ölçüleri (mm)</th>
-                            <th>Kesilecek Profil Boy Adedi</th>
                             <th>Fire / Atık</th>
                             <th>Eksik Adet</th>
                             <th>Mevcut Stok Miktarıl</th>
@@ -65,13 +64,10 @@
                                     }
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.KullanilacakOlcu)
+                                    @(item.Adet + "x" + item.KullanilacakOlcu)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.KesileceklerOlcusu)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Adet)
                                 </td>
                                 @{
                                     var limit = ViewBag.minimumFire;
