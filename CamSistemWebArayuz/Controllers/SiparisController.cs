@@ -463,6 +463,9 @@ namespace CamSistemWebArayuz.Controllers
         {
             try
             {
+                var sabitRepo = new SabitRepo();
+                ViewBag.minimumFire = sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault()?.SabitDeger ?? 0;
+
                 var kayitlar = GetOrRunOptimizasyonHesaps(SiparisId)
                     .OrderByDescending(x => x.Id)
                     .ToList();

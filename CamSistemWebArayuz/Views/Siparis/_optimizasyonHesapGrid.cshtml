@@ -1,4 +1,4 @@
-﻿@model IList<CamSistemDataLayer.Models.OptimizasyonHesap>
+@model IList<CamSistemDataLayer.Models.OptimizasyonHesap>
 @using System.Linq;
 
 @functions {
@@ -28,88 +28,89 @@
 @if (Model == null || Model.Count == 0)
 {
     <div class="alert alert-warning">Optimizasyon kaydı bulunamadı.</div>
-    return;
 }
+else
+{
+    @{
+        var first = Model[0];
+        var minimumFireVal = Convert.ToInt32(ViewBag.minimumFire ?? 0);
+    }
 
-@{
-    var first = Model[0];
-    var minimumFireVal = Convert.ToInt32(ViewBag.minimumFire ?? 0);
-}
-
-<table class="table table-bordered" style="margin-top:10px;">
-    <thead>
-        <tr>
-            <th style="text-align:center;vertical-align:middle;width:60px;">Profil Kodu</th>
-            <th style="text-align:center;vertical-align:middle;">Profil Kesit</th>
-            <th style="text-align:center;vertical-align:middle;">Profil Adı</th>
-            <th style="text-align:center;vertical-align:middle;">Birim Ağırlık (gr)</th>
-            <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy (mm)</th>
-            <th style="text-align:center;vertical-align:middle;">Kesim Planı</th>
-            <th style="text-align:center;vertical-align:middle;">Kesim Ölçüleri (mm)</th>
-            <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy Adedi</th>
-            <th style="text-align:center;vertical-align:middle;width:60px;">Fire / Atık</th>
-        </tr>
-    </thead>
-
-    <tfoot>
-        <tr>
-            <th colspan="2">Toplam Atık</th>
-            <th colspan="2">Fire Stoğa Eklenen Toplam</th>
-            <th colspan="2">Asıl Stoktan Kullanılan Toplam</th>
-            <th colspan="3">Fire Stoktan Kullanılan Toplam</th>
-        </tr>
-        <tr>
-            <th>Uzunluk (Metre)</th>
-            <th>Ağırlık (Kg)</th>
-            <th>Uzunluk (Metre)</th>
-            <th>Ağırlık (Kg)</th>
-            <th>Uzunluk (Metre)</th>
-            <th>Ağırlık (Kg)</th>
-            <th>Uzunluk (Metre)</th>
-            <th colspan="2">Ağırlık (Kg)</th>
-        </tr>
-        <tr>
-            <th>@string.Format("{0:N2}", first.ToplamAtikUzunluk)</th>
-            <th>@string.Format("{0:N2}", first.ToplamAtikAgirlik)</th>
-            <th>@string.Format("{0:N2}", first.FireyeEklenenToplamUzunluk)</th>
-            <th>@string.Format("{0:N2}", first.FireyeEklenenToplamAgirlik)</th>
-            <th>@string.Format("{0:N2}", first.AsilStoktanKullanilanToplamUzunluk)</th>
-            <th>@string.Format("{0:N2}", first.AsilStoktanKullanilanToplamAgirlik)</th>
-            <th>@string.Format("{0:N2}", first.FiredenKullanilanToplamUzunluk)</th>
-            <th colspan="2">@string.Format("{0:N2}", first.FiredenKullanilanToplamAgirlik)</th>
-        </tr>
-    </tfoot>
-
-    <tbody>
-        @foreach (var r in Model)
-        {
-            var fireColor = (r.FireAtik ?? 0) > minimumFireVal ? "bg-light-green" : "bg-red";
+    <table class="table table-bordered" style="margin-top:10px;">
+        <thead>
             <tr>
-                <td style="text-align:center;vertical-align:middle;">
-                    @(r.profil != null ? r.profil.ProfilKodu : r.ProfilId.ToString())
-                </td>
-                <td style="text-align:center;vertical-align:middle;">
-                    @if (r.profil != null && !string.IsNullOrEmpty(r.profil.ProfilFoto))
-                    {
-                        <img class="img-responsive img-thumbnailProf" src="@Url.Content("~/images/profilicons/" + r.profil.ProfilFoto)" />
-                    }
-                </td>
-                <td style="vertical-align:middle;">
-                    @(r.profil != null ? r.profil.ProfilAdi : "")
-                </td>
-                <td style="text-align:center;vertical-align:middle;">
-                    @(r.profil != null ? r.profil.BirimAgirlik?.ToString() : "")
-                </td>
-                <td style="text-align:center;vertical-align:middle;">@r.ProfilBoy</td>
-                <td style="word-wrap:break-word;min-width:160px;max-width:220px;vertical-align:middle;">
-                    @Html.Raw(FormatKesimPlani(r.KesilecekOlculer))
-                </td>
-                <td style="word-wrap:break-word;min-width:140px;max-width:180px;vertical-align:middle;">
-                    @FormatKesimOlculer(r.KesilecekOlculer)
-                </td>
-                <td style="text-align:center;vertical-align:middle;">@r.KesimAdet</td>
-                <td class="@fireColor" style="text-align:center;vertical-align:middle;">@r.FireAtik</td>
+                <th style="text-align:center;vertical-align:middle;width:60px;">Profil Kodu</th>
+                <th style="text-align:center;vertical-align:middle;">Profil Kesit</th>
+                <th style="text-align:center;vertical-align:middle;">Profil Adı</th>
+                <th style="text-align:center;vertical-align:middle;">Birim Ağırlık (gr)</th>
+                <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy (mm)</th>
+                <th style="text-align:center;vertical-align:middle;">Kesim Planı</th>
+                <th style="text-align:center;vertical-align:middle;">Kesim Ölçüleri (mm)</th>
+                <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy Adedi</th>
+                <th style="text-align:center;vertical-align:middle;width:60px;">Fire / Atık</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+
+        <tfoot>
+            <tr>
+                <th colspan="2">Toplam Atık</th>
+                <th colspan="2">Fire Stoğa Eklenen Toplam</th>
+                <th colspan="2">Asıl Stoktan Kullanılan Toplam</th>
+                <th colspan="3">Fire Stoktan Kullanılan Toplam</th>
+            </tr>
+            <tr>
+                <th>Uzunluk (Metre)</th>
+                <th>Ağırlık (Kg)</th>
+                <th>Uzunluk (Metre)</th>
+                <th>Ağırlık (Kg)</th>
+                <th>Uzunluk (Metre)</th>
+                <th>Ağırlık (Kg)</th>
+                <th>Uzunluk (Metre)</th>
+                <th colspan="2">Ağırlık (Kg)</th>
+            </tr>
+            <tr>
+                <th>@string.Format("{0:N2}", first.ToplamAtikUzunluk)</th>
+                <th>@string.Format("{0:N2}", first.ToplamAtikAgirlik)</th>
+                <th>@string.Format("{0:N2}", first.FireyeEklenenToplamUzunluk)</th>
+                <th>@string.Format("{0:N2}", first.FireyeEklenenToplamAgirlik)</th>
+                <th>@string.Format("{0:N2}", first.AsilStoktanKullanilanToplamUzunluk)</th>
+                <th>@string.Format("{0:N2}", first.AsilStoktanKullanilanToplamAgirlik)</th>
+                <th>@string.Format("{0:N2}", first.FiredenKullanilanToplamUzunluk)</th>
+                <th colspan="2">@string.Format("{0:N2}", first.FiredenKullanilanToplamAgirlik)</th>
+            </tr>
+        </tfoot>
+
+        <tbody>
+            @foreach (var r in Model)
+            {
+                var fireColor = (r.FireAtik ?? 0) > minimumFireVal ? "bg-light-green" : "bg-red";
+                <tr>
+                    <td style="text-align:center;vertical-align:middle;">
+                        @(r.profil != null ? r.profil.ProfilKodu : r.ProfilId.ToString())
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        @if (r.profil != null && !string.IsNullOrEmpty(r.profil.ProfilFoto))
+                        {
+                            @Html.Raw("<img class='img-responsive img-thumbnailProf' src='" + Url.Content("~/images/profilicons/" + r.profil.ProfilFoto) + "' />")
+                        }
+                    </td>
+                    <td style="vertical-align:middle;">
+                        @(r.profil != null ? r.profil.ProfilAdi : "")
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        @(r.profil != null ? r.profil.BirimAgirlik?.ToString() ?? "" : "")
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">@r.ProfilBoy</td>
+                    <td style="word-wrap:break-word;min-width:160px;max-width:220px;vertical-align:middle;">
+                        @Html.Raw(FormatKesimPlani(r.KesilecekOlculer))
+                    </td>
+                    <td style="word-wrap:break-word;min-width:140px;max-width:180px;vertical-align:middle;">
+                        @FormatKesimOlculer(r.KesilecekOlculer)
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;">@r.KesimAdet</td>
+                    <td class="@fireColor" style="text-align:center;vertical-align:middle;">@r.FireAtik</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

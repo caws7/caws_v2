@@ -590,7 +590,7 @@
 
             var printWindow = window.open('', '', 'height=600,width=800');
             printWindow.document.open();
-            printWindow.document.write('<html><head><title>OPT\u0130M\u0130ZASYON</title></head><body>');
+            printWindow.document.write('<html><head><title>OPT\u0130M\u0130ZASYON</title><base href="' + window.location.protocol + '//' + window.location.host + '/" /></head><body>');
             printWindow.document.write(htmlToPrint);
             printWindow.document.write('</body></html>');
             printWindow.document.close();
