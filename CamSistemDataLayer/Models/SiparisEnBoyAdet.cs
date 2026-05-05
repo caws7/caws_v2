@@ -22,5 +22,8 @@ namespace CamSistemDataLayer.Models
         public Nullable<int> GirilenAdet { get; set; }
         public Nullable<int> GirilenKanatAdet { get; set; }
         public Nullable<int> GirilenEn3 { get; set; }
+        public Nullable<int> SistemId { get; set; }
+        public Nullable<int> AltSistemId { get; set; }
+        public Nullable<int> SistemTurId { get; set; }
     }
 }

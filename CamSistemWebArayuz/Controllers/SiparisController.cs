@@ -246,7 +246,10 @@ namespace CamSistemWebArayuz.Controllers
                         (int)(item2.GirilenEn ?? 0),
                         (int)(item2.GirilenSolEn ?? 0),
                         (int)(item2.GirilenBoy ?? 0),
-                        (int)(item2.GirilenAdet ?? 0)
+                        (int)(item2.GirilenAdet ?? 0),
+                        item2.SistemId,
+                        item2.AltSistemId,
+                        item2.SistemTurId
                     );
 
                     // Not: Bu yapı aynı sipariş için birden çok en/boy girilince aynı key tekrar ederse exception üretebilir.
@@ -651,6 +654,15 @@ namespace CamSistemWebArayuz.Controllers
                 else if (siparis.SiparisTur == "tur_profil")
                     siparis.SiparisTur = "Profil Gönderim";
 
+                // Backward compat: set order-level system from first row's per-row system data when provided
+                var firstRow = enBoyAdet.FirstOrDefault();
+                if (firstRow != null && firstRow.SistemId.HasValue && firstRow.SistemId.Value > 0)
+                {
+                    siparis.SistemId = firstRow.SistemId;
+                    siparis.AltSistemId = firstRow.AltSistemId;
+                    siparis.SistemTurId = firstRow.SistemTurId;
+                }
+
                 Siparis siparisEntity = siparisRepo.SaveAndReturnEntity(siparis);
 
                 // Cam kombinasyon
@@ -689,6 +701,10 @@ namespace CamSistemWebArayuz.Controllers
                         GirilenBoy = item.GirilenBoy ?? 0,
                         GirilenEn = item.GirilenEn ?? 0,
                         GirilenKanatAdet = item.GirilenKanatAdet ?? 0,
+                        GirilenEn3 = item.GirilenEn3 ?? 0,
+                        SistemId = item.SistemId,
+                        AltSistemId = item.AltSistemId,
+                        SistemTurId = item.SistemTurId,
                         SiparisId = siparisEntity.Id
                     };
 
@@ -786,11 +802,18 @@ namespace CamSistemWebArayuz.Controllers
                 int girilenBoy = item.GirilenBoy ?? 0;
                 int girilenAdet = item.GirilenAdet ?? 0;
 
-                List<Profil> profilList = SiparisHesaplamalari.profilHesaplama(siparis.Id, girilenEn, girilenSolEn, girilenBoy, girilenAdet);
+                // Use per-row system data when available, fall back to order-level system
+                int effectiveSistemId = (item.SistemId.HasValue && item.SistemId.Value > 0) ? item.SistemId.Value : (int)(siparis.SistemId ?? 0);
+                int effectiveAltSistemId = (item.AltSistemId.HasValue && item.AltSistemId.Value > 0) ? item.AltSistemId.Value : (int)(siparis.AltSistemId ?? 0);
+                int effectiveSistemTurId = (item.SistemTurId.HasValue && item.SistemTurId.Value > 0) ? item.SistemTurId.Value : (int)(siparis.SistemTurId ?? 0);
+
+                List<Profil> profilList = SiparisHesaplamalari.profilHesaplama(
+                    siparis.Id, girilenEn, girilenSolEn, girilenBoy, girilenAdet,
+                    item.SistemId, item.AltSistemId, item.SistemTurId);
                 List<CamBilgileri> camBilgileriList = SiparisHesaplamalari.CamYukseklikHesapla(
-                    (int)(siparis.SistemId ?? 0),
-                    (int)(siparis.SistemTurId ?? 0),
-                    (int)(siparis.AltSistemId ?? 0),
+                    effectiveSistemId,
+                    effectiveSistemTurId,
+                    effectiveAltSistemId,
                     girilenBoy,
                     girilenEn,
                     girilenSolEn,
@@ -800,7 +823,7 @@ namespace CamSistemWebArayuz.Controllers
                 ProfilDetayBilgileri profilDetay = new ProfilDetayBilgileri();
                 if (camBilgileriList != null)
                 {
-                    if (altSistemId4Surme.Contains((int)(siparis.AltSistemId ?? 0)))
+                    if (altSistemId4Surme.Contains(effectiveAltSistemId))
                     {
                         profilDetay.ToplamAlan = camBilgileriList.Where(e => !string.IsNullOrWhiteSpace(e.CamAdi) && e.CamAdi.Contains("SAĞ")).Sum(e => e.Alanm2);
                         ent.camList = camBilgileriList.ToList();

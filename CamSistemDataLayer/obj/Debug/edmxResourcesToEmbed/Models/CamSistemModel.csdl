@@ -316,6 +316,9 @@
     <Property Name="GirilenAdet" Type="Int32" />
     <Property Name="GirilenKanatAdet" Type="Int32" />
     <Property Name="GirilenEn3" Type="Int32" />
+    <Property Name="SistemId" Type="Int32" />
+    <Property Name="AltSistemId" Type="Int32" />
+    <Property Name="SistemTurId" Type="Int32" />
   </EntityType>
   <EntityType Name="SiparisSevkiyatAksesuar">
     <Key>

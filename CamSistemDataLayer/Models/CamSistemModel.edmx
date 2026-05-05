@@ -319,6 +319,9 @@
           <Property Name="GirilenAdet" Type="int" />
           <Property Name="GirilenKanatAdet" Type="int" />
           <Property Name="GirilenEn3" Type="int" />
+          <Property Name="SistemId" Type="int" />
+          <Property Name="AltSistemId" Type="int" />
+          <Property Name="SistemTurId" Type="int" />
         </EntityType>
         <EntityType Name="SiparisSevkiyatAksesuar">
           <Key>
@@ -898,6 +901,9 @@
           <Property Name="GirilenAdet" Type="Int32" />
           <Property Name="GirilenKanatAdet" Type="Int32" />
           <Property Name="GirilenEn3" Type="Int32" />
+          <Property Name="SistemId" Type="Int32" />
+          <Property Name="AltSistemId" Type="Int32" />
+          <Property Name="SistemTurId" Type="Int32" />
         </EntityType>
         <EntityType Name="SiparisSevkiyatAksesuar">
           <Key>
@@ -1499,6 +1505,9 @@
                 <ScalarProperty Name="GirilenBoy" ColumnName="GirilenBoy" />
                 <ScalarProperty Name="GirilenAdet" ColumnName="GirilenAdet" />
                 <ScalarProperty Name="GirilenKanatAdet" ColumnName="GirilenKanatAdet" />
+                <ScalarProperty Name="SistemId" ColumnName="SistemId" />
+                <ScalarProperty Name="AltSistemId" ColumnName="AltSistemId" />
+                <ScalarProperty Name="SistemTurId" ColumnName="SistemTurId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

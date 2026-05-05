@@ -5,8 +5,49 @@
 }
 
 <style>
-    .bootstrap-select .dropdown-menu {
-        z-index: 99999 !important;
+    .siparis-row {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        background: #fafafa;
+    }
+    .siparis-row .olcu-group {
+        display: inline-block;
+        margin-right: 6px;
+        vertical-align: top;
+    }
+    .siparis-row .olcu-group label {
+        font-size: 11px;
+        color: #777;
+        display: block;
+        margin-bottom: 2px;
+    }
+    .siparis-row .olcu-group input {
+        width: 90px;
+    }
+    .siparis-row select.row-sistem,
+    .siparis-row select.row-altsistem,
+    .siparis-row select.row-sistemtur {
+        min-width: 180px;
+        display: inline-block;
+        margin-right: 6px;
+        vertical-align: top;
+    }
+    .row-actions {
+        display: inline-block;
+        vertical-align: top;
+        padding-top: 18px;
+    }
+    .row-actions .btn {
+        margin-right: 4px;
+    }
+    .siparis-rows-container {
+        min-height: 60px;
+    }
+    .olcu-section {
+        display: inline-block;
+        vertical-align: top;
     }
 </style>
 
@@ -17,236 +58,8 @@
                 <h2>Yeni Sipariş Oluştur</h2>
             </div>
             <div class="body">
-                @using (Html.BeginForm("SiparisKaydet", "Siparis", FormMethod.Post, new { id = "form_validation" }))
-                {
-                    @Html.ValidationSummary(true)
-                    <div class="row clearfix">
-                        <div class="col-md-4">
-                            <p><b>Sistem Listesi</b></p>
-
-                            <div class="form-group">
-                                <div class="form-line">
-                                    @Html.DropDownListFor(
-                                        model => model.SistemId,
-                                        new SelectList(ViewBag.Sistemler, "Id", "SistemAdi"),
-                                        "Sistem Seçiniz...",
-                                        new
-                                        {
-                                            @class = "form-control show-tick",
-                                            @id = "SistemId",
-                                            @onchange = "AltSistemGetir(this.value);",
-                                            @required = "required"
-                                        })
-                                </div>
-                            </div>
-
-                            <!-- ALT SİSTEM (SÜRME İÇİN) -->
-                            <div id="altSistemWrapper" style="display:none; margin-top:12px;">
-                                <div class="form-group" style="margin-bottom:0;">
-                                    <div class="form-line">
-                                        @Html.DropDownListFor(
-                                            model => model.AltSistemId,
-                                            new SelectList(ViewBag.AltSistemler, "Id", "AltSistemAdi"),
-                                            "Alt Sistem Seçiniz...",
-                                            new { @class = "form-control show-tick", @id = "AltSistemId" }
-                                        )
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- SİSTEM TÜRÜ (GİYOTİN VB. İÇİN) -->
-                            <div id="sistemTurWrapper" style="display:none; margin-top:12px;">
-                                <div class="form-group" style="margin-bottom:0;">
-                                    <div class="form-line">
-                                        @Html.DropDownListFor(
-                                            model => model.SistemTurId,
-                                            new SelectList(ViewBag.SistemTurleri, "Id", "TurAdi"),
-                                            "Sistem Türü Seçiniz...",
-                                            new
-                                            {
-                                                @class = "form-control show-tick",
-                                                @id = "SistemTur"
-                                            })
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="col-md-4"></div>
-                        <div class="col-md-4"></div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ÖLÇÜ KARTI -->
-<div class="row clearfix" id="olcuWrapper" style="display:none;">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="body">
-                <div class="row clearfix">
-                    <!-- NORMAL -->
-                    <table id="tblCustomers" class="table" cellpadding="0" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th style="width:150px">En (mm)</th>
-                                <th style="width:150px">Yükseklik (mm)</th>
-                                <th style="width:150px">Sistem Adet</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.enBoyAdetList)
-                            {
-                                <tr>
-                                    <td>@item.GirilenEn</td>
-                                    <td>@item.GirilenBoy</td>
-                                    <td>@item.GirilenAdet</td>
-                                    <td><input type="button" value="Remove" onclick="Remove(this)" /></td>
-                                </tr>
-                            }
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtEn" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtBoy" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtAdet" /></div></div></td>
-                                <td>
-                                    <button type="button" class="btn bg-green btn-circle waves-effect waves-circle waves-float" id="btnAdd" value="Add">
-                                        <i class="material-icons">add</i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-
-                    <!-- SÜRME: STANDART + ORTA BİRLEŞİM -->
-                    <table id="tbl4SurmeStandart" class="table" style="display:none;" cellpadding="0" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th style="width:150px">En (mm)</th>
-                                <th style="width:150px">Yükseklik (mm)</th>
-                                <th style="width:150px">Kanat Adet</th>
-                                <th style="width:150px">Sistem Adet</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        <tfoot>
-                            <tr>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeStdEn" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeStdYukseklik" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeStdKanatAdet" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeStdSistemAdet" /></div></div></td>
-                                <td>
-                                    <button type="button" class="btn bg-green btn-circle waves-effect waves-circle waves-float" id="btnSurmeStandartAdd">
-                                        <i class="material-icons">add</i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-
-                    <!-- SÜRME: 90 TEK KÖŞE -->
-                    <table id="tbl4SurmeTekKose" class="table" style="display:none;" cellpadding="0" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th style="width:150px">En-1 (mm)</th>
-                                <th style="width:150px">En-2 (mm)</th>
-                                <th style="width:150px">Yükseklik (mm)</th>
-                                <th style="width:150px">Kanat Adet</th>
-                                <th style="width:150px">Sistem Adet</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        <tfoot>
-                            <tr>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeTekEn1" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeTekEn2" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeTekYukseklik" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeTekKanatAdet" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeTekSistemAdet" /></div></div></td>
-                                <td>
-                                    <button type="button" class="btn bg-green btn-circle waves-effect waves-circle waves-float" id="btnSurmeTekKoseAdd">
-                                        <i class="material-icons">add</i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-
-                    <!-- SÜRME: 90 ÇİFT KÖŞE -->
-                    <table id="tbl4SurmeCiftKose" class="table" style="display:none;" cellpadding="0" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th style="width:150px">En-1 (mm)</th>
-                                <th style="width:150px">En-2 (mm)</th>
-                                <th style="width:150px">En-3 (mm)</th>
-                                <th style="width:150px">Yükseklik (mm)</th>
-                                <th style="width:150px">Kanat Adet</th>
-                                <th style="width:150px">Sistem Adet</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        <tfoot>
-                            <tr>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeCiftEn1" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeCiftEn2" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeCiftEn3" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeCiftYukseklik" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeCiftKanatAdet" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtSurmeCiftSistemAdet" /></div></div></td>
-                                <td>
-                                    <button type="button" class="btn bg-green btn-circle waves-effect waves-circle waves-float" id="btnSurmeCiftKoseAdd">
-                                        <i class="material-icons">add</i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-
-                    <!-- CAM ÇATI -->
-                    <table id="tblCamCati" class="table" style="display:none;" cellpadding="0" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th style="width:150px">Sistem Genişlik</th>
-                                <th style="width:150px">Sistem Açınım</th>
-                                <th style="width:150px">Oluk Altı Yükseklik</th>
-                                <th style="width:150px">Kanat Sayısı</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.enBoyAdetList)
-                            {
-                                <tr>
-                                    <td>@item.GirilenEn</td>
-                                    <td>@item.GirilenSolEn</td>
-                                    <td>@item.GirilenBoy</td>
-                                    <td>@item.GirilenAdet</td>
-                                    <td><input type="button" value="Remove" onclick="RemoveCamCati(this)" /></td>
-                                </tr>
-                            }
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtCamCatiEn" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtCamCatiSolEn" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtCamCatiBoy" /></div></div></td>
-                                <td><div class="form-group form-float"><div class="form-line"><input type="text" class="form-control" onkeypress="return isNumberKey(event)" id="txtCamCatiAdet" /></div></div></td>
-                                <td>
-                                    <button type="button" class="btn bg-green btn-circle waves-effect waves-circle waves-float" id="btnCamCatiAdd" value="Add">
-                                        <i class="material-icons">add</i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-
+                <div id="siparisRowsContainer" class="siparis-rows-container">
+                    <!-- Rows will be added here by JS -->
                 </div>
             </div>
         </div>
@@ -267,549 +80,327 @@
 </div>
 
 @section scripts {
-    <script>
-        (function ($) {
+<script>
+(function ($) {
 
-            // ============ HELPERS ============
-            function isSurmeAltSistem(_altSistemId) {
-                var ids = ["1012", "1013", "1014", "1015"];
-                return ids.includes(_altSistemId);
-            }
+    // ============ HELPERS ============
+    var SURME_ALT_SISTEM_IDS = ["1012", "1013", "1014", "1015"];
+    var SURME_STANDART_IDS   = ["1012", "1013"];
+    var SURME_TEK_KOSE_IDS   = ["1014"];
+    var SURME_CIFT_KOSE_IDS  = ["1015"];
 
-            // Ölçü alanını sistem/alt sistem seçimine göre aç-kapat
-            function OlcuAlaniniGuncelle() {
-                var sistemId = $('#SistemId').val();
-                var altSistemId = $('#AltSistemId').val();
+    function isSurmeAltSistem(id) { return SURME_ALT_SISTEM_IDS.includes(String(id)); }
 
-                if (!sistemId || sistemId == "-1") {
-                    $("#olcuWrapper").hide();
-                    return;
-                }
+    var rowIndex = 0;
 
-                if (sistemId == "4" && (!altSistemId || altSistemId == "-1")) {
-                    $("#olcuWrapper").hide();
-                    return;
-                }
+    // Build HTML for one row
+    function buildRowHtml(idx) {
+        var sistemOptions = '<option value="">Sistem Seçiniz...</option>';
+        @foreach (var s in ViewBag.Sistemler)
+        {
+            @:sistemOptions += '<option value="@s.Id">@Html.Raw(s.SistemAdi)</option>';
+        }
 
-                $("#olcuWrapper").show();
-            }
+        return '<div class="siparis-row" id="row_' + idx + '" data-row-index="' + idx + '">'
+            // Sistem
+            + '<select class="form-control row-sistem" data-row="' + idx + '" style="min-width:170px;display:inline-block;vertical-align:top;margin-right:6px;">'
+            + sistemOptions
+            + '</select>'
+            // Alt Sistem (hidden by default)
+            + '<select class="form-control row-altsistem" data-row="' + idx + '" style="min-width:170px;display:none;vertical-align:top;margin-right:6px;">'
+            + '<option value="">Alt Sistem Seçiniz...</option>'
+            + '</select>'
+            // Sistem Tür (hidden by default)
+            + '<select class="form-control row-sistemtur" data-row="' + idx + '" style="min-width:160px;display:none;vertical-align:top;margin-right:6px;">'
+            + '<option value="">Sistem Türü Seçiniz...</option>'
+            + '</select>'
+            // Ölçü alanları (hidden until system selected)
+            + '<span class="olcu-section row-olcu-wrapper" data-row="' + idx + '" style="display:none;">'
+            // Normal: En, Boy, Adet
+            + '<span class="olcu-group row-en-grp">'
+            + '<label>En (mm)</label>'
+            + '<input type="text" class="form-control row-en" data-row="' + idx + '" onkeypress="return isNumberKey(event)" placeholder="En">'
+            + '</span>'
+            // SolEn/En2 (for Cam Çatı açınım + Sürme köşe)
+            + '<span class="olcu-group row-soLen-grp" style="display:none;">'
+            + '<label class="row-soLen-label">En-2 (mm)</label>'
+            + '<input type="text" class="form-control row-soLen" data-row="' + idx + '" onkeypress="return isNumberKey(event)" placeholder="En-2">'
+            + '</span>'
+            // En3 (for Sürme çift köşe)
+            + '<span class="olcu-group row-en3-grp" style="display:none;">'
+            + '<label>En-3 (mm)</label>'
+            + '<input type="text" class="form-control row-en3" data-row="' + idx + '" onkeypress="return isNumberKey(event)" placeholder="En-3">'
+            + '</span>'
+            // Boy
+            + '<span class="olcu-group row-boy-grp">'
+            + '<label class="row-boy-label">Yükseklik (mm)</label>'
+            + '<input type="text" class="form-control row-boy" data-row="' + idx + '" onkeypress="return isNumberKey(event)" placeholder="Boy">'
+            + '</span>'
+            // Kanat Adet (for Sürme)
+            + '<span class="olcu-group row-kanat-grp" style="display:none;">'
+            + '<label>Kanat Adet</label>'
+            + '<input type="text" class="form-control row-kanat" data-row="' + idx + '" onkeypress="return isNumberKey(event)" placeholder="Kanat">'
+            + '</span>'
+            // Sistem Adet
+            + '<span class="olcu-group row-adet-grp">'
+            + '<label>Sistem Adet</label>'
+            + '<input type="text" class="form-control row-adet" data-row="' + idx + '" onkeypress="return isNumberKey(event)" placeholder="Adet">'
+            + '</span>'
+            + '</span>'
+            // Action buttons
+            + '<span class="row-actions">'
+            + '<button type="button" class="btn bg-green btn-circle waves-effect waves-circle waves-float btn-add-row" title="Yeni Satır Ekle"><i class="material-icons">add</i></button>'
+            + '<button type="button" class="btn bg-red btn-circle waves-effect waves-circle waves-float btn-remove-row" title="Satırı Sil"><i class="material-icons">delete</i></button>'
+            + '</span>'
+            + '</div>';
+    }
 
-            // Alt sistem tipine göre sürme tablosu seç
-            function SurmeIcinTablo(_altTurId) {
-                $("#tbl4SurmeStandart").hide();
-                $("#tbl4SurmeTekKose").hide();
-                $("#tbl4SurmeCiftKose").hide();
+    function addRow() {
+        var html = buildRowHtml(rowIndex);
+        $('#siparisRowsContainer').append(html);
+        bindRow(rowIndex);
+        rowIndex++;
+    }
 
-                $("#tblCustomers").show();
+    function bindRow(idx) {
+        var rowSel = '#row_' + idx;
+        // Sistem change
+        $(rowSel + ' .row-sistem').on('change', function () {
+            rowSistemChanged(idx, $(this).val());
+        });
+        // AltSistem change
+        $(rowSel + ' .row-altsistem').on('change', function () {
+            rowAltSistemChanged(idx, $(this).val());
+        });
+    }
 
-                var standartIds = ["1012", "1013"];
-                var tekKoseIds = ["1014"];
-                var ciftKoseIds = ["1015"];
+    function rowSistemChanged(idx, sistemId) {
+        var rowSel = '#row_' + idx;
 
-                if (standartIds.includes(_altTurId)) {
-                    $("#tblCustomers").hide();
-                    $("#tbl4SurmeStandart").show();
-                } else if (tekKoseIds.includes(_altTurId)) {
-                    $("#tblCustomers").hide();
-                    $("#tbl4SurmeTekKose").show();
-                } else if (ciftKoseIds.includes(_altTurId)) {
-                    $("#tblCustomers").hide();
-                    $("#tbl4SurmeCiftKose").show();
-                }
-            }
+        // Reset alt/tur dropdowns
+        $(rowSel + ' .row-altsistem').hide().val('');
+        $(rowSel + ' .row-sistemtur').hide().val('');
 
-            // ============ GLOBAL FUNCTIONS (called from HTML attributes) ============
-            window.Remove = function (button) {
-                var row = $(button).closest("TR");
-                if (confirm("Seçili satırı silmek istediğinize emin misiniz?")) {
-                    var table = $("#tblCustomers")[0];
-                    table.deleteRow(row[0].rowIndex);
-                }
-            };
+        if (!sistemId || sistemId === '') {
+            $(rowSel + ' .row-olcu-wrapper').hide();
+            return;
+        }
 
-            window.RemoveSurme = function (button) {
-                var row = $(button).closest("TR");
-                if (confirm("Seçili satırı silmek istediğinize emin misiniz?")) {
-                    row.remove();
-                }
-            };
+        // Cam Çatı (sistem=2)
+        if (sistemId === '2') {
+            $(rowSel + ' .row-olcu-wrapper').show();
+            // Cam çatı: En=Genişlik, SolEn=Açınım, Boy=OlukAltı Yüks, Adet=KanatSayısı
+            $(rowSel + ' .row-soLen-grp').show();
+            $(rowSel + ' .row-soLen-label').text('Sistem Açınım');
+            $(rowSel + ' .row-en-grp label').text('Sistem Genişlik');
+            $(rowSel + ' .row-boy-label').text('Oluk Altı Yükseklik');
+            $(rowSel + ' .row-adet-grp label').text('Kanat Sayısı');
+            $(rowSel + ' .row-en3-grp').hide();
+            $(rowSel + ' .row-kanat-grp').hide();
+        }
 
-            if (typeof window.RemoveCamCati !== "function") {
-                window.RemoveCamCati = function (button) {
-                    var row = $(button).closest("TR");
-                    if (confirm("Seçili satırı silmek istediğinize emin misiniz?")) {
-                        row.remove();
-                    }
-                };
-            }
+        var url = '@Url.Action("SistemAltturGetir", "Siparis")';
+        $.ajax({
+            url: url,
+            data: { SistemId: sistemId },
+            type: 'POST',
+            cache: false,
+            success: function (data) {
+                var turKontrol = data.SistemTuruVarMi;
+                if (sistemId === '4' || sistemId === '2') turKontrol = false; // Sürme and Cam Çatı have no sistem türü
 
-            window.AltSistemGetir = function (_SistemId) {
-                console.log("AltSistemGetir çağrıldı. _SistemId=", _SistemId, "text=", $("#SistemId option:selected").text());
-
-                if (!_SistemId || _SistemId == "-1") {
-                    alert("Lütfen Sistem Seçiniz");
-
-                    $("#altSistemWrapper").stop(true, true).slideUp(150);
-                    $("#AltSistemId").val("-1");
-                    $("#AltSistemId option").remove();
-                    $("#AltSistemId").append('<option value="-1">Alt Sistem Seçiniz...</option>');
-                    $("#AltSistemId").prop("disabled", true);
-                    $("#AltSistemId").selectpicker('refresh');
-                    $("#AltSistemId").selectpicker('render');
-
-                    $("#SistemTur").prop("disabled", true);
-                    $("#SistemTur option").remove();
-                    $("#SistemTur").append('<option value="-1">Lütfen Sistem Seçiniz...</option>');
-                    $("#SistemTur").selectpicker('refresh');
-                    $("#SistemTur").selectpicker('render');
-
-                    $("#tblCamCati").hide();
-                    $("#tbl4SurmeStandart").hide();
-                    $("#tbl4SurmeTekKose").hide();
-                    $("#tbl4SurmeCiftKose").hide();
-                    $("#tblCustomers").show();
-
-                    OlcuAlaniniGuncelle();
-                    return;
-                }
-                // Sürme seçildiyse Sistem Türü alanını kesin kapat (UI reset)
-                if (_SistemId == "4") {
-                    $("#sistemTurWrapper").hide();
-                    $("#SistemTur").prop("disabled", true);
-                    $("#SistemTur option").remove();
-                    $("#SistemTur").append('<option value="-1">Sistem Türü Yok!</option>');
-                    $("#SistemTur").selectpicker('refresh');
-                    $("#SistemTur").selectpicker('render');
-                }
-
-                var url = '@Url.Action("SistemAltturGetir", "Siparis")';
-                OlcuAlaniniGuncelle();
-
-                if (_SistemId == "4") {
-                    $("#AltSistemId").prop("disabled", false);
-                    $("#altSistemWrapper").stop(true, true).slideDown(150, function () {
-                        $("#AltSistemId").selectpicker('refresh');
-                        $("#AltSistemId").selectpicker('render');
+                if (turKontrol) {
+                    // Show SistemTur dropdown
+                    var $tur = $(rowSel + ' .row-sistemtur');
+                    $tur.find('option').remove();
+                    $tur.append('<option value="">Sistem Türü Seçiniz...</option>');
+                    $.each(data.SistemTurListesi, function (i, t) {
+                        $tur.append('<option value="' + t.Value + '">' + t.Text + '</option>');
                     });
+                    $tur.show();
+                    $(rowSel + ' .row-olcu-wrapper').hide();
                 } else {
-                    $("#altSistemWrapper").stop(true, true).slideUp(150);
-
-                    $("#AltSistemId").val("-1");
-                    $("#AltSistemId option").remove();
-                    $("#AltSistemId").append('<option value="-1">Alt Sistem Seçiniz...</option>');
-                    $("#AltSistemId").prop("disabled", true);
-                    $("#AltSistemId").selectpicker('refresh');
-                    $("#AltSistemId").selectpicker('render');
-
-                    $("#tbl4SurmeStandart").hide();
-                    $("#tbl4SurmeTekKose").hide();
-                    $("#tbl4SurmeCiftKose").hide();
-                    $("#tblCustomers").show();
-                }
-
-                if (_SistemId == "2") {
-                    $("#tblCamCati").show();
-                    $("#tblCustomers").hide();
-                } else {
-                    $("#tblCamCati").hide();
-                    $("#tblCustomers").show();
-                }
-
-                $.ajax({
-                    url: url,
-                    data: { SistemId: _SistemId },
-                    cache: false,
-                    type: 'POST',
-                    beforeSend: function (xhr, settings) {
-                        console.log("AJAX giden data (settings.data):", settings.data);
-                    },
-
-                    success: function (data) {
-                        // ===== RESET: her sistem değişiminde SistemTur state temizle =====
-                        $("#sistemTurWrapper").stop(true, true).slideUp(0);
-
-                        // dropdown içini sıfırla ve disable et (önceki sistemden kalan seçenekleri temizler)
-                        $('#SistemTur option').remove();
-                        $('#SistemTur').append('<option value="-1">Sistem Türü Seçiniz...</option>');
-                        $('#SistemTur').val("-1");
-                        $('#SistemTur').prop('disabled', true);
-                        $('#SistemTur').selectpicker('refresh');
-                        $('#SistemTur').selectpicker('render');
-                        // ===== RESET BİTTİ =====
-                        var turKontrol = data.SistemTuruVarMi;
-                        // sürmede tür asla yok
-                        if (_SistemId == "4") turKontrol = false;
-
-                        if (turKontrol) {
-                            $("#sistemTurWrapper").stop(true, true).slideDown(150);
-                            $('#AltSistemId').prop("disabled", true);
-                            $('#AltSistemId option').remove();
-                            $('#AltSistemId').append('<option value="-1">Sistem Türü Seçiniz...</option>');
-                            $('#AltSistemId').selectpicker('refresh');
-                            $('#AltSistemId').selectpicker('render');
-
-                            $('#SistemTur option').remove();
-                            $('#SistemTur').prop('disabled', false);
-
-                            var turListesi = data.SistemTurListesi;
-                            var markup = '<option value="-1">Sistem Türü Seçiniz...</option>';
-                            $('#SistemTur').append(markup);
-
-                            for (var x = 0; x < turListesi.length; x++) {
-                                markup = '<option value="' + turListesi[x].Value + '">' + turListesi[x].Text + '</option>';
-                                $('#SistemTur').append(markup);
-                            }
-
-                            $('#SistemTur').selectpicker('refresh');
-                            $('#SistemTur').selectpicker('render');
-
-                        } else {
-                            $("#sistemTurWrapper").stop(true, true).slideUp(150);
-                            $("#SistemTur").prop("disabled", true);
-                            $('#SistemTur option').remove();
-                            $('#SistemTur').append('<option value="-1">Sistem Türü Yok!</option>');
-                            $('#SistemTur').selectpicker('refresh');
-                            $('#SistemTur').selectpicker('render');
-
-                            $('#AltSistemId option').remove();
-                            $('#AltSistemId').prop('disabled', false);
-
-                            var altSistemListesi = data.AltSistemListesi;
-                            var markup2 = '<option value="-1">Alt Sistem Seçiniz...</option>';
-                            $('#AltSistemId').append(markup2);
-
-                            for (var y = 0; y < altSistemListesi.length; y++) {
-                                markup2 = '<option value="' + altSistemListesi[y].Value + '">' + altSistemListesi[y].Text + '</option>';
-                                $('#AltSistemId').append(markup2);
-                            }
-
-                            $('#AltSistemId').selectpicker('refresh');
-                            $('#AltSistemId').selectpicker('render');
-                        }
-
-                        $('#AltSistemId')
-                            .off('change.surme')
-                            .on('change.surme', function () {
-                                OlcuAlaniniGuncelle();
-                                SurmeIcinTablo($(this).val());
-                            });
-
-                        OlcuAlaniniGuncelle();
-                        SurmeIcinTablo($('#AltSistemId').val());
-                    },
-                    error: function (xhr) {
-                        console.log("AltSistemGetir error", xhr);
-
-                        var msg = "Alt sistemler getirilemedi.\nHTTP " + xhr.status;
-                        if (xhr.responseText) msg += "\n" + xhr.responseText;
-
-                        alert(msg);
-                    }
-                });
-            };
-
-            // ============ DOM READY ============
-            $(function () {
-
-                // MultiSelect init (sayfada .searchable varsa)
-                if ($.fn.multiSelect && $('.searchable').length) {
-                    $('.searchable').multiSelect({
-                        selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Aksesuar arama...'>",
-                        selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Seçilen aksesuarlarda arama...'>",
-                        afterInit: function (ms) {
-                            var that = this,
-                                $selectableSearch = that.$selectableUl.prev(),
-                                $selectionSearch = that.$selectionUl.prev(),
-                                selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-                                selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
-
-                            that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                                .on('keydown', function (e) {
-                                    if (e.which === 40) {
-                                        that.$selectableUl.focus();
-                                        return false;
-                                    }
-                                });
-
-                            that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                                .on('keydown', function (e) {
-                                    if (e.which == 40) {
-                                        that.$selectionUl.focus();
-                                        return false;
-                                    }
-                                });
-                        },
-                        afterSelect: function () { this.qs1.cache(); this.qs2.cache(); },
-                        afterDeselect: function () { this.qs1.cache(); this.qs2.cache(); }
+                    // Show AltSistem dropdown (fill options from ajax)
+                    var $alt = $(rowSel + ' .row-altsistem');
+                    $alt.find('option').remove();
+                    $alt.append('<option value="">Alt Sistem Seçiniz...</option>');
+                    $.each(data.AltSistemListesi, function (i, a) {
+                        $alt.append('<option value="' + a.Value + '">' + a.Text + '</option>');
                     });
+
+                    if (data.AltSistemListesi && data.AltSistemListesi.length > 0 && sistemId === '4') {
+                        $alt.show();
+                        $(rowSel + ' .row-olcu-wrapper').hide();
+                    } else {
+                        // No alt sistem needed, show ölçü directly (but not for Cam Çatı which is already configured)
+                        $alt.hide();
+                        if (sistemId !== '2') showNormalOlcu(idx);
+                    }
                 }
+            },
+            error: function () {
+                // If ajax fails, still show ölçü area for non-sürme
+                if (sistemId !== '4') showNormalOlcu(idx);
+            }
+        });
+    }
 
-                // Sipariş türü seçim (sayfada radio varsa)
-                $('input[type="radio"]').click(function () {
-                    if ($(this).attr("value") == "tur_profil") $("#tureGoreKombinasyon").hide();
-                    if ($(this).attr("value") == "tur_demonte") $("#tureGoreKombinasyon").show();
-                });
+    function rowAltSistemChanged(idx, altSistemId) {
+        var rowSel = '#row_' + idx;
+        if (!altSistemId || altSistemId === '') {
+            $(rowSel + ' .row-olcu-wrapper').hide();
+            return;
+        }
 
-                // KAYDET (AJAX)
-                $('#siparisKaydetForm').click(function (e) {
-                    e.preventDefault();
+        $(rowSel + ' .row-olcu-wrapper').show();
+        // Reset all extra fields
+        $(rowSel + ' .row-soLen-grp').hide();
+        $(rowSel + ' .row-en3-grp').hide();
+        $(rowSel + ' .row-kanat-grp').hide();
+        // Reset labels
+        $(rowSel + ' .row-en-grp label').text('En (mm)');
+        $(rowSel + ' .row-boy-label').text('Yükseklik (mm)');
+        $(rowSel + ' .row-adet-grp label').text('Sistem Adet');
 
-                    var items = [];
-                    var _altSistemId = $('#AltSistemId').val();
-                    var sistemId = $('#SistemId').val();
+        if (SURME_STANDART_IDS.includes(String(altSistemId))) {
+            $(rowSel + ' .row-kanat-grp').show();
+        } else if (SURME_TEK_KOSE_IDS.includes(String(altSistemId))) {
+            $(rowSel + ' .row-soLen-grp').show();
+            $(rowSel + ' .row-soLen-label').text('En-2 (mm)');
+            $(rowSel + ' .row-kanat-grp').show();
+        } else if (SURME_CIFT_KOSE_IDS.includes(String(altSistemId))) {
+            $(rowSel + ' .row-soLen-grp').show();
+            $(rowSel + ' .row-soLen-label').text('En-2 (mm)');
+            $(rowSel + ' .row-en3-grp').show();
+            $(rowSel + ' .row-kanat-grp').show();
+        }
+    }
 
-                    if (sistemId == 2) {
-                        $("#tblCamCati TBODY TR").each(function () {
-                            var row = $(this);
-                            var item = {};
-                            item.GirilenEn = row.find("TD").eq(0).html();
-                            item.GirilenSolEn = row.find("TD").eq(1).html();
-                            item.GirilenBoy = row.find("TD").eq(2).html();
-                            item.GirilenAdet = row.find("TD").eq(3).html();
-                            items.push(item);
-                        });
-                    } else if (isSurmeAltSistem(_altSistemId)) {
+    function showNormalOlcu(idx) {
+        var rowSel = '#row_' + idx;
+        $(rowSel + ' .row-olcu-wrapper').show();
+        $(rowSel + ' .row-soLen-grp').hide();
+        $(rowSel + ' .row-en3-grp').hide();
+        $(rowSel + ' .row-kanat-grp').hide();
+        $(rowSel + ' .row-en-grp label').text('En (mm)');
+        $(rowSel + ' .row-boy-label').text('Yükseklik (mm)');
+        $(rowSel + ' .row-adet-grp label').text('Sistem Adet');
+    }
 
-                        if ($("#tbl4SurmeStandart").is(":visible")) {
-                            $("#tbl4SurmeStandart TBODY TR").each(function () {
-                                var row = $(this);
-                                var item = {};
-                                item.GirilenEn = row.find("TD").eq(0).html();
-                                item.GirilenBoy = row.find("TD").eq(1).html();
-                                item.GirilenKanatAdet = row.find("TD").eq(2).html();
-                                item.GirilenAdet = row.find("TD").eq(3).html();
-                                items.push(item);
-                            });
-                        } else if ($("#tbl4SurmeTekKose").is(":visible")) {
-                            $("#tbl4SurmeTekKose TBODY TR").each(function () {
-                                var row = $(this);
-                                var item = {};
-                                item.GirilenEn = row.find("TD").eq(0).html();
-                                item.GirilenSolEn = row.find("TD").eq(1).html();
-                                item.GirilenBoy = row.find("TD").eq(2).html();
-                                item.GirilenKanatAdet = row.find("TD").eq(3).html();
-                                item.GirilenAdet = row.find("TD").eq(4).html();
-                                items.push(item);
-                            });
-                        } else if ($("#tbl4SurmeCiftKose").is(":visible")) {
-                            $("#tbl4SurmeCiftKose TBODY TR").each(function () {
-                                var row = $(this);
-                                var item = {};
-                                item.GirilenEn = row.find("TD").eq(0).html();
-                                item.GirilenSolEn = row.find("TD").eq(1).html();
-                                item.GirilenEn3 = row.find("TD").eq(2).html();
-                                item.GirilenBoy = row.find("TD").eq(3).html();
-                                item.GirilenKanatAdet = row.find("TD").eq(4).html();
-                                item.GirilenAdet = row.find("TD").eq(5).html();
-                                items.push(item);
-                            });
-                        }
+    // When SistemTur is selected in a row, show ölçü
+    $(document).on('change', '.row-sistemtur', function () {
+        var idx = $(this).data('row');
+        var rowSel = '#row_' + idx;
+        if ($(this).val()) {
+            showNormalOlcu(idx);
+        } else {
+            $(rowSel + ' .row-olcu-wrapper').hide();
+        }
+    });
 
-                    } else {
-                        $("#tblCustomers TBODY TR").each(function () {
-                            var row = $(this);
-                            var item = {};
-                            item.GirilenEn = row.find("TD").eq(0).html();
-                            item.GirilenBoy = row.find("TD").eq(1).html();
-                            item.GirilenAdet = row.find("TD").eq(2).html();
-                            items.push(item);
-                        });
-                    }
+    // Add row button
+    $(document).on('click', '.btn-add-row', function () {
+        addRow();
+    });
 
-                    var SiparisModel = {
-    MusteriId: $('#MusteriId').val(),
-    RenkId: $('#RenkId').val(),
-    AltSistemId: $('#AltSistemId').val(),
-    SistemId: sistemId,
-    SistemTurId: $('#SistemTur').val(),
-    TahminiTeslim: $('#@Html.IdFor(m => m.TahminiTeslim)').val(),
-    SeciliAksesuarlar: $('#custom-headers option:selected').map(function () { return this.value; }).get(),
-    SiparisTur: $('.siparisTur:radio:checked').val() || ""
-                    };
+    // Remove row button
+    $(document).on('click', '.btn-remove-row', function () {
+        var rowDiv = $(this).closest('.siparis-row');
+        if ($('.siparis-row').length > 1) {
+            rowDiv.remove();
+        } else {
+            alert('En az bir satır olmalıdır!');
+        }
+    });
 
+    // ============ KAYDET ============
+    $('#siparisKaydetForm').click(function (e) {
+        e.preventDefault();
 
-                    // Sürme seçiliyse, kanat adedi kontrolü (boş geçilmesin)
-                    if (isSurmeAltSistem(_altSistemId)) {
-                        for (var i = 0; i < items.length; i++) {
-                            if (!items[i].GirilenKanatAdet || items[i].GirilenKanatAdet.toString().trim() === "") {
-                                alert("Sürme sistemlerde Kanat Adedi boş olamaz!");
-                                return;
-                            }
-                        }
-                    }
+        var items = [];
+        var hasError = false;
 
-                    if ($("#form_validation").validate().form()) {
-                        $.ajax({
-                            type: 'POST',
-                            data: JSON.stringify({ enBoyAdet: items, siparis: SiparisModel }),
-                            url: '@Url.Action("SiparisKaydet", "Siparis")',
-                            dataType: "json",
-                            contentType: 'application/json; charset=utf-8',
-                            success: function (data) {
-                                if (data == 'OK') {
-                                    location.href = '/Siparis/Index';
-                                }
-                            },
-                            error: function (errorObj) {
-                                alert(errorObj.toString());
-                            }
-                        });
-                    }
-                });
+        $('.siparis-row').each(function () {
+            var row = $(this);
+            var idx = row.data('row-index');
+            var sistemId = row.find('.row-sistem').val();
+            var altSistemId = row.find('.row-altsistem').is(':visible') ? row.find('.row-altsistem').val() : null;
+            var sistemTurId = row.find('.row-sistemtur').is(':visible') ? row.find('.row-sistemtur').val() : null;
 
-                // NORMAL ADD
-                $("body").on("click", "#btnAdd", function () {
-                    var txtEn = $("#txtEn");
-                    var txtBoy = $("#txtBoy");
-                    var txtAdet = $("#txtAdet");
+            var en = row.find('.row-en').val();
+            var soLen = row.find('.row-soLen-grp').is(':visible') ? row.find('.row-soLen').val() : '0';
+            var en3 = row.find('.row-en3-grp').is(':visible') ? row.find('.row-en3').val() : '0';
+            var boy = row.find('.row-boy').val();
+            var kanat = row.find('.row-kanat-grp').is(':visible') ? row.find('.row-kanat').val() : '0';
+            var adet = row.find('.row-adet').val();
 
-                    if (txtEn.val() != "" && txtBoy.val() != "" && txtAdet.val() != "") {
-                        var tBody = $("#tblCustomers > TBODY")[0];
-                        var row = tBody.insertRow(-1);
+            if (!sistemId) {
+                alert((idx + 1) + '. satırda Sistem seçiniz!');
+                hasError = true;
+                return false;
+            }
+            if (!en || !boy || !adet) {
+                alert((idx + 1) + '. satırda En, Boy ve Adet alanlarını doldurunuz!');
+                hasError = true;
+                return false;
+            }
+            if (isSurmeAltSistem(altSistemId) && (!kanat || kanat === '0')) {
+                alert((idx + 1) + '. satırda Sürme sistemlerde Kanat Adedi boş olamaz!');
+                hasError = true;
+                return false;
+            }
 
-                        $(row.insertCell(-1)).html(txtEn.val());
-                        $(row.insertCell(-1)).html(txtBoy.val());
-                        $(row.insertCell(-1)).html(txtAdet.val());
-
-                        var cell = $(row.insertCell(-1));
-                        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>");
-                        btnRemove.attr("type", "button");
-                        btnRemove.attr("onclick", "Remove(this);");
-                        cell.append(btnRemove);
-
-                        txtEn.val(""); txtBoy.val(""); txtAdet.val("");
-                    } else {
-                        alert('Lütfen En, Boy ve Adet alanlarını doldurunuz!');
-                    }
-                });
-
-                // SÜRME: STANDART/ORTA BİRLEŞİM ADD
-                $("body").on("click", "#btnSurmeStandartAdd", function () {
-                    var en = $("#txtSurmeStdEn");
-                    var yuk = $("#txtSurmeStdYukseklik");
-                    var kanat = $("#txtSurmeStdKanatAdet");
-                    var adet = $("#txtSurmeStdSistemAdet");
-
-                    if (en.val() && yuk.val() && kanat.val() && adet.val()) {
-                        var tBody = $("#tbl4SurmeStandart > TBODY")[0];
-                        var row = tBody.insertRow(-1);
-
-                        $(row.insertCell(-1)).html(en.val());
-                        $(row.insertCell(-1)).html(yuk.val());
-                        $(row.insertCell(-1)).html(kanat.val());
-                        $(row.insertCell(-1)).html(adet.val());
-
-                        var cell = $(row.insertCell(-1));
-                        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>");
-                        btnRemove.attr("type", "button");
-                        btnRemove.attr("onclick", "RemoveSurme(this);");
-                        cell.append(btnRemove);
-
-                        en.val(""); yuk.val(""); kanat.val(""); adet.val("");
-                    } else {
-                        alert("Lütfen tüm alanları doldurunuz!");
-                    }
-                });
-
-                // SÜRME: TEK KÖŞE ADD
-                $("body").on("click", "#btnSurmeTekKoseAdd", function () {
-                    var en1 = $("#txtSurmeTekEn1");
-                    var en2 = $("#txtSurmeTekEn2");
-                    var yuk = $("#txtSurmeTekYukseklik");
-                    var kanat = $("#txtSurmeTekKanatAdet");
-                    var adet = $("#txtSurmeTekSistemAdet");
-
-                    if (en1.val() && en2.val() && yuk.val() && kanat.val() && adet.val()) {
-                        var tBody = $("#tbl4SurmeTekKose > TBODY")[0];
-                        var row = tBody.insertRow(-1);
-
-                        $(row.insertCell(-1)).html(en1.val());
-                        $(row.insertCell(-1)).html(en2.val());
-                        $(row.insertCell(-1)).html(yuk.val());
-                        $(row.insertCell(-1)).html(kanat.val());
-                        $(row.insertCell(-1)).html(adet.val());
-
-                        var cell = $(row.insertCell(-1));
-                        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>");
-                        btnRemove.attr("type", "button");
-                        btnRemove.attr("onclick", "RemoveSurme(this);");
-                        cell.append(btnRemove);
-
-                        en1.val(""); en2.val(""); yuk.val(""); kanat.val(""); adet.val("");
-                    } else {
-                        alert("Lütfen tüm alanları doldurunuz!");
-                    }
-                });
-
-                // SÜRME: ÇİFT KÖŞE ADD
-                $("body").on("click", "#btnSurmeCiftKoseAdd", function () {
-                    var en1 = $("#txtSurmeCiftEn1");
-                    var en2 = $("#txtSurmeCiftEn2");
-                    var en3 = $("#txtSurmeCiftEn3");
-                    var yuk = $("#txtSurmeCiftYukseklik");
-                    var kanat = $("#txtSurmeCiftKanatAdet");
-                    var adet = $("#txtSurmeCiftSistemAdet");
-
-                    if (en1.val() && en2.val() && en3.val() && yuk.val() && kanat.val() && adet.val()) {
-                        var tBody = $("#tbl4SurmeCiftKose > TBODY")[0];
-                        var row = tBody.insertRow(-1);
-
-                        $(row.insertCell(-1)).html(en1.val());
-                        $(row.insertCell(-1)).html(en2.val());
-                        $(row.insertCell(-1)).html(en3.val());
-                        $(row.insertCell(-1)).html(yuk.val());
-                        $(row.insertCell(-1)).html(kanat.val());
-                        $(row.insertCell(-1)).html(adet.val());
-
-                        var cell = $(row.insertCell(-1));
-                        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>");
-                        btnRemove.attr("type", "button");
-                        btnRemove.attr("onclick", "RemoveSurme(this);");
-                        cell.append(btnRemove);
-
-                        en1.val(""); en2.val(""); en3.val(""); yuk.val(""); kanat.val(""); adet.val("");
-                    } else {
-                        alert("Lütfen tüm alanları doldurunuz!");
-                    }
-                });
-
-                // CAM ÇATI ADD
-                $("body").on("click", "#btnCamCatiAdd", function () {
-                    var en = $("#txtCamCatiEn");
-                    var solEn = $("#txtCamCatiSolEn");
-                    var boy = $("#txtCamCatiBoy");
-                    var adet = $("#txtCamCatiAdet");
-
-                    if (en.val() && solEn.val() && boy.val() && adet.val()) {
-                        var tBody = $("#tblCamCati > TBODY")[0];
-                        var row = tBody.insertRow(-1);
-
-                        $(row.insertCell(-1)).html(en.val());
-                        $(row.insertCell(-1)).html(solEn.val());
-                        $(row.insertCell(-1)).html(boy.val());
-                        $(row.insertCell(-1)).html(adet.val());
-
-                        var cell = $(row.insertCell(-1));
-                        var btnRemove = $("<button class='btn bg-red btn-circle waves-effect waves-circle waves-float'><i class='material-icons'>delete</i></button>");
-                        btnRemove.attr("type", "button");
-                        btnRemove.attr("onclick", "RemoveCamCati(this);");
-                        cell.append(btnRemove);
-
-                        en.val(""); solEn.val(""); boy.val(""); adet.val("");
-                    } else {
-                        alert("Lütfen tüm alanları doldurunuz!");
-                    }
-                });
-
-                // selectpicker dropdown'larını body'ye çizdir
-                $('#SistemId, #AltSistemId, #SistemTur').selectpicker({ container: 'body' });
-
-                // ilk açılışta ölçü alanı
-                setTimeout(function () {
-                    OlcuAlaniniGuncelle();
-                }, 0);
+            items.push({
+                GirilenEn: parseInt(en) || 0,
+                GirilenSolEn: parseInt(soLen) || 0,
+                GirilenEn3: parseInt(en3) || 0,
+                GirilenBoy: parseInt(boy) || 0,
+                GirilenKanatAdet: parseInt(kanat) || 0,
+                GirilenAdet: parseInt(adet) || 0,
+                SistemId: parseInt(sistemId) || 0,
+                AltSistemId: parseInt(altSistemId) || 0,
+                SistemTurId: parseInt(sistemTurId) || 0
             });
+        });
 
-        })(jQuery);
-    </script>
+        if (hasError || items.length === 0) return;
+
+        var firstItem = items[0];
+        var SiparisModel = {
+            MusteriId: $('#MusteriId').val() || null,
+            RenkId: $('#RenkId').val() || null,
+            AltSistemId: firstItem.AltSistemId,
+            SistemId: firstItem.SistemId,
+            SistemTurId: firstItem.SistemTurId,
+            TahminiTeslim: $('#@Html.IdFor(m => m.TahminiTeslim)').val() || null,
+            SeciliAksesuarlar: $('#custom-headers option:selected').map(function () { return this.value; }).get(),
+            SiparisTur: $('.siparisTur:radio:checked').val() || ""
+        };
+
+        $.ajax({
+            type: 'POST',
+            data: JSON.stringify({ enBoyAdet: items, siparis: SiparisModel }),
+            url: '@Url.Action("SiparisKaydet", "Siparis")',
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data === 'OK') {
+                    location.href = '/Siparis/Index';
+                } else {
+                    alert('Kayıt başarısız: ' + data);
+                }
+            },
+            error: function (errorObj) {
+                alert('Hata: ' + errorObj.responseText);
+            }
+        });
+    });
+
+    // ============ INIT ============
+    $(function () {
+        addRow(); // Add first row on page load
+    });
+
+})(jQuery);
+</script>
 }

@@ -69,8 +69,46 @@ namespace CamSistemDataLayer.Models
                 SistemRepo sRepo = new SistemRepo();
                 SistemTurRepo stRepo = new SistemTurRepo();
                 AltSistemRepo asRepo = new AltSistemRepo();
-                string retVal = "";
+                SiparisEnBoyAdetRepo sebaRepo = new SiparisEnBoyAdetRepo();
 
+                // Collect unique system descriptions from per-row data when available
+                var rows = sebaRepo.FindBy(e => e.SiparisId == Id).ToList();
+                var hasPerRowSystem = rows.Any(r => r.SistemId.HasValue && r.SistemId.Value > 0);
+
+                if (hasPerRowSystem)
+                {
+                    var sistemler = new System.Collections.Generic.List<string>();
+                    foreach (var row in rows)
+                    {
+                        int rowSistemId = (row.SistemId.HasValue && row.SistemId.Value > 0) ? row.SistemId.Value : (SistemId ?? 0);
+                        int rowSistemTurId = (row.SistemTurId.HasValue && row.SistemTurId.Value > 0) ? row.SistemTurId.Value : (SistemTurId ?? 0);
+                        int rowAltSistemId = (row.AltSistemId.HasValue && row.AltSistemId.Value > 0) ? row.AltSistemId.Value : (AltSistemId ?? 0);
+
+                        string rowRetVal = "";
+                        if (rowSistemId > 0)
+                        {
+                            var sistem = sRepo.FindBy(e => e.Id == rowSistemId).FirstOrDefault();
+                            if (sistem != null) rowRetVal = sistem.SistemAdi;
+                        }
+                        if (rowSistemTurId > 0 && rowSistemTurId != -1)
+                        {
+                            var sistemTur = stRepo.FindBy(e => e.Id == rowSistemTurId).FirstOrDefault();
+                            if (sistemTur != null) rowRetVal = rowRetVal + " / " + sistemTur.TurAdi;
+                        }
+                        if (rowAltSistemId > 0 && rowAltSistemId != -1)
+                        {
+                            var altSistem = asRepo.FindBy(e => e.Id == rowAltSistemId).FirstOrDefault();
+                            if (altSistem != null) rowRetVal = rowRetVal + " / " + altSistem.AltSistemAdi;
+                        }
+                        if (!string.IsNullOrWhiteSpace(rowRetVal) && !sistemler.Contains(rowRetVal))
+                            sistemler.Add(rowRetVal);
+                    }
+                    if (sistemler.Count > 0)
+                        return string.Join(", ", sistemler);
+                }
+
+                // Fallback to order-level system
+                string retVal = "";
                 if (SistemId != null && SistemId != -1)
                 {
                     var sistem = sRepo.FindBy(e => e.Id == SistemId).FirstOrDefault();

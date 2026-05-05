@@ -218,7 +218,8 @@ namespace CamSistemDataLayer.BussinesLogic
             return camEntityList;
         }
 
-        public static List<Profil> profilHesaplama(long siparisId, int en, int solEn, int boy, int adet)
+        public static List<Profil> profilHesaplama(long siparisId, int en, int solEn, int boy, int adet,
+            int? sistemIdOverride = null, int? altSistemIdOverride = null, int? sistemTurIdOverride = null)
         {
             SiparisRepo sRepo = new SiparisRepo();
             SiparisEnBoyAdetRepo sebaRepo = new SiparisEnBoyAdetRepo();
@@ -233,32 +234,37 @@ namespace CamSistemDataLayer.BussinesLogic
 
             if (siparis != null)
             {
+                // Use per-row system overrides when provided
+                int? effectiveSistemId = sistemIdOverride.HasValue && sistemIdOverride.Value > 0 ? sistemIdOverride : siparis.SistemId;
+                int? effectiveAltSistemId = altSistemIdOverride.HasValue && altSistemIdOverride.Value > 0 ? altSistemIdOverride : siparis.AltSistemId;
+                int? effectiveSistemTurId = sistemTurIdOverride.HasValue && sistemTurIdOverride.Value > 0 ? sistemTurIdOverride : siparis.SistemTurId;
+
                 int joinTablosuId = 0;
-                if (siparis.SistemId != null && siparis.AltSistemId != null && siparis.AltSistemId != -1 && siparis.SistemTurId != null && siparis.SistemTurId != -1)
+                if (effectiveSistemId != null && effectiveAltSistemId != null && effectiveAltSistemId != -1 && effectiveSistemTurId != null && effectiveSistemTurId != -1)
                 {
-                    joinTablosuId = sjRepo.FindBy(e => e.SistemId == siparis.SistemId && e.AltSistemId == siparis.AltSistemId && e.SistemTurId == siparis.SistemTurId).FirstOrDefault().Id;
+                    joinTablosuId = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && e.AltSistemId == effectiveAltSistemId && e.SistemTurId == effectiveSistemTurId).FirstOrDefault().Id;
                 }
-                else if (siparis.SistemId != null && siparis.AltSistemId != null && siparis.AltSistemId != -1 && (siparis.SistemTurId == -1 || siparis.SistemTurId == null))
+                else if (effectiveSistemId != null && effectiveAltSistemId != null && effectiveAltSistemId != -1 && (effectiveSistemTurId == -1 || effectiveSistemTurId == null))
                 {
-                    joinTablosuId = sjRepo.FindBy(e => e.SistemId == siparis.SistemId && e.AltSistemId == siparis.AltSistemId && e.SistemTurId == null).FirstOrDefault().Id;
+                    joinTablosuId = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && e.AltSistemId == effectiveAltSistemId && e.SistemTurId == null).FirstOrDefault().Id;
                 }
-                else if (siparis.SistemId != null
-    && (siparis.AltSistemId == -1 || siparis.AltSistemId == null)
-    && siparis.SistemTurId != null && siparis.SistemTurId != -1)
+                else if (effectiveSistemId != null
+                    && (effectiveAltSistemId == -1 || effectiveAltSistemId == null)
+                    && effectiveSistemTurId != null && effectiveSistemTurId != -1)
                 {
                     var join = sjRepo.FindBy(e =>
-                        e.SistemId == siparis.SistemId
+                        e.SistemId == effectiveSistemId
                         && (e.AltSistemId == null || e.AltSistemId == -1)
-                        && e.SistemTurId == siparis.SistemTurId
+                        && e.SistemTurId == effectiveSistemTurId
                     ).FirstOrDefault();
 
                     if (join != null)
                         joinTablosuId = join.Id;
                 }
 
-                else if (siparis.SistemId != null && (siparis.AltSistemId == -1 || siparis.AltSistemId == null) && (siparis.SistemTurId == -1 || siparis.SistemTurId == null))
+                else if (effectiveSistemId != null && (effectiveAltSistemId == -1 || effectiveAltSistemId == null) && (effectiveSistemTurId == -1 || effectiveSistemTurId == null))
                 {
-                    joinTablosuId = sjRepo.FindBy(e => e.SistemId == siparis.SistemId && (e.AltSistemId == null || e.AltSistemId == -1) && (e.SistemTurId == null || e.SistemTurId == -1)).FirstOrDefault().Id;
+                    joinTablosuId = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && (e.AltSistemId == null || e.AltSistemId == -1) && (e.SistemTurId == null || e.SistemTurId == -1)).FirstOrDefault().Id;
                 }
 
                 //join tablosından gelen id ile sistemprofildeki joinidsiyle eşleştirip listeyi çekeceğiz ve profil tablosundaki karşılıklarını alacağız.
@@ -298,20 +304,20 @@ namespace CamSistemDataLayer.BussinesLogic
 
                 }
 
-                string sistem = sistemRepo.FindBy(e => e.Id == siparis.SistemId).FirstOrDefault()?.SistemAdi ?? "";
+                string sistem = sistemRepo.FindBy(e => e.Id == effectiveSistemId).FirstOrDefault()?.SistemAdi ?? "";
                 string tur = "";
                 string altSistem = "";
 
                 // Sistem türü kontrol ve atama
-                if (siparis.SistemTurId != -1)
+                if (effectiveSistemTurId != -1)
                 {
-                    var turEntity = tRepo.FindBy(e => e.Id == siparis.SistemTurId).FirstOrDefault();
+                    var turEntity = tRepo.FindBy(e => e.Id == effectiveSistemTurId).FirstOrDefault();
                     tur = turEntity != null ? turEntity.TurAdi : "";
                 }
                 // Alt sistem kontrol ve atama
-                if (siparis.AltSistemId != -1)
+                if (effectiveAltSistemId != -1)
                 {
-                    var altSistemEntity = asRepo.FindBy(e => e.Id == siparis.AltSistemId).FirstOrDefault();
+                    var altSistemEntity = asRepo.FindBy(e => e.Id == effectiveAltSistemId).FirstOrDefault();
                     altSistem = altSistemEntity != null ? altSistemEntity.AltSistemAdi : "";
                 }
 
