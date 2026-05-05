@@ -8,7 +8,7 @@
         if (string.IsNullOrEmpty(olcular)) return "";
         var parts = olcular.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
         var grouped = parts.GroupBy(x => x)
-                           .Select(g => g.Count() > 1 ? g.Count() + "x" + g.Key : g.Key);
+                           .Select(g => g.Count() + "x" + g.Key);
         return string.Join(", ", grouped);
     }
 }
