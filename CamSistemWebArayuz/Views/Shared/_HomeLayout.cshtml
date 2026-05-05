@@ -576,17 +576,21 @@
 
             var htmlToPrint = '' +
                 '<style type="text/css">' +
+                '@@page { margin: 0mm; }' +
+                'body { margin: 1cm; }' +
                 'table { border: 1px solid black;' +
-                'border-collapse: collapse;width: 100 %;}' +
+                'border-collapse: collapse;width: 100%;}' +
                 'td {border: 1px solid black;border-collapse: collapse;text-align: center;font-size: 12px;}' +
                 'th {border: 1px solid black;border-collapse: collapse;text-align: center;font-size: 12px;}' +
                 'table th {text-align: center;}' +
+                '.img-thumbnailProf { max-width: 60px; max-height: 40px; object-fit: contain; }' +
+                '.logo-print { max-width: 100%; max-height: 80px; object-fit: contain; display: block; margin: auto; }' +
                 '</style>';
             htmlToPrint += divContents;
 
             var printWindow = window.open('', '', 'height=600,width=800');
             printWindow.document.open();
-            printWindow.document.write('</head><body>');
+            printWindow.document.write('<html><head><title>OPT\u0130M\u0130ZASYON</title></head><body>');
             printWindow.document.write(htmlToPrint);
             printWindow.document.write('</body></html>');
             printWindow.document.close();

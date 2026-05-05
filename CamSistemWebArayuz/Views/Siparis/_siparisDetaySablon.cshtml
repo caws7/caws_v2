@@ -696,16 +696,16 @@
 
                     <thead>
                         <tr>
-                            <th colspan=2><img src="~/images/icons/icon.jpeg" /></th>
+                            <th colspan=2 style="text-align:center;vertical-align:middle;padding:4px;"><img src="~/images/icons/icon.jpeg" style="max-width:100%;max-height:80px;object-fit:contain;display:block;margin:auto;" /></th>
                             <th colspan=5><center><h2><b>OPTİMİZASYON</b></h2></center></th>
                             <th colspan=2 style="word-wrap: break-word;max-width: 250px;">
                                 @Html.DisplayFor(model => first.siparisModel.SistemTamami)
                             </th>
                         </tr>
                         <tr>
-                            <th colspan=4>@Html.DisplayFor(model => Model.First().siparisModel.MusteriTamAdi)</th>
-                            <th>Adres</th>
-                            <th colspan="4">@Html.DisplayFor(model => Model.First().siparisModel.MusteriAdres)</th>
+                            <th>İmalat Ölçüleri</th>
+                            <th colspan="4">@string.Join(" | ", Model.Select(m => m.GirilenEn + "/" + m.GirilenBoy + "/" + m.GirilenAdet).Distinct())</th>
+                            <th colspan="4">@Html.DisplayFor(model => Model.First().siparisModel.MusteriTamAdi)</th>
                         </tr>
                         <tr>
                             <th>Sipariş Numarası</th>
