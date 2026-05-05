@@ -894,11 +894,10 @@ namespace CamSistemWebArayuz.Controllers
             // Optimizasyon verilerini DB'den çekip modele ekle
             var optimizasyonHesapRepo = new OptimizasyonHesapRepo();
             string siparisIdStr = siparis.Id.ToString();
-            var optimizasyonKayitlar = optimizasyonHesapRepo.GetAll()
-                .Where(x => !string.IsNullOrWhiteSpace(x.SiparisIds) &&
-                            x.SiparisIds.Split(',')
-                                .Select(s => s.Trim())
-                                .Any(id => id == siparisIdStr))
+            var optimizasyonKayitlar = optimizasyonHesapRepo
+                .FindBy(e => e.SiparisIds != null && e.SiparisIds.Contains(siparisIdStr))
+                .ToList()
+                .Where(x => x.SiparisIds.Split(',').Select(s => s.Trim()).Any(id => id == siparisIdStr))
                 .OrderByDescending(x => x.Id)
                 .ToList();
             foreach (var ent in siparisTumDetay)
