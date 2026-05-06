@@ -20,37 +20,37 @@ namespace CamSistemDataLayer.BussinesLogic.RuzgarKirici
                     case "RK-101":
                         item.KesimOlcusu = en - 44 - 2;
                         item.KesimAdet = adet * 2;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "RK-102":
                         item.KesimOlcusu = Convert.ToInt32((boy - kapaliBoy) + 267 - 34 - 8);
                         item.KesimAdet = adet * 2;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "RK-103":
                         item.KesimOlcusu = en - 12 - 2;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "RK-104":
                         item.KesimOlcusu = en - 95 - 2;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "RK-104-1":
                         item.KesimOlcusu = en - 95 - 2;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "RK-104-2":
                         item.KesimOlcusu = Convert.ToInt32((boy - kapaliBoy) + 267 - 34 - 8);
                         item.KesimAdet = adet * 2;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "RK-105":
                         item.KesimOlcusu = en - 60;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "DP-101":
                         item.KesimOlcusu = en - 90;
@@ -73,12 +73,12 @@ namespace CamSistemDataLayer.BussinesLogic.RuzgarKirici
                         double g24 = (i24 / h16) * 1000;
                         double f16 = en - 90;
                         item.KesimAdet = Convert.ToInt32(Math.Floor(g24 / f16));
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "DP-102":
                         item.KesimOlcusu = en - 90;
                         item.KesimAdet = 1;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                 }
                 newProfilList.Add(item);

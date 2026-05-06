@@ -927,7 +927,10 @@ namespace CamSistemWebArayuz.Controllers
                     List<Aksesuar> aksesuarEntities = null;
                     if (siparisAksesuarList != null && siparisAksesuarList.Count > 0)
                     {
-                        var aksesuarIds = siparisAksesuarList.Select(x => x.AksesuarId).ToList();
+                        var aksesuarIds = siparisAksesuarList
+                            .Where(x => x.AksesuarId.HasValue)
+                            .Select(x => x.AksesuarId.Value)
+                            .ToList();
                         aksesuarEntities = aksesuarRepo.FindBy(x => x.AktifMi == true && aksesuarIds.Contains(x.Id)).ToList();
                     }
 

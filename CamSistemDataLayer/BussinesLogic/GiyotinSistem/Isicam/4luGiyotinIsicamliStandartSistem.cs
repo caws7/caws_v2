@@ -16,77 +16,77 @@ namespace CamSistemDataLayer.BussinesLogic.GiyotinSistem
                     case "SP-101":
                         item.KesimOlcusu = en - 25;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "SP-102":
                         item.KesimOlcusu = en - 27;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-101":
                         item.KesimOlcusu = en - 205;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-102":
                         item.KesimOlcusu = en - 205;
                         item.KesimAdet = adet * 6;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-105":
                         item.KesimOlcusu = en - 205;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-106":
                         item.KesimOlcusu = Convert.ToInt32(((double)(boy - 180.75) / 4) + 5.938) + (14 + 20);
                         item.KesimAdet = adet * 2;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-106-1"://dikey baza üst cam
                         item.KesimOlcusu = Convert.ToInt32(((double)(boy - 180.75) / 4) + 5.938) + (14 + 20);
                         item.KesimAdet = adet * 2;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-106-2"://orta cam
                         item.KesimOlcusu = Convert.ToInt32(((double)(boy - 180.75) / 4) - 2.062 + (26.285 + 20));
                         item.KesimAdet = adet * 6;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-107":
                         item.KesimOlcusu = boy - 150;
                         item.KesimAdet = adet * 2;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-108":
                         item.KesimOlcusu = boy - 150;
                         item.KesimAdet = adet * 2;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-109":
                         item.KesimOlcusu = boy - 150;
                         item.KesimAdet = adet * 2;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-110":
                         item.KesimOlcusu = Convert.ToInt32(((((double)(boy - 180.75) / 4) + 5.938) + 169.98) - 150);
                         item.KesimAdet = adet * 4;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-110-1":
                         item.KesimOlcusu = Convert.ToInt32(((((double)(boy - 180.75) / 4) + 5.938) + 169.98) - 150);
                         item.KesimAdet = adet * 4;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "G-110-2":
                         item.KesimOlcusu = Convert.ToInt32(((((double)(boy - 180.75) / 4) + 5.938) + 47.16 + (((double)(boy - 180.75) / 4) + 5.938) + 169.98) - 150);
                         item.KesimAdet = adet * 4;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "SB-101":
                         item.KesimOlcusu = en - 71;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                 }
                 newProfilList.Add(item);

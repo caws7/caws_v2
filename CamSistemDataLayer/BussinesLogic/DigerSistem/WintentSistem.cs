@@ -17,19 +17,19 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
                         item.ProfilAdi = item.ProfilAdi;
                         item.KesimOlcusu = en - 44;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "WT-102":
                         item.ProfilAdi = item.ProfilAdi;
                         item.KesimOlcusu = en - 54;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                     case "SB-102":
                         item.ProfilAdi = item.ProfilAdi;
                         item.KesimOlcusu = en - 86;
                         item.KesimAdet = adet;
-                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (int)item.BirimAgirlik);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
                 }
                 newProfilList.Add(item);
