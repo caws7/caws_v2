@@ -169,21 +169,24 @@
         <div class="modal-body">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs tab-nav-right tab-col-amber" role="tablist">
+                @{ bool ilkImalatTab = true; }
                 @foreach (var item in Model)
                 {
-                    <li role="presentation">
-                        <a href="#@item.GirilenEn@item.GirilenBoy@item.GirilenAdet" data-toggle="tab">
+                    <li role="presentation" class="@(ilkImalatTab ? "active" : "")">
+                        <a href="#tab_@item.Id" data-toggle="tab">
                             @item.GirilenEn/@item.GirilenBoy/@item.GirilenAdet
                         </a>
                     </li>
+                    ilkImalatTab = false;
                 }
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
+                @{ bool ilkImalatPane = true; }
                 @foreach (var item in Model)
                 {
-                    <div role="tabpanel" class="tab-pane fade" id="@item.GirilenEn@item.GirilenBoy@item.GirilenAdet">
-                        <div id="imalatyazdir_@item.GirilenEn+@item.GirilenBoy+@item.GirilenAdet">
+                    <div role="tabpanel" class="tab-pane fade @(ilkImalatPane ? "in active" : "")" id="tab_@item.Id">
+                        <div id="imalatyazdir_@item.Id">
 
                             <!-- İmalat tablo başlangıç-->
                             <table class="table table-bordered">
@@ -349,11 +352,12 @@
                             <!-- İmalat tablo bitiş-->
                             @Html.Raw(ViewBag.SiparisAciklamasi)
                         </div>
-                        <button type="button" onclick="PrintElem('imalatyazdir_@item.GirilenEn+@item.GirilenBoy+@item.GirilenAdet')" class="btn bg-red waves-effect waves-light pull-right">
+                        <button type="button" onclick="PrintElem('imalatyazdir_@item.Id')" class="btn bg-red waves-effect waves-light pull-right">
                             <i class="material-icons">print</i>
                             <span>YAZDIR</span>
                         </button>
                     </div>
+                    @{ ilkImalatPane = false; }
                 }
             </div>
         </div>

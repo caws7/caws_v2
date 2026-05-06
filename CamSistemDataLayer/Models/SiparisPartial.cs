@@ -25,10 +25,12 @@ namespace CamSistemDataLayer.Models
             {
                 MusteriRepo mRepo = new MusteriRepo();
                 Musteri musteri = mRepo.FindBy(e => e.Id == MusteriId).FirstOrDefault();
-                if (musteri != null)
-                    return musteri.Adres.AcikAdres + " " + musteri.Adres.PostaKodu + " " + musteri.Adres.Ilce + " - " + musteri.Adres.Il + " / " + musteri.Adres.Ulke;
-                else
+                if (musteri == null)
                     return "";
+                var adres = musteri.Adres;
+                if (adres == null)
+                    return "";
+                return adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
             }
         }
 

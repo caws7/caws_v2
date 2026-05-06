@@ -295,8 +295,19 @@
     function SiparisDetayiGoruntule(_siparisId) {
         var url = '@Url.Action("SiparisDetayGoruntule", "Siparis")';
 
-        $('#searchResults').load(url, { SiparisId: _siparisId, raporMu: false });
+        $('#searchResults').html('<div style="text-align:center;padding:40px;color:#666;"><i class="material-icons" style="font-size:48px;vertical-align:middle;">sync</i><br/><span>Yükleniyor...</span></div>');
         $('#showDuzenleModal').modal('show');
+
+        $('#searchResults').load(url, { SiparisId: _siparisId, raporMu: false }, function (response, status, xhr) {
+            if (status === 'error') {
+                $('#searchResults').html(
+                    '<div class="alert alert-danger" style="margin:20px;">' +
+                    '<strong>Sipariş detayı yüklenemedi.</strong><br/>' +
+                    'Hata: ' + xhr.status + ' ' + xhr.statusText +
+                    '<br/><button class="btn btn-default" style="margin-top:10px;" onclick="$(\'#showDuzenleModal\').modal(\'hide\')">Kapat</button>' +
+                    '</div>');
+            }
+        });
     }
 
     function SiparisIndir(_siparisId) {

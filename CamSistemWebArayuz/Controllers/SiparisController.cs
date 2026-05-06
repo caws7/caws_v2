@@ -731,6 +731,19 @@ namespace CamSistemWebArayuz.Controllers
         [AuthLog(Roles = "SİPARİS,GORUNTULEME")]
         public ActionResult SiparisDetayGoruntule(long SiparisId, bool raporMu)
         {
+            try
+            {
+            return SiparisDetayGoruntuleInternal(SiparisId, raporMu);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] Hata SiparisId=" + SiparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                return Content("<div class='alert alert-danger' style='margin:20px;'><strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>" + System.Web.HttpUtility.HtmlEncode(ex.Message) + "<br/><button class='btn btn-default' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button></div>");
+            }
+        }
+
+        private ActionResult SiparisDetayGoruntuleInternal(long SiparisId, bool raporMu)
+        {
             // null-safe repo nesneleri
             var siparisRepo = new SiparisRepo();
             var sebaRepo = new SiparisEnBoyAdetRepo();

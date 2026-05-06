@@ -166,21 +166,24 @@
         <div class="modal-body">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs tab-nav-right tab-col-amber" role="tablist">
+                @{ bool ilkGiyotinImalatTab = true; }
                 @foreach (var item in Model)
                 {
-                    <li role="presentation">
-                        <a href="#@item.GirilenEn@item.GirilenBoy@item.GirilenAdet" data-toggle="tab">
+                    <li role="presentation" class="@(ilkGiyotinImalatTab ? "active" : "")">
+                        <a href="#gtab_@item.Id" data-toggle="tab">
                             @item.GirilenEn/@item.GirilenBoy/@item.GirilenAdet
                         </a>
                     </li>
+                    ilkGiyotinImalatTab = false;
                 }
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
+                @{ bool ilkGiyotinImalatPane = true; }
                 @foreach (var item in Model)
                 {
-                    <div role="tabpanel" class="tab-pane fade" id="@item.GirilenEn@item.GirilenBoy@item.GirilenAdet">
-                        <div id="imalatyazdir_@item.GirilenEn+@item.GirilenBoy+@item.GirilenAdet">
+                    <div role="tabpanel" class="tab-pane fade @(ilkGiyotinImalatPane ? "in active" : "")" id="gtab_@item.Id">
+                        <div id="imalatyazdir_@item.Id">
 
                             <!-- İmalat tablo başlangıç-->
                             <table class="table table-bordered">
@@ -323,11 +326,12 @@
                             <!-- İmalat tablo bitiş-->
                             @Html.Raw(ViewBag.SiparisAciklamasi)
                         </div>
-                        <button type="button" onclick="PrintElem('imalatyazdir_@item.GirilenEn+@item.GirilenBoy+@item.GirilenAdet')" class="btn bg-red waves-effect waves-light pull-right">
+                        <button type="button" onclick="PrintElem('imalatyazdir_@item.Id')" class="btn bg-red waves-effect waves-light pull-right">
                             <i class="material-icons">print</i>
                             <span>YAZDIR</span>
                         </button>
                     </div>
+                    @{ ilkGiyotinImalatPane = false; }
                 }
             </div>
         </div>
