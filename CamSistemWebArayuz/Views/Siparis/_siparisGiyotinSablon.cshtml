@@ -287,7 +287,7 @@
                                     {
                                         <tr>
                                             @{ 
-                                                if (item2.ProfilKodu.Split('-').Length > 2)
+                                                if (item2.ProfilKodu != null && item2.ProfilKodu.Split('-').Length > 2)
                                                 {
                                                     var kod = item2.ProfilKodu.Split('-');
                                                     @Html.Raw("<td>")
@@ -317,7 +317,7 @@
                                             <td colspan=2>@Html.DisplayFor(modelItem => item2.ProfilAdi)</td>
                                             <td>@Html.DisplayFor(modelItem => item2.KesimOlcusu)</td>
                                             <td>@Html.DisplayFor(modelItem => item2.KesimAdet)</td>
-                                            <td>@string.Format("{0:0.000}", ((double)item2.BirimAgirlik / 1000))</td>
+                                            <td>@string.Format("{0:0.000}", ((double)(item2.BirimAgirlik ?? 0) / 1000))</td>
                                             <td>@string.Format("{0:0.00}", item2.ToplamAgirlik)</td>
                                         </tr>
                                     }
@@ -589,20 +589,33 @@
                                     </tr>
                                 </thead>
                                 <tfoot>
+                                    @{
+                                        decimal? toplamMaliyet = null;
+                                        decimal? m2 = null;
+                                        decimal? teklif = null;
+                                        if (item.teklifToplamDetay != null)
+                                        {
+                                            toplamMaliyet = item.teklifToplamDetay.ToplamMaliyet;
+                                            m2 = item.teklifToplamDetay.m2;
+                                            teklif = item.teklifToplamDetay.Teklif;
+                                        }
+                                    }
                                     <tr>
                                         <th colspan=7 class="text-right">TOPLAM MALİYET</th>
-                                        <th>@Html.Raw(string.Format("{0:c2}", item.teklifToplamDetay.ToplamMaliyet))</th>
+                                        <th>@Html.Raw(string.Format("{0:c2}", toplamMaliyet.GetValueOrDefault(0)))</th>
                                     </tr>
                                     <tr>
                                         <th colspan=7 class="text-right">M2</th>
-                                        <th>@Html.Raw(string.Format("{0:c2}", item.teklifToplamDetay.m2))</th>
+                                        <th>@Html.Raw(string.Format("{0:c2}", m2.GetValueOrDefault(0)))</th>
                                     </tr>
                                     <tr>
                                         <th colspan=7 class="text-right">TEKLİF</th>
-                                        <th>@Html.Raw(string.Format("{0:c2}", item.teklifToplamDetay.Teklif))</th>
+                                        <th>@Html.Raw(string.Format("{0:c2}", teklif.GetValueOrDefault(0)))</th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
+                                    @if (item.teklifList != null)
+                                    {
                                     @foreach (var item2 in item.teklifList)
                                     {
                     <tr>
@@ -641,6 +654,7 @@
                         </td>
                     </tr>
                 }
+                                    }
                                 </tbody>
                             </table>
                         </div>
@@ -733,16 +747,18 @@
                                 {
                 <tr>
                     <td style="text-align:center;vertical-align:middle;">
-                        @Html.DisplayFor(modelItem => item2.profil.ProfilKodu)
+                        @(item2.profil != null ? item2.profil.ProfilKodu : "")
                     </td>
                     <td style="text-align:center;vertical-align:middle;">
-                        @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item2.profil.ProfilFoto) + "' />")
+                        @if (item2.profil != null) {
+                            @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item2.profil.ProfilFoto) + "' />")
+                        }
                     </td>
                     <td style="vertical-align:middle;">
-                        @Html.DisplayFor(modelItem => item2.profil.ProfilAdi)
+                        @(item2.profil != null ? item2.profil.ProfilAdi : "")
                     </td>
                     <td style="text-align:center;vertical-align:middle;">
-                        @Html.DisplayFor(modelItem => item2.profil.BirimAgirlik)
+                        @(item2.profil?.BirimAgirlik?.ToString() ?? "")
                     </td>
                     <td style="text-align:center;vertical-align:middle;">
                         @Html.DisplayFor(modelItem => item2.ProfilBoy)

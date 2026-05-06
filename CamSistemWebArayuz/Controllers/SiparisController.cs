@@ -762,11 +762,9 @@ namespace CamSistemWebArayuz.Controllers
             ViewBag.SiparisDurumu = (siparis.DurumId == (int)Durumlar.Onaylandı || siparis.DurumId == (int)Durumlar.ImalataGonderildi || siparis.DurumId == (int)Durumlar.Sevkiyatta);
 
             List<SiparisEnBoyAdet> siparisAdet = sebaRepo.FindBy(e => e.SiparisId == siparis.Id).ToList();
-            List<SiparisTeklif> teklifListesi = siparisTeklifRepo.GetAll().ToList();
 
             List<SiparisEnBoyAdet> siparisTumDetay = new List<SiparisEnBoyAdet>();
             var siparisCam = siparisCamRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault() ?? new SiparisCam { CamKombinasyon = "" };
-
             // Dosya listesi null-safe
             ViewBag.aciklamaDosyaList = null;
             if (!string.IsNullOrWhiteSpace(siparis.DosyaIds))
