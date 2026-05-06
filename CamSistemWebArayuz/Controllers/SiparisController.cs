@@ -854,19 +854,19 @@ namespace CamSistemWebArayuz.Controllers
                 int effectiveAltSistemId = (item.AltSistemId.HasValue && item.AltSistemId.Value > 0) ? item.AltSistemId.Value : (int)(siparis.AltSistemId ?? 0);
                 int effectiveSistemTurId = (item.SistemTurId.HasValue && item.SistemTurId.Value > 0) ? item.SistemTurId.Value : (int)(siparis.SistemTurId ?? 0);
 
-                List<Profil> profilList = null;
+                List<Profil> profilList = new List<Profil>();
                 try
                 {
                     profilList = SiparisHesaplamalari.profilHesaplama(
                         siparis.Id, girilenEn, girilenSolEn, girilenBoy, girilenAdet,
-                        item.SistemId, item.AltSistemId, item.SistemTurId);
+                        item.SistemId, item.AltSistemId, item.SistemTurId) ?? new List<Profil>();
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] profilHesaplama hatası item.Id=" + item.Id + ": " + ex.Message);
+                    System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] profilHesaplama hatası item.Id=" + item.Id + ": " + ex.GetType().Name + ": " + ex.Message + (ex.InnerException != null ? " --> " + ex.InnerException.Message : ""));
                 }
 
-                List<CamBilgileri> camBilgileriList = null;
+                List<CamBilgileri> camBilgileriList = new List<CamBilgileri>();
                 try
                 {
                     camBilgileriList = SiparisHesaplamalari.CamYukseklikHesapla(
@@ -877,11 +877,11 @@ namespace CamSistemWebArayuz.Controllers
                         girilenEn,
                         girilenSolEn,
                         girilenAdet
-                    );
+                    ) ?? new List<CamBilgileri>();
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] CamYukseklikHesapla hatası item.Id=" + item.Id + ": " + ex.Message);
+                    System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] CamYukseklikHesapla hatası item.Id=" + item.Id + ": " + ex.GetType().Name + ": " + ex.Message + (ex.InnerException != null ? " --> " + ex.InnerException.Message : ""));
                 }
 
                 ProfilDetayBilgileri profilDetay = new ProfilDetayBilgileri();
@@ -903,7 +903,6 @@ namespace CamSistemWebArayuz.Controllers
                     ent.camList = new List<CamBilgileri>();
                 }
 
-                if (profilList == null) profilList = new List<Profil>();
                 profilDetay.ToplamPresKG = profilList.Sum(e => e.ToplamAgirlik);
                 profilDetay.ToplamBoyaliKG = profilDetay.ToplamPresKG * 1.035;
 
@@ -1071,8 +1070,15 @@ namespace CamSistemWebArayuz.Controllers
                 ViewBag.SiparisAciklamasi = "<div class='alert alert-danger'><strong>" + SiparisId + " Nolu Sipariş Açıklaması:</strong> " + siparis.Aciklama + "</div>";
 
             ViewBag.raporMu = raporMu;
-            try { ViewBag.minimumFire = sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault()?.SabitDeger ?? 0; }
-            catch { ViewBag.minimumFire = 0; }
+            try
+            {
+                ViewBag.minimumFire = sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault()?.SabitDeger ?? 0;
+            }
+            catch (Exception exSabit)
+            {
+                System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] minimumFire sorgu hatası: " + exSabit.GetType().Name + ": " + exSabit.Message);
+                ViewBag.minimumFire = 0;
+            }
 
             // Select view: check order-level SistemId AND per-row SistemIds for Giyotin Sabit Sistem
             var giyotinIds = new[] { 5, 2006, 2010 };
