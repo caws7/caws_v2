@@ -1,5 +1,6 @@
 ﻿using CamSistemDataLayer.Repos;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CamSistemDataLayer.Models
 {
