@@ -775,7 +775,7 @@
                                     @(item2.profil != null ? item2.profil.ProfilAdi : "")
                                 </td>
                                 <td style="text-align:center;vertical-align:middle;">
-                                    @(item2.profil?.BirimAgirlik?.ToString() ?? "")
+                                    @(item2.profil != null && item2.profil.BirimAgirlik != null ? item2.profil.BirimAgirlik.Value.ToString() : "")
                                 </td>
                                 <td style="text-align:center;vertical-align:middle;">
                                     @(item2.KesimAdet + "x" + item2.ProfilBoy)

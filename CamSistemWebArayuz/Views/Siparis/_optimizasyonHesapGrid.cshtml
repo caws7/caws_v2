@@ -97,7 +97,7 @@ else
                         @(r.profil != null ? r.profil.ProfilAdi : "")
                     </td>
                     <td style="text-align:center;vertical-align:middle;">
-                        @(r.profil != null ? r.profil.BirimAgirlik?.ToString() ?? "" : "")
+                        @(r.profil != null && r.profil.BirimAgirlik != null ? r.profil.BirimAgirlik.Value.ToString() : "")
                     </td>
                     <td style="text-align:center;vertical-align:middle;">@(r.KesimAdet + "x" + r.ProfilBoy)</td>
                     <td style="word-wrap:break-word;min-width:160px;max-width:220px;vertical-align:middle;">
