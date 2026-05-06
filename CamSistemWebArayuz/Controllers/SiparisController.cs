@@ -711,23 +711,8 @@ namespace CamSistemWebArayuz.Controllers
                     sebaRepo.AddAndSave(enBoyAdetModel);
                 }
 
-                // PROFİL GÖNDERİM -> OPTİMİZASYON HESAPLA ve DB'ye yaz
-                if (siparisEntity.SiparisTur == "Profil Gönderim")
-                {
-                    try
-                    {
-                        var output = RunOptimizerForSiparis(new List<long> { siparisEntity.Id }, fireKullanilsinMi: false);
-                        if (output != null)
-                        {
-                            var currentUser2 = (Kullanici)Session["CurrentUser"];
-                            SaveOptimizasyonHesaplar(output, siparisEntity.Id.ToString(), currentUser2?.Id ?? 0);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine("[SiparisKaydet] Profil optimizasyon hatası SiparisId=" + siparisEntity.Id + ": " + ex.Message);
-                    }
-                }
+                // Sipariş oluşturulduğunda optimizasyonu çalıştır (tüm sipariş türleri için)
+                GetOrRunOptimizasyonHesaps(siparisEntity.Id);
 
                 ViewBag.RecordResult = 1;
                 ModelState.Clear();
@@ -1013,6 +998,9 @@ namespace CamSistemWebArayuz.Controllers
                     siparis.OnayIptalTarihi = DateTime.Now;
                     siparis.GuncellemeTarihi = DateTime.Now;
                     siparisRepo.EditAndSave(siparis);
+
+                    // Henüz optimizasyon yapılmamışsa şimdi çalıştır
+                    GetOrRunOptimizasyonHesaps(SiparisId);
 
                     return Json("OK", JsonRequestBehavior.AllowGet);
                 }

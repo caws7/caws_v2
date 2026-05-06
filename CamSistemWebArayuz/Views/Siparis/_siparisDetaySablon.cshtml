@@ -37,22 +37,29 @@
 </style>
 
 <script>
-    function OptimizasyonHesapla(siparisId) {
+    function OptimizasyonHesapla(siparisId, _retryCount) {
         if (!siparisId) {
             Swal.fire("Hata", "Sipariş ID bulunamadı.", "error");
             return;
         }
 
-        $("#optimizasyonContent").html("Hesaplanıyor...");
+        var retryCount = _retryCount || 0;
+        $("#optimizasyonContent").html('<div style="text-align:center;padding:20px;color:#666;"><i class="material-icons" style="font-size:36px;vertical-align:middle;">sync</i> Hesaplanıyor...</div>');
 
         $.ajax({
             type: "POST",
             url: '@Url.Action("OptimizasyonHesapla", "Siparis")',
-            data: { SiparisId: siparisId }
+            data: { SiparisId: siparisId },
+            timeout: 300000 // 5-minute timeout to allow for longer optimization computations
         }).done(function (html) {
             $("#optimizasyonContent").html(html);
         }).fail(function (xhr) {
-            $("#optimizasyonContent").html("Hata: " + xhr.status + " " + xhr.statusText);
+            if (xhr.status === 500 && retryCount < 1) {
+                // Optimizer may have completed on server side; retry to fetch the saved result
+                setTimeout(function () { OptimizasyonHesapla(siparisId, 1); }, 2000);
+            } else {
+                $("#optimizasyonContent").html('<div class="alert alert-danger">Optimizasyon hesaplanamadı. Lütfen yeniden deneyin.</div>');
+            }
         });
     }
 
@@ -672,20 +679,34 @@
 
             @if (!optiDataVar)
             {
-                <div class="alert alert-warning">
-                    Bu sipariş için optimizasyon kaydı bulunamadı. Teklif aşamasında da görüntülemek için aşağıdaki buton ile hesaplayabilirsiniz.
+                @{
+                    var optiSiparisId = first != null && first.siparisModel != null ? first.siparisModel.Id.ToString() : "";
+                }
+
+                <div id="optimizasyonContent">
+                    <div style="text-align:center;padding:30px;color:#666;">
+                        <i class="material-icons" style="font-size:48px;vertical-align:middle;">sync</i><br />
+                        <span>Optimizasyon yükleniyor...</span>
+                    </div>
                 </div>
 
-                if (!(ViewBag.raporMu ?? false))
+                @if (!(ViewBag.raporMu ?? false))
                 {
                     <button type="button"
                             class="btn bg-blue waves-effect"
-                            onclick="OptimizasyonHesapla('@(first != null && first.siparisModel != null ? first.siparisModel.Id.ToString() : "")')">
-                        OPTİMİZASYON HESAPLA
+                            style="margin-top:10px;"
+                            onclick="OptimizasyonHesapla('@optiSiparisId')">
+                        OPTİMİZASYON YENİDEN HESAPLA
                     </button>
                 }
 
-                <div id="optimizasyonContent"></div>
+                <script>
+                    $(document).ready(function () {
+                        $('a[href="#optimizasyon"]').one('shown.bs.tab', function () {
+                            OptimizasyonHesapla('@optiSiparisId');
+                        });
+                    });
+                </script>
             }
             else
             {
