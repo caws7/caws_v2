@@ -250,15 +250,13 @@
                                         <th>@Html.DisplayFor(model => item.siparisModel.Aksesuar)</th>
                                         <th>@Html.DisplayFor(model => item.siparisModel.RenkAdi)</th>
                                         <th>@Html.DisplayFor(model => item.siparisModel.Motor)</th>
-                                        @{ 
+                                        @{
                                             var girilenEn = Convert.ToDouble(item.GirilenEn);
                                             var girilenSolEn = Convert.ToDouble(item.GirilenSolEn);
                                             var girilenBoy = Convert.ToDouble(item.GirilenBoy);
                                             var sistemM2 = Convert.ToDouble((girilenEn + girilenSolEn) * girilenBoy / 1000000);
-                                            @Html.Raw("<th>")
-                                            @Html.Raw(string.Format("{0:0.00}", sistemM2))
-                                            @Html.Raw("</th>") 
                                         }
+                                        <th>@string.Format("{0:0.00}", sistemM2)</th>
                                     </tr>
                                     <tr>
                                         <th>NO</th>
@@ -286,33 +284,21 @@
                                     @foreach (var item2 in item.profilList)
                                     {
                                         <tr>
-                                            @{ 
-                                                if (item2.ProfilKodu != null && item2.ProfilKodu.Split('-').Length > 2)
-                                                {
-                                                    var kod = item2.ProfilKodu.Split('-');
-                                                    @Html.Raw("<td>")
-                                                    @Html.Raw(kod[0] + "-"+ kod[1])
-                                                    @Html.Raw("</td>")
-                                                    @Html.Raw("<td>")
-                                                    @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + kod[0] + "-" + kod[1] + ".jpg") + "' />")
-                                                    @Html.Raw("</td>") 
-                                                }
-                                                else
-                                                {
-                                                    if (item2.ProfilFoto != null)
-                                                    {
-                                                        @Html.Raw("<td>")
-                                                        @Html.Raw(item2.ProfilKodu)
-                                                        @Html.Raw("</td>")
-                                                        @Html.Raw("<td>")
-                                                        @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item2.ProfilFoto) + "' />")
-                                                        @Html.Raw("</td>") 
-                                                    }
-                                                    else
-                                                    {
-                                                        @Html.Raw("<td>" + item2.ProfilKodu + "</td><td></td>") 
-                                                    }
-                                                } 
+                                            @if (item2.ProfilKodu != null && item2.ProfilKodu.Split('-').Length > 2)
+                                            {
+                                                var kod = item2.ProfilKodu.Split('-');
+                                                <td>@(kod[0] + "-" + kod[1])</td>
+                                                <td><img class="img-responsive img-thumbnailProf" src='@(Url.Content("~/images/profilicons/" + kod[0] + "-" + kod[1] + ".jpg"))' /></td>
+                                            }
+                                            else if (item2.ProfilFoto != null)
+                                            {
+                                                <td>@item2.ProfilKodu</td>
+                                                <td><img class="img-responsive img-thumbnailProf" src='@(Url.Content("~/images/profilicons/" + item2.ProfilFoto))' /></td>
+                                            }
+                                            else
+                                            {
+                                                <td>@item2.ProfilKodu</td>
+                                                <td></td>
                                             }
                                             <td colspan=2>@Html.DisplayFor(modelItem => item2.ProfilAdi)</td>
                                             <td>@Html.DisplayFor(modelItem => item2.KesimOlcusu)</td>
@@ -419,15 +405,13 @@
                                         <th>@Html.DisplayFor(model => item.siparisModel.Aksesuar)</th>
                                         <th>@Html.DisplayFor(model => item.siparisModel.RenkAdi)</th>
                                         <th>@Html.DisplayFor(model => item.siparisModel.Motor)</th>
-                                        @{ 
+                                        @{
                                             var girilenEn = Convert.ToDouble(item.GirilenEn);
                                             var girilenSolEn = Convert.ToDouble(item.GirilenSolEn);
                                             var girilenBoy = Convert.ToDouble(item.GirilenBoy);
                                             var sistemM2 = Convert.ToDouble((girilenEn + girilenSolEn) * girilenBoy / 1000000);
-                                            @Html.Raw("<th>")
-                                            @Html.Raw(string.Format("{0:0.00}", sistemM2))
-                                            @Html.Raw("</th>") 
                                         }
+                                        <th>@string.Format("{0:0.00}", sistemM2)</th>
                                     </tr>
                                     <tr>
                                         <th colspan="2"></th>
@@ -567,15 +551,13 @@
                                         <th>@Html.DisplayFor(model => item.siparisModel.Aksesuar)</th>
                                         <th>@Html.DisplayFor(model => item.siparisModel.RenkAdi)</th>
                                         <th>@Html.DisplayFor(model => item.siparisModel.Motor)</th>
-                                        @{ 
+                                        @{
                                             var girilenEn = Convert.ToDouble(item.GirilenEn);
                                             var girilenSolEn = Convert.ToDouble(item.GirilenSolEn);
                                             var girilenBoy = Convert.ToDouble(item.GirilenBoy);
                                             var sistemM2 = Convert.ToDouble((girilenEn + girilenSolEn) * girilenBoy / 1000000);
-                                            @Html.Raw("<th>")
-                                            @Html.Raw(string.Format("{0:0.00}", sistemM2))
-                                            @Html.Raw("</th>") 
                                         }
+                                        <th>@string.Format("{0:0.00}", sistemM2)</th>
                                     </tr>
                                     <tr>
                                         <th>No</th>
@@ -774,17 +756,17 @@
                     <td style="text-align:center;vertical-align:middle;">
                         @Html.DisplayFor(modelItem => item2.KesimAdet)
                     </td>
-                    @{ var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0);
-
-                        if ((item2.FireAtik ?? 0) > fireLimit)
-                        {
-
-        @Html.Raw("<th class='bg-light-green' style='text-align:center;vertical-align:middle;'>") }
-        else
-        {
-        @Html.Raw("<th class='bg-red' style='text-align:center;vertical-align:middle;'>") }
-        @Html.Raw(item2.FireAtik)
-                            @Html.Raw("</th>") }
+                    @{
+                        var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0);
+                    }
+                    @if ((item2.FireAtik ?? 0) > fireLimit)
+                    {
+                        <th class="bg-light-green" style="text-align:center;vertical-align:middle;">@item2.FireAtik</th>
+                    }
+                    else
+                    {
+                        <th class="bg-red" style="text-align:center;vertical-align:middle;">@item2.FireAtik</th>
+                    }
                 </tr>
         }
                             </tbody>
