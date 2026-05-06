@@ -1,4 +1,5 @@
-﻿using CamSistemDataLayer.Repos;
+﻿using System;
+using CamSistemDataLayer.Repos;
 using System.Linq;
 
 namespace CamSistemDataLayer.Models
