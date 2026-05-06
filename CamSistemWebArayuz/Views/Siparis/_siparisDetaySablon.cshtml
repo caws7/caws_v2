@@ -3,24 +3,26 @@
 @using System.Linq;
 
 @functions {
-    string FormatKesimOlculer(string olcular)
+    string FormatKesimOlculer(string olcular, string pozLabel = "POZ1")
     {
         if (string.IsNullOrEmpty(olcular)) return "";
+        var pozHtml = "<span style='color:green;font-weight:bold;'>[" + pozLabel + "]</span>";
         var parts = olcular.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
         var grouped = parts.GroupBy(x => x)
-                           .Select(g => g.Count() + "x" + g.Key);
+                           .Select(g => pozHtml + g.Count() + "x" + g.Key);
         return string.Join(", ", grouped);
     }
 
-    string FormatKesimPlani(string olcular)
+    string FormatKesimPlani(string olcular, string pozLabel = "POZ1")
     {
         if (string.IsNullOrEmpty(olcular)) return "";
+        var pozHtml = "<span style='color:green;font-weight:bold;'>[" + pozLabel + "]</span>";
         var cuts = olcular.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
         var sb = new System.Text.StringBuilder();
         sb.Append("<span style='color:red;font-weight:bold;'>(4)</span>");
         foreach (var cut in cuts)
         {
-            sb.Append("," + cut + ",<span style='color:red;font-weight:bold;'>(4)</span>");
+            sb.Append("," + pozHtml + cut + ",<span style='color:red;font-weight:bold;'>(4)</span>");
         }
         return sb.ToString();
     }
@@ -711,7 +713,7 @@
                         </tr>
                         <tr>
                             <th>İmalat Ölçüleri</th>
-                            <th colspan="4">@string.Join(" | ", Model.Select(m => m.GirilenEn + "/" + m.GirilenBoy + "/" + m.GirilenAdet).Distinct())</th>
+                            <th colspan="4">@string.Join(" | ", Model.Select((m, i) => "POZ" + (i + 1) + "- " + m.GirilenEn + "x" + m.GirilenBoy + "/" + m.GirilenAdet + " Adet"))</th>
                             <th colspan="4">@Html.DisplayFor(model => first.siparisModel.SistemTamami) @Html.DisplayFor(model => first.siparisModel.MusteriTamAdi)</th>
                         </tr>
                         <tr>
@@ -763,9 +765,26 @@
                         </tr>
                     </tfoot>
                     <tbody>
-                        @{ var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0); }
+                        @{
+                            var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0);
+                            var orderItems = Model.ToArray();
+                            var profilPozMap = new System.Collections.Generic.Dictionary<int, int>();
+                            for (int positionIndex = 0; positionIndex < orderItems.Length; positionIndex++) {
+                                if (orderItems[positionIndex].profilList != null) {
+                                    foreach (var pf in orderItems[positionIndex].profilList) {
+                                        if (!profilPozMap.ContainsKey(pf.Id)) {
+                                            profilPozMap[pf.Id] = positionIndex + 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         @foreach (var item2 in optiList)
                         {
+                            var pozLabel = "POZ1";
+                            if (item2.ProfilId.HasValue && profilPozMap.ContainsKey(item2.ProfilId.Value)) {
+                                pozLabel = "POZ" + profilPozMap[item2.ProfilId.Value];
+                            }
                             <tr>
                                 <td style="text-align:center;vertical-align:middle;">
                                     @(item2.profil != null ? item2.profil.ProfilKodu : "")
@@ -785,10 +804,10 @@
                                     @(item2.KesimAdet + "x" + item2.ProfilBoy)
                                 </td>
                                 <td style="word-wrap:break-word;min-width:160px;max-width:220px;vertical-align:middle;">
-                                    @Html.Raw(FormatKesimPlani(item2.KesilecekOlculer))
+                                    @Html.Raw(FormatKesimPlani(item2.KesilecekOlculer, pozLabel))
                                 </td>
                                 <td style="word-wrap: break-word;min-width: 140px;max-width: 180px;vertical-align:middle;">
-                                    @FormatKesimOlculer(item2.KesilecekOlculer)
+                                    @Html.Raw(FormatKesimOlculer(item2.KesilecekOlculer, pozLabel))
                                 </td>
                                 @if ((item2.FireAtik ?? 0) > fireLimit)
                                 {

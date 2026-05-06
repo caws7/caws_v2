@@ -2,24 +2,26 @@
 @using System.Linq;
 
 @functions {
-    string FormatKesimOlculer(string olcular)
+    string FormatKesimOlculer(string olcular, string pozLabel = "POZ1")
     {
         if (string.IsNullOrEmpty(olcular)) return "";
+        var pozHtml = "<span style='color:green;font-weight:bold;'>[" + pozLabel + "]</span>";
         var parts = olcular.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
         var grouped = parts.GroupBy(x => x)
-                           .Select(g => g.Count() + "x" + g.Key);
+                           .Select(g => pozHtml + g.Count() + "x" + g.Key);
         return string.Join(", ", grouped);
     }
 
-    string FormatKesimPlani(string olcular)
+    string FormatKesimPlani(string olcular, string pozLabel = "POZ1")
     {
         if (string.IsNullOrEmpty(olcular)) return "";
+        var pozHtml = "<span style='color:green;font-weight:bold;'>[" + pozLabel + "]</span>";
         var cuts = olcular.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
         var sb = new System.Text.StringBuilder();
         sb.Append("<span style='color:red;font-weight:bold;'>(4)</span>");
         foreach (var cut in cuts)
         {
-            sb.Append("," + cut + ",<span style='color:red;font-weight:bold;'>(4)</span>");
+            sb.Append("," + pozHtml + cut + ",<span style='color:red;font-weight:bold;'>(4)</span>");
         }
         return sb.ToString();
     }
@@ -104,7 +106,7 @@ else
                         @Html.Raw(FormatKesimPlani(r.KesilecekOlculer))
                     </td>
                     <td style="word-wrap:break-word;min-width:140px;max-width:180px;vertical-align:middle;">
-                        @FormatKesimOlculer(r.KesilecekOlculer)
+                        @Html.Raw(FormatKesimOlculer(r.KesilecekOlculer))
                     </td>
                     <td class="@fireColor" style="text-align:center;vertical-align:middle;">@r.FireAtik</td>
                 </tr>

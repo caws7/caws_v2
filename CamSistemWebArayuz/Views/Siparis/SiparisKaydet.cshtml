@@ -118,7 +118,7 @@
 
         return '<div class="siparis-row" id="row_' + idx + '" data-row-index="' + idx + '">'
             // POZ label (vertical)
-            + '<span class="row-poz-label">POZ' + pozNum + '</span>'
+            + '<span class="row-poz-label" data-poz-num="' + pozNum + '">POZ' + pozNum + '</span>'
             // Sistem
             + '<select class="form-control row-sistem" data-row="' + idx + '" style="min-width:170px;display:inline-block;vertical-align:top;margin-right:6px;">'
             + sistemOptions
@@ -172,10 +172,35 @@
             + '</div>';
     }
 
+    function updatePozLabel(idx) {
+        var rowSel = '#row_' + idx;
+        var label = $(rowSel + ' .row-poz-label');
+        var pozNum = label.data('poz-num');
+        var en = $(rowSel + ' .row-en').val();
+        var boy = $(rowSel + ' .row-boy').val();
+        var adet = $(rowSel + ' .row-adet').val();
+        var newText = 'POZ' + pozNum;
+        if (en && boy && adet) {
+            newText += '- ' + en + 'x' + boy + '/' + adet + ' Adet';
+        }
+        label.text(newText);
+    }
+
     function renumberRows() {
         var pozNum = 1;
         $('.siparis-row').each(function () {
-            $(this).find('.row-poz-label').text('POZ' + pozNum);
+            var row = $(this);
+            var idx = row.data('row-index');
+            var label = row.find('.row-poz-label');
+            label.data('poz-num', pozNum);
+            var en = row.find('.row-en').val();
+            var boy = row.find('.row-boy').val();
+            var adet = row.find('.row-adet').val();
+            var newText = 'POZ' + pozNum;
+            if (en && boy && adet) {
+                newText += '- ' + en + 'x' + boy + '/' + adet + ' Adet';
+            }
+            label.text(newText);
             pozNum++;
         });
     }
@@ -197,6 +222,10 @@
         // AltSistem change
         $(rowSel + ' .row-altsistem').on('change', function () {
             rowAltSistemChanged(idx, $(this).val());
+        });
+        // Update POZ label when En, Boy, Adet change
+        $(rowSel + ' .row-en, ' + rowSel + ' .row-boy, ' + rowSel + ' .row-adet').on('input change', function () {
+            updatePozLabel(idx);
         });
     }
 
