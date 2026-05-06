@@ -300,7 +300,7 @@ namespace CamSistemDataLayer.BussinesLogic
                         || item.ProfilKodu.Contains("SS-132") || item.ProfilKodu.Contains("SS-130") || item.ProfilKodu.Contains("SS-128") || item.ProfilKodu.Contains("SS-126")
                         || item.ProfilKodu.Contains("SS-124") || item.ProfilKodu.Contains("SS-121") || item.ProfilKodu.Contains("SS-118") || item.ProfilKodu.Contains("SS-117")
                         || item.ProfilKodu.Contains("SS-135") || item.ProfilKodu.Contains("SS-136") || item.ProfilKodu.Contains("SS-120") || item.ProfilKodu.Contains("T-2456") 
-                        || item.ProfilKodu.Contains("T-2457") || item.ProfilKodu.Contains("T-2400") || item.ProfilKodu.Contains("KAR-4873") || item.ProfilKodu.Contains("KAR-4862"))
+                        || item.ProfilKodu.Contains("T-2457") || item.ProfilKodu.Contains("T-2400") || item.ProfilKodu.Contains("KAR-4873") || item.ProfilKodu.Contains("KAR-4862")))
                     {
                         if (item.ProfilKodu.Split('-').Length > 2)
                         {
