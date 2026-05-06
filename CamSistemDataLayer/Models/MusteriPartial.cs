@@ -1,4 +1,5 @@
 ﻿using CamSistemDataLayer.Repos;
+using System;
 using System.Linq;
 
 namespace CamSistemDataLayer.Models
@@ -30,7 +31,7 @@ namespace CamSistemDataLayer.Models
                     AdresRepo adresRepo = new AdresRepo();
                     return adresRepo.FindBy(e => e.Id == AdresId).FirstOrDefault();
                 }
-                catch { return null; }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[Musteri.Adres] Hata AdresId=" + AdresId + ": " + ex.Message); return null; }
             }
         }
     }

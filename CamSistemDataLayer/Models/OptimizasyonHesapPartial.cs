@@ -15,10 +15,7 @@ namespace CamSistemDataLayer.Models
                     ProfilRepo profilRepo = new ProfilRepo();
                     return profilRepo.FindBy(e => e.Id == ProfilId).FirstOrDefault();
                 }
-                catch
-                {
-                    return null;
-                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[OptimizasyonHesap.profil] Hata ProfilId=" + ProfilId + ": " + ex.Message); return null; }
             }
         }
     }
