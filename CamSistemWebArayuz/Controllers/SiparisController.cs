@@ -55,15 +55,19 @@ namespace CamSistemWebArayuz.Controllers
         {
             if (filterContext.HttpContext.Request.IsAjaxRequest())
             {
-                System.Diagnostics.Debug.WriteLine("[SiparisController.OnException] Hata: " + filterContext.Exception?.Message + "\n" + filterContext.Exception?.StackTrace);
+                var ex = filterContext.Exception;
+                var innerMsg = ex?.InnerException != null ? " | İç hata: " + ex.InnerException.Message : "";
+                System.Diagnostics.Debug.WriteLine("[SiparisController.OnException] Hata: " + ex?.GetType().Name + ": " + ex?.Message + innerMsg + "\n" + ex?.StackTrace);
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.TrySkipIisCustomErrors = true;
                 filterContext.HttpContext.Response.StatusCode = 200;
+                string hataDetay = System.Web.HttpUtility.HtmlEncode((ex?.GetType().Name ?? "Hata") + ": " + ex?.Message + innerMsg);
                 filterContext.Result = new ContentResult
                 {
                     Content = "<div class='alert alert-danger' style='margin:20px;'>" +
                               "<strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>" +
-                              "Lütfen sayfayı yenileyip tekrar deneyin.<br/>" +
+                              "Lütfen veritabanı migrasyonunu çalıştırdığınızdan emin olun (<em>Migrations/Add_Missing_Tables_And_Columns.sql</em>).<br/>" +
+                              "<small style='color:#a94442;'>" + hataDetay + "</small><br/>" +
                               "<button class='btn btn-default' style='margin-top:10px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
                               "</div>",
                     ContentType = "text/html"
@@ -161,19 +165,19 @@ namespace CamSistemWebArayuz.Controllers
             SiparisEnBoyAdetRepo sebaRepo = new SiparisEnBoyAdetRepo();
 
             // fire stok
-            int fireMinDeger = (int)sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault().SabitDeger;
+            int fireMinDeger = (int?)(sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault()?.SabitDeger) ?? 0;
             List<OptProfil> fireler = new List<OptProfil>();
             List<AtikStok> atikStok = asRepo.GetAll().ToList();
 
             fire.minDeger = fireMinDeger;
             foreach (AtikStok item in atikStok)
             {
-                int fireVirtualBoy = (int)item.Olcu - BICHAK_PAYI;
+                int fireVirtualBoy = (int)(item.Olcu ?? 0) - BICHAK_PAYI;
                 if (fireVirtualBoy <= 0) continue;
                 Optimizasyon.Profil profil = new Optimizasyon.Profil();
-                profil.Adet = (int)item.Adet;
+                profil.Adet = (int)(item.Adet ?? 0);
                 profil.Boy = fireVirtualBoy;
-                profil.Profil_Kod = (int)item.ProfilId;
+                profil.Profil_Kod = (int)(item.ProfilId ?? 0);
                 fireler.Add(profil);
             }
             fire.Fireler = fireler;
@@ -189,19 +193,19 @@ namespace CamSistemWebArayuz.Controllers
                 Optimizasyon.Profil profil = new Optimizasyon.Profil();
                 if (item.OzelOlcu == null)
                 {
-                    profil.Profil_Kod = (int)item.ProfilId;
+                    profil.Profil_Kod = (int)(item.ProfilId ?? 0);
                     int profilId = Convert.ToInt32(item.ProfilId);
-                    profil.Gram = Convert.ToInt32(pRepo.FindBy(e => e.Id == profilId).FirstOrDefault().BirimAgirlik);
-                    profil.Boy = (int)pbRepo.FindBy(e => e.Id == item.ProfilBoyId).FirstOrDefault().ProfilBoyu;
-                    profil.Adet = (int)item.StokAdet;
+                    profil.Gram = Convert.ToInt32(pRepo.FindBy(e => e.Id == profilId).FirstOrDefault()?.BirimAgirlik ?? 0);
+                    profil.Boy = (int)(pbRepo.FindBy(e => e.Id == item.ProfilBoyId).FirstOrDefault()?.ProfilBoyu ?? 0);
+                    profil.Adet = (int)(item.StokAdet ?? 0);
                 }
                 else
                 {
                     int profilId = Convert.ToInt32(item.ProfilId);
-                    profil.Gram = Convert.ToInt32(pRepo.FindBy(e => e.Id == profilId).FirstOrDefault().BirimAgirlik);
-                    profil.Profil_Kod = (int)item.ProfilId;
-                    profil.Boy = (int)item.OzelOlcu;
-                    profil.Adet = (int)item.StokAdet;
+                    profil.Gram = Convert.ToInt32(pRepo.FindBy(e => e.Id == profilId).FirstOrDefault()?.BirimAgirlik ?? 0);
+                    profil.Profil_Kod = (int)(item.ProfilId ?? 0);
+                    profil.Boy = (int)(item.OzelOlcu ?? 0);
+                    profil.Adet = (int)(item.StokAdet ?? 0);
                 }
                 profiller.Add(profil);
             }
@@ -212,7 +216,7 @@ namespace CamSistemWebArayuz.Controllers
             foreach (var item in profilIds)
             {
                 Dictionary<int, int> dic = new Dictionary<int, int>();
-                dicProfilBirimAgirlik[item.Id] = (int)item.BirimAgirlik;
+                dicProfilBirimAgirlik[item.Id] = (int)(item.BirimAgirlik ?? 0);
 
                 List<Optimizasyon.Profil> profilList = profiller.Where(e => e.Profil_Kod == item.Id).ToList();
 
@@ -764,10 +768,21 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] Hata SiparisId=" + SiparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                // Log the full exception chain for diagnosis
+                var innerMsg = ex.InnerException != null ? " | İç hata: " + ex.InnerException.Message : "";
+                System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] Hata SiparisId=" + SiparisId + ": " + ex.GetType().Name + ": " + ex.Message + innerMsg + "\n" + ex.StackTrace);
                 Response.TrySkipIisCustomErrors = true;
                 Response.StatusCode = 200;
-                return Content("<div class='alert alert-danger' style='margin:20px;'><strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>Lütfen sayfayı yenileyip tekrar deneyin.<br/><button class='btn btn-default' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button></div>", "text/html");
+                // Include exception type/message in the visible error so the admin can diagnose DB schema issues
+                string hataDetay = System.Web.HttpUtility.HtmlEncode(ex.GetType().Name + ": " + ex.Message + innerMsg);
+                return Content(
+                    "<div class='alert alert-danger' style='margin:20px;'>" +
+                    "<strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>" +
+                    "Lütfen veritabanı migrasyonunu çalıştırdığınızdan emin olun (<em>Migrations/Add_Missing_Tables_And_Columns.sql</em>).<br/>" +
+                    "<small style='color:#a94442;'>" + hataDetay + "</small><br/>" +
+                    "<button class='btn btn-default' style='margin-top:10px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
+                    "</div>",
+                    "text/html");
             }
         }
 
@@ -790,10 +805,33 @@ namespace CamSistemWebArayuz.Controllers
 
             ViewBag.SiparisDurumu = (siparis.DurumId == (int)Durumlar.Onaylandı || siparis.DurumId == (int)Durumlar.ImalataGonderildi || siparis.DurumId == (int)Durumlar.Sevkiyatta);
 
-            List<SiparisEnBoyAdet> siparisAdet = sebaRepo.FindBy(e => e.SiparisId == siparis.Id).ToList();
+            // Her iki sorguyu da sararak veritabanı şema uyumsuzluklarına karşı koruma sağla.
+            // Eksik sütun/tablo hatası durumunda migrasyon scriptinin çalıştırılması gerektiğini belirt.
+            List<SiparisEnBoyAdet> siparisAdet;
+            try
+            {
+                siparisAdet = sebaRepo.FindBy(e => e.SiparisId == siparis.Id).ToList();
+            }
+            catch (Exception ex)
+            {
+                var inner = ex.InnerException?.Message ?? "";
+                throw new InvalidOperationException(
+                    "SiparisEnBoyAdet sorgusu başarısız. Veritabanı şeması güncel değil — lütfen Migrations/Add_Missing_Tables_And_Columns.sql scriptini çalıştırın. " +
+                    "Hata: " + ex.Message + (inner.Length > 0 ? " | " + inner : ""), ex);
+            }
 
             List<SiparisEnBoyAdet> siparisTumDetay = new List<SiparisEnBoyAdet>();
-            var siparisCam = siparisCamRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault() ?? new SiparisCam { CamKombinasyon = "" };
+            SiparisCam siparisCam;
+            try
+            {
+                siparisCam = siparisCamRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault()
+                             ?? new SiparisCam { CamKombinasyon = "" };
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntuleInternal] SiparisCam sorgusu başarısız, boş nesne kullanılıyor. Hata: " + ex.Message);
+                siparisCam = new SiparisCam { CamKombinasyon = "" };
+            }
             // Dosya listesi null-safe
             ViewBag.aciklamaDosyaList = null;
             if (!string.IsNullOrWhiteSpace(siparis.DosyaIds))
@@ -883,88 +921,106 @@ namespace CamSistemWebArayuz.Controllers
                 ent.siparisCam = siparisCam;
 
                 // ==== TEKLİF / MALİYET (SiparisTeklif) ====
-                var teklifSatirlari = siparisTeklifRepo
-                    .FindBy(t => t.SiparisEnBoyAdetId == item.Id)
-                    .OrderBy(t => t.Id)
-                    .ToList();
-
-                // Bu 6 kalem zorunlu: eksikse teklifi yeniden üret
-                bool zorunluEksikMi = false;
-                string[] zorunlular = new[]
+                // SiparisTeklif tablosu mevcut olmayabilir (migrasyon çalıştırılmamışsa).
+                // Bu durumda teklif bölümü boş bırakılır; view yine de açılır.
+                List<SiparisTeklif> teklifSatirlari = null;
+                try
                 {
-                    "ALÜMİNYUM",
-                    "CAM",
-                    "AKSESUAR SETİ",
-                    "İMALAT BEDELİ",
-                    "SARF MALZEME BEDELİ",
-                    "KAR PAYI"
-                };
-
-                if (teklifSatirlari == null || teklifSatirlari.Count == 0)
-                {
-                    zorunluEksikMi = true;
-                }
-                else
-                {
-                    foreach (var z in zorunlular)
-                    {
-                        if (!teklifSatirlari.Any(x => x.Malzeme != null &&
-                                                      x.Malzeme.Trim().Equals(z, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            zorunluEksikMi = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (zorunluEksikMi)
-                {
-                    var silinecekler = siparisTeklifRepo.FindBy(t => t.SiparisEnBoyAdetId == item.Id).ToList();
-                    foreach (var s in silinecekler)
-                        siparisTeklifRepo.DeleteAndSave(s);
-
-                    var siparisAksesuarList = siparisAksesuarRepo.FindBy(a => a.SiparisId == siparis.Id).ToList();
-                    List<Aksesuar> aksesuarEntities = null;
-                    if (siparisAksesuarList != null && siparisAksesuarList.Count > 0)
-                    {
-                        var aksesuarIds = siparisAksesuarList
-                            .Where(x => x.AksesuarId.HasValue)
-                            .Select(x => x.AksesuarId.Value)
-                            .ToList();
-                        aksesuarEntities = aksesuarRepo.FindBy(x => x.AktifMi == true && aksesuarIds.Contains(x.Id)).ToList();
-                    }
-
-                    var maliyetToplam = MaliyetHesapla.MaliyetHesaplama(
-                        aksesuarEntities,
-                        ent.camModel,
-                        siparisCam != null ? siparisCam.CamKombinasyon : "",
-                        item,
-                        siparis.Id
-                    );
-
-                    if (maliyetToplam != null && maliyetToplam.MaliyetList != null)
-                    {
-                        foreach (var m in maliyetToplam.MaliyetList)
-                        {
-                            var yeni = new SiparisTeklif
-                            {
-                                SiparisEnBoyAdetId = item.Id,
-                                Malzeme = m.Malzeme,
-                                Birim = m.Birim,
-                                Miktar = m.Miktar,
-                                BirimFiyat = m.BirimFiyat,
-                                ToplamTutar = m.ToplamTutar,
-                                KayitTarihi = DateTime.Now
-                            };
-
-                            siparisTeklifRepo.AddAndSave(yeni);
-                        }
-                    }
-
                     teklifSatirlari = siparisTeklifRepo
                         .FindBy(t => t.SiparisEnBoyAdetId == item.Id)
                         .OrderBy(t => t.Id)
                         .ToList();
+
+                    // Bu 6 kalem zorunlu: eksikse teklifi yeniden üret
+                    bool zorunluEksikMi = false;
+                    string[] zorunlular = new[]
+                    {
+                        "ALÜMİNYUM",
+                        "CAM",
+                        "AKSESUAR SETİ",
+                        "İMALAT BEDELİ",
+                        "SARF MALZEME BEDELİ",
+                        "KAR PAYI"
+                    };
+
+                    if (teklifSatirlari == null || teklifSatirlari.Count == 0)
+                    {
+                        zorunluEksikMi = true;
+                    }
+                    else
+                    {
+                        foreach (var z in zorunlular)
+                        {
+                            if (!teklifSatirlari.Any(x => x.Malzeme != null &&
+                                                          x.Malzeme.Trim().Equals(z, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                zorunluEksikMi = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (zorunluEksikMi)
+                    {
+                        var silinecekler = siparisTeklifRepo.FindBy(t => t.SiparisEnBoyAdetId == item.Id).ToList();
+                        foreach (var s in silinecekler)
+                            siparisTeklifRepo.DeleteAndSave(s);
+
+                        var siparisAksesuarList = siparisAksesuarRepo.FindBy(a => a.SiparisId == siparis.Id).ToList();
+                        List<Aksesuar> aksesuarEntities = null;
+                        if (siparisAksesuarList != null && siparisAksesuarList.Count > 0)
+                        {
+                            var aksesuarIds = siparisAksesuarList
+                                .Where(x => x.AksesuarId.HasValue)
+                                .Select(x => x.AksesuarId.Value)
+                                .ToList();
+                            aksesuarEntities = aksesuarRepo.FindBy(x => x.AktifMi == true && aksesuarIds.Contains(x.Id)).ToList();
+                        }
+
+                        var maliyetToplam = MaliyetHesapla.MaliyetHesaplama(
+                            aksesuarEntities,
+                            ent.camModel,
+                            siparisCam != null ? siparisCam.CamKombinasyon : "",
+                            item,
+                            siparis.Id
+                        );
+
+                        if (maliyetToplam != null && maliyetToplam.MaliyetList != null)
+                        {
+                            foreach (var m in maliyetToplam.MaliyetList)
+                            {
+                                var yeni = new SiparisTeklif
+                                {
+                                    SiparisEnBoyAdetId = item.Id,
+                                    Malzeme = m.Malzeme,
+                                    Birim = m.Birim,
+                                    Miktar = m.Miktar,
+                                    BirimFiyat = m.BirimFiyat,
+                                    ToplamTutar = m.ToplamTutar,
+                                    KayitTarihi = DateTime.Now
+                                };
+
+                                siparisTeklifRepo.AddAndSave(yeni);
+                            }
+                        }
+
+                        teklifSatirlari = siparisTeklifRepo
+                            .FindBy(t => t.SiparisEnBoyAdetId == item.Id)
+                            .OrderBy(t => t.Id)
+                            .ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log full details: table may not exist or there is another DB error.
+                    // View will render without the cost/quote section until the migration is applied.
+                    System.Diagnostics.Debug.WriteLine(
+                        "[SiparisDetayGoruntuleInternal] SiparisTeklif işlemi başarısız (tablo eksik olabilir). " +
+                        "Hata: " + ex.GetType().Name + ": " + ex.Message +
+                        (ex.InnerException != null ? " | İç hata: " + ex.InnerException.Message : "") +
+                        "\n" + ex.StackTrace);
+                    // Use empty list as fallback; ent.teklifList == empty (not null) signals "query failed / table missing"
+                    teklifSatirlari = new List<SiparisTeklif>();
                 }
 
                 ent.teklifList = teklifSatirlari;
