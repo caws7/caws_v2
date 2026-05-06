@@ -3,6 +3,13 @@
 -- Açıklama: Bu script, EF modelinde tanımlanmış ancak henüz veritabanında
 --           oluşturulmamış tablo ve sütunları idempotent (IF NOT EXISTS)
 --           şekilde ekler. Her dağıtımda güvenle çalıştırılabilir.
+--
+-- NASIL ÇALIŞTIRILIR:
+--   1. SQL Server Management Studio (SSMS) açın.
+--   2. Üst menüden Dosya > Aç > Dosya... seçin ve bu .sql dosyasını açın.
+--      VEYA bu dosyanın içeriğini kopyalayıp Yeni Sorgu penceresine yapıştırın.
+--   3. Sağ üstteki açılır listeden hedef veritabanınızı (cws_ vb.) seçin.
+--   4. F5 tuşuna basın veya "Yürüt" düğmesine tıklayın.
 -- =====================================================================
 
 -- -----------------------------------------------------------------------
@@ -103,6 +110,8 @@ END;
 --         hesaplaması yapabilmesi için bu değerlerin uygulama içindeki
 --         "Tanımlamalar > Sabitler" ekranından güncellenmesi GEREKMEKTEDİR.
 -- -----------------------------------------------------------------------
+SET IDENTITY_INSERT dbo.Sabitler ON;
+
 IF NOT EXISTS (SELECT 1 FROM dbo.Sabitler WHERE Id = 2)
     INSERT INTO dbo.Sabitler (Id, SabitDeger) VALUES (2, 0);
 
@@ -114,3 +123,5 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Sabitler WHERE Id = 4)
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Sabitler WHERE Id = 5)
     INSERT INTO dbo.Sabitler (Id, SabitDeger) VALUES (5, 0);
+
+SET IDENTITY_INSERT dbo.Sabitler OFF;
