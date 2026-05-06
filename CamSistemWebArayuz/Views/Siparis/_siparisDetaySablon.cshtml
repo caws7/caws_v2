@@ -702,14 +702,12 @@
                         <tr>
                             <th colspan=2 style="text-align:center;vertical-align:middle;padding:4px;"><img src="@Url.Content("~/images/logo.png")" style="max-width:100%;max-height:80px;object-fit:contain;display:block;margin:auto;" /></th>
                             <th colspan=5><center><h2><b>OPTİMİZASYON</b></h2></center></th>
-                            <th colspan=2 style="word-wrap: break-word;max-width: 250px;">
-                                @Html.DisplayFor(model => first.siparisModel.SistemTamami)
-                            </th>
+                            <th colspan=2 style="word-wrap: break-word;max-width: 250px;"></th>
                         </tr>
                         <tr>
                             <th>İmalat Ölçüleri</th>
                             <th colspan="4">@string.Join(" | ", Model.Select(m => m.GirilenEn + "/" + m.GirilenBoy + "/" + m.GirilenAdet).Distinct())</th>
-                            <th colspan="4">@Html.DisplayFor(model => Model.First().siparisModel.MusteriTamAdi)</th>
+                            <th colspan="4">@Html.DisplayFor(model => first.siparisModel.SistemTamami) @Html.DisplayFor(model => first.siparisModel.MusteriTamAdi)</th>
                         </tr>
                         <tr>
                             <th>Sipariş Numarası</th>
@@ -760,6 +758,7 @@
                         </tr>
                     </tfoot>
                     <tbody>
+                        @{ var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0); }
                         @foreach (var item2 in optiList)
                         {
                             <tr>
@@ -786,9 +785,6 @@
                                 <td style="word-wrap: break-word;min-width: 140px;max-width: 180px;vertical-align:middle;">
                                     @FormatKesimOlculer(item2.KesilecekOlculer)
                                 </td>
-                                @{
-                                    var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0);
-                                }
                                 @if ((item2.FireAtik ?? 0) > fireLimit)
                                 {
                                     <th class="bg-light-green" style="text-align:center;vertical-align:middle;">@item2.FireAtik</th>

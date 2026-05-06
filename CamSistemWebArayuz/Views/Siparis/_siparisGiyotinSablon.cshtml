@@ -672,12 +672,12 @@
                                             </h2>
                                         </center>
                                     </th>
-                                    <th colspan=2 style="word-wrap: break-word;max-width: 250px;">@Html.DisplayFor(model => Model.First().siparisModel.SistemTamami)</th>
+                                    <th colspan=2 style="word-wrap: break-word;max-width: 250px;"></th>
                                 </tr>
                                 <tr>
                                     <th>İmalat Ölçüleri</th>
                                     <th colspan="4">@string.Join(" | ", Model.Select(m => m.GirilenEn + "/" + m.GirilenBoy + "/" + m.GirilenAdet).Distinct())</th>
-                                    <th colspan="4">@Html.DisplayFor(model => Model.First().siparisModel.MusteriTamAdi)</th>
+                                    <th colspan="4">@Html.DisplayFor(model => Model.First().siparisModel.SistemTamami) @Html.DisplayFor(model => Model.First().siparisModel.MusteriTamAdi)</th>
                                 </tr>
                                 <tr>
                                     <th>Sipariş Numarası</th>
@@ -729,6 +729,7 @@
                                 </tr>
                             </tfoot>
                             <tbody>
+                                @{ var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0); }
                                 @foreach (var item2 in Model.First().optimizasyonList)
                                 {
                 <tr>
@@ -756,9 +757,6 @@
                     <td style="text-align:center;vertical-align:middle;">
                         @Html.DisplayFor(modelItem => item2.KesimAdet)
                     </td>
-                    @{
-                        var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0);
-                    }
                     @if ((item2.FireAtik ?? 0) > fireLimit)
                     {
                         <th class="bg-light-green" style="text-align:center;vertical-align:middle;">@item2.FireAtik</th>
