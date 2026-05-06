@@ -43,11 +43,17 @@ namespace CamSistemDataLayer.BussinesLogic
 
             if (sistem.Equals("Giyotin Temizlenebilir Sistem"))
             {
-                camEntityList = GiyotinTemizlenebilirSistem.CamYukseklikHesapla(boy, en, adet);
+                if (altsistem.Equals("Tek Camlı Sistem"))
+                    camEntityList = GiyotinTemizlenebilirSistemTC.CamYukseklikHesapla(boy, en, adet);
+                else
+                    camEntityList = GiyotinTemizlenebilirSistem.CamYukseklikHesapla(boy, en, adet);
             }
             else if (sistem.Equals("Giyotin Sabit Sistem"))
             {
-                camEntityList = GiyotinSabitSistem.CamYukseklikHesapla(boy, en, adet);
+                if (altsistem.Equals("Tek Camlı Sistem"))
+                    camEntityList = GiyotinSabitSistemTC.CamYukseklikHesapla(boy, en, adet);
+                else
+                    camEntityList = GiyotinSabitSistem.CamYukseklikHesapla(boy, en, adet);
             }
             return camEntityList;
         }
@@ -168,11 +174,17 @@ namespace CamSistemDataLayer.BussinesLogic
 
                 if (sistem.Equals("Giyotin Temizlenebilir Sistem"))
                 {
-                    list = GiyotinTemizlenebilirSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
+                    if (altSistem.Equals("Tek Camlı Sistem"))
+                        list = GiyotinTemizlenebilirSistemTC.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
+                    else
+                        list = GiyotinTemizlenebilirSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                 }
                 if (sistem.Equals("Giyotin Sabit Sistem"))
                 {
-                    list = GiyotinSabitSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
+                    if (altSistem.Equals("Tek Camlı Sistem"))
+                        list = GiyotinSabitSistemTC.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
+                    else
+                        list = GiyotinSabitSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                 }
                 return list;
             }
