@@ -646,7 +646,7 @@
                             @*<input type="text" value="@item2.ToplamTutar" style="display:none" />*@
                         </td>
                         <td>
-                            @if (!ViewBag.raporMu)
+                            @if (!(ViewBag.raporMu ?? false))
                             {
                 <a class="Edit" href="javascript:;">Düzenle</a>
                                         <a class="Update" href="javascript:;" style="display:none">Güncelle</a>
@@ -668,7 +668,15 @@
             </div>
         </div>
     </div>
-    @if (ViewBag.optiVarMi)
+    @{
+        var giyotinOptiFirst = (Model != null) ? Model.FirstOrDefault() : null;
+        bool giyotinOptiOk = (bool)(ViewBag.optiVarMi ?? false)
+                             && giyotinOptiFirst != null
+                             && giyotinOptiFirst.optimizasyonList != null
+                             && giyotinOptiFirst.optimizasyonList.Any();
+        int giyotinFireLimit = ViewBag.minimumFire != null ? (int)ViewBag.minimumFire : 0;
+    }
+    @if (giyotinOptiOk)
     {
         <div role="tabpanel" class="tab-pane fade" id="optimizasyon">            <div class="modal-body">
                 <div class="tab-content">
@@ -686,21 +694,21 @@
                                             </h2>
                                         </center>
                                     </th>
-                                    <th colspan=2 style="word-wrap: break-word;max-width: 250px;">@Html.DisplayFor(model => Model.First().siparisModel.SistemTamami)</th>
+                                    <th colspan=2 style="word-wrap: break-word;max-width: 250px;">@Html.DisplayFor(model => giyotinOptiFirst.siparisModel.SistemTamami)</th>
                                 </tr>
                                 <tr>
                                     <th>İmalat Ölçüleri</th>
                                     <th colspan="4">@string.Join(" | ", Model.Select(m => m.GirilenEn + "/" + m.GirilenBoy + "/" + m.GirilenAdet).Distinct())</th>
-                                    <th colspan="4">@Html.DisplayFor(model => Model.First().siparisModel.MusteriTamAdi)</th>
+                                    <th colspan="4">@Html.DisplayFor(model => giyotinOptiFirst.siparisModel.MusteriTamAdi)</th>
                                 </tr>
                                 <tr>
                                     <th>Sipariş Numarası</th>
-                                    <th>@Html.DisplayFor(model => Model.First().siparisModel.Id)</th>
+                                    <th>@Html.DisplayFor(model => giyotinOptiFirst.siparisModel.Id)</th>
                                     <th>Sipariş Tarihi</th>
-                                    <th colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.First().siparisModel.KayitTarihi))</th>
+                                    <th colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", giyotinOptiFirst.siparisModel.KayitTarihi))</th>
                                     <th></th>
                                     <th>Teslim Tarihi</th>
-                                    <th colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.First().siparisModel.TahminiTeslim))</th>
+                                    <th colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", giyotinOptiFirst.siparisModel.TahminiTeslim))</th>
                                 </tr>
                                 <tr>
                                     <th style="text-align:center;vertical-align:middle;width:60px;">Profil Kodu</th>
@@ -732,18 +740,18 @@
                                     <th colspan=2>Ağırlık (Kg)</th>
                                 </tr>
                                 <tr>
-                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().ToplamAtikUzunluk))</th>
-                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().ToplamAtikAgirlik))</th>
-                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FireyeEklenenToplamUzunluk))</th>
-                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FireyeEklenenToplamAgirlik))</th>
-                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().AsilStoktanKullanilanToplamUzunluk))</th>
-                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().AsilStoktanKullanilanToplamAgirlik))</th>
-                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FiredenKullanilanToplamUzunluk))</th>
-                                    <th colspan=2>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FiredenKullanilanToplamAgirlik))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", giyotinOptiFirst.optimizasyonList.First().ToplamAtikUzunluk))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", giyotinOptiFirst.optimizasyonList.First().ToplamAtikAgirlik))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", giyotinOptiFirst.optimizasyonList.First().FireyeEklenenToplamUzunluk))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", giyotinOptiFirst.optimizasyonList.First().FireyeEklenenToplamAgirlik))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", giyotinOptiFirst.optimizasyonList.First().AsilStoktanKullanilanToplamUzunluk))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", giyotinOptiFirst.optimizasyonList.First().AsilStoktanKullanilanToplamAgirlik))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", giyotinOptiFirst.optimizasyonList.First().FiredenKullanilanToplamUzunluk))</th>
+                                    <th colspan=2>@Html.Raw(string.Format("{0:N2}", giyotinOptiFirst.optimizasyonList.First().FiredenKullanilanToplamAgirlik))</th>
                                 </tr>
                             </tfoot>
                             <tbody>
-                                @foreach (var item2 in Model.First().optimizasyonList)
+                                @foreach (var item2 in giyotinOptiFirst.optimizasyonList)
                                 {
                 <tr>
                     <td style="text-align:center;vertical-align:middle;">
@@ -770,9 +778,8 @@
                     <td style="text-align:center;vertical-align:middle;">
                         @Html.DisplayFor(modelItem => item2.KesimAdet)
                     </td>
-                    @{ var limit = ViewBag.minimumFire;
-
-                        if (item2.FireAtik > limit)
+                    @{
+                        if (item2.FireAtik.HasValue && item2.FireAtik.Value > giyotinFireLimit)
                         {
 
         @Html.Raw("<th class='bg-light-green' style='text-align:center;vertical-align:middle;'>") }
@@ -797,7 +804,7 @@
     else
     {
         @{
-            var giyotinFirstItem = Model != null ? Model.FirstOrDefault() : null;
+            var giyotinFirstItem = giyotinOptiFirst ?? (Model != null ? Model.FirstOrDefault() : null);
             var optiSiparisId = giyotinFirstItem != null && giyotinFirstItem.siparisModel != null ? giyotinFirstItem.siparisModel.Id.ToString() : "";
         }
         <div role="tabpanel" class="tab-pane fade" id="optimizasyon">

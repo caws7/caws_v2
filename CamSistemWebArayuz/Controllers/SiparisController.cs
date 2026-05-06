@@ -985,10 +985,25 @@ namespace CamSistemWebArayuz.Controllers
             ViewBag.raporMu = raporMu;
             ViewBag.minimumFire = sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault()?.SabitDeger ?? 0;
 
-            if (siparis.SistemId == 5 || siparis.SistemId == 2006 || siparis.SistemId == 2010)
-                return PartialView("_siparisGiyotinSablon", siparisTumDetay);
-            else
-                return PartialView("_siparisDetaySablon", siparisTumDetay);
+            string viewName = (siparis.SistemId == 5 || siparis.SistemId == 2006 || siparis.SistemId == 2010)
+                ? "_siparisGiyotinSablon"
+                : "_siparisDetaySablon";
+
+            string html = RenderPartialViewToString(viewName, siparisTumDetay);
+            return Content(html, "text/html");
+        }
+
+        private string RenderPartialViewToString(string viewName, object model)
+        {
+            ViewData.Model = model;
+            using (var sw = new System.IO.StringWriter())
+            {
+                var viewResult = System.Web.Mvc.ViewEngines.Engines.FindPartialView(ControllerContext, viewName);
+                var viewContext = new ViewContext(ControllerContext, viewResult.View, ViewData, TempData, sw);
+                viewResult.View.Render(viewContext, sw);
+                viewResult.ViewEngine.ReleaseView(ControllerContext, viewResult.View);
+                return sw.GetStringBuilder().ToString();
+            }
         }
         #endregion
 

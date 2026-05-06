@@ -649,7 +649,7 @@
                                                     @*<input type="text" value="@item2.ToplamTutar" style="display:none" />*@
                                                 </td>
                                                 <td>
-                                                    @if (!ViewBag.raporMu)
+                                                    @if (!(ViewBag.raporMu ?? false))
                                                     {
                                                         <a class="Edit" href="javascript:;">Düzenle</a>
                                                         <a class="Update" href="javascript:;" style="display:none">Güncelle</a>
@@ -679,6 +679,7 @@
                 var first = Model != null ? Model.FirstOrDefault() : null;
                 var optiList = (first != null) ? first.optimizasyonList : null;
                 bool optiDataVar = (optiList != null && optiList.Count > 0);
+                int detayFireLimit = ViewBag.minimumFire != null ? (int)ViewBag.minimumFire : 0;
             }
 
             @if (!optiDataVar)
@@ -808,9 +809,7 @@
                                     @FormatKesimOlculer(item2.KesilecekOlculer)
                                 </td>
                                 @{
-                                    var limit = ViewBag.minimumFire;
-
-                                    if (item2.FireAtik > limit)
+                                    if (item2.FireAtik.HasValue && item2.FireAtik.Value > detayFireLimit)
                                     {
 
                                         @Html.Raw("<th class='bg-light-green' style='text-align:center;vertical-align:middle;'>")

@@ -292,7 +292,8 @@ namespace CamSistemDataLayer.BussinesLogic
                 List<Profil> profilListesiTekilleme = new List<Profil>();
                 foreach (var item in profilListesi)
                 {
-                    if (item.ProfilKodu.Contains("AP-101") || item.ProfilKodu.Contains("BC-108") || item.ProfilKodu.Contains("BC-107") || item.ProfilKodu.Contains("BC-103") || item.ProfilKodu.Contains("BC-102")
+                    if (item.ProfilKodu != null &&
+                       (item.ProfilKodu.Contains("AP-101") || item.ProfilKodu.Contains("BC-108") || item.ProfilKodu.Contains("BC-107") || item.ProfilKodu.Contains("BC-103") || item.ProfilKodu.Contains("BC-102")
                         || item.ProfilKodu.Contains("RK-104") || item.ProfilKodu.Contains("G-106") || item.ProfilKodu.Contains("G-110") || item.ProfilKodu.Contains("G-111")
                         || item.ProfilKodu.Contains("G-112") || item.ProfilKodu.Contains("G-115") || item.ProfilKodu.Contains("G-116") || item.ProfilKodu.Contains("G-121")
                         || item.ProfilKodu.Contains("G-126") || item.ProfilKodu.Contains("G-127") || item.ProfilKodu.Contains("SS-134") || item.ProfilKodu.Contains("SS-133")
