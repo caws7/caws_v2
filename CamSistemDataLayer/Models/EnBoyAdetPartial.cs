@@ -1,4 +1,5 @@
 ﻿using CamSistemDataLayer.Repos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,6 +31,8 @@ namespace CamSistemDataLayer.Models
         {
             get
             {
+                try
+                {
                 SistemRepo sRepo = new SistemRepo();
                 SistemTurRepo stRepo = new SistemTurRepo();
                 AltSistemRepo asRepo = new AltSistemRepo();
@@ -58,6 +61,8 @@ namespace CamSistemDataLayer.Models
                     if (altSistem != null) retVal = retVal + " / " + altSistem.AltSistemAdi;
                 }
                 return retVal;
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SistemTamamiRow] Hata: " + ex.Message); return ""; }
             }
         }
     }

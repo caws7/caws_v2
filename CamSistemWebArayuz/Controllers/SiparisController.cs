@@ -57,6 +57,7 @@ namespace CamSistemWebArayuz.Controllers
             {
                 System.Diagnostics.Debug.WriteLine("[SiparisController.OnException] Hata: " + filterContext.Exception?.Message + "\n" + filterContext.Exception?.StackTrace);
                 filterContext.ExceptionHandled = true;
+                filterContext.HttpContext.Response.TrySkipIisCustomErrors = true;
                 filterContext.HttpContext.Response.StatusCode = 200;
                 filterContext.Result = new ContentResult
                 {
@@ -754,6 +755,7 @@ namespace CamSistemWebArayuz.Controllers
 
         #region Siparis Detay
         [AuthLog(Roles = "SİPARİS,GORUNTULEME")]
+        [HttpPost]
         public ActionResult SiparisDetayGoruntule(long SiparisId, bool raporMu)
         {
             try
@@ -763,7 +765,9 @@ namespace CamSistemWebArayuz.Controllers
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] Hata SiparisId=" + SiparisId + ": " + ex.Message + "\n" + ex.StackTrace);
-                return Content("<div class='alert alert-danger' style='margin:20px;'><strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>Lütfen sayfayı yenileyip tekrar deneyin.<br/><button class='btn btn-default' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button></div>");
+                Response.TrySkipIisCustomErrors = true;
+                Response.StatusCode = 200;
+                return Content("<div class='alert alert-danger' style='margin:20px;'><strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>Lütfen sayfayı yenileyip tekrar deneyin.<br/><button class='btn btn-default' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button></div>", "text/html");
             }
         }
 
@@ -1024,6 +1028,8 @@ namespace CamSistemWebArayuz.Controllers
             using (var sw = new System.IO.StringWriter())
             {
                 var viewResult = System.Web.Mvc.ViewEngines.Engines.FindPartialView(ControllerContext, viewName);
+                if (viewResult == null || viewResult.View == null)
+                    throw new InvalidOperationException("Görünüm bulunamadı: " + viewName);
                 var viewContext = new ViewContext(ControllerContext, viewResult.View, ViewData, TempData, sw);
                 viewResult.View.Render(viewContext, sw);
                 viewResult.ViewEngine.ReleaseView(ControllerContext, viewResult.View);
