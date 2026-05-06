@@ -668,6 +668,10 @@
             </div>
         </div>
     </div>
+    @{
+        var giyotinFirstItem = Model != null ? Model.FirstOrDefault() : null;
+        var optiSiparisId = giyotinFirstItem != null && giyotinFirstItem.siparisModel != null ? giyotinFirstItem.siparisModel.Id.ToString() : "";
+    }
     @if ((bool)(ViewBag.optiVarMi ?? false) && Model != null && Model.Any())
     {
         <div role="tabpanel" class="tab-pane fade" id="optimizasyon">            <div class="modal-body">
@@ -796,10 +800,6 @@
     }
     else
     {
-        @{
-            var giyotinFirstItem = Model != null ? Model.FirstOrDefault() : null;
-            var optiSiparisId = giyotinFirstItem != null && giyotinFirstItem.siparisModel != null ? giyotinFirstItem.siparisModel.Id.ToString() : "";
-        }
         <div role="tabpanel" class="tab-pane fade" id="optimizasyon">
             <div class="modal-body">
                 <div id="optimizasyonContent">

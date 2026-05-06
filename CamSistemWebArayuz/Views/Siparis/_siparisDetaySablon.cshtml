@@ -679,14 +679,12 @@
                 var first = Model != null ? Model.FirstOrDefault() : null;
                 var optiList = (first != null) ? first.optimizasyonList : null;
                 bool optiDataVar = (optiList != null && optiList.Count > 0);
+                var optiSiparisId = first != null && first.siparisModel != null ? first.siparisModel.Id.ToString() : "";
             }
 
             @if (!optiDataVar)
             {
-                @{
-                    var optiSiparisId = first != null && first.siparisModel != null ? first.siparisModel.Id.ToString() : "";
-                }
-
+                <text>
                 <div id="optimizasyonContent">
                     <div style="text-align:center;padding:30px;color:#666;">
                         <i class="material-icons" style="font-size:48px;vertical-align:middle;">sync</i><br />
@@ -711,6 +709,7 @@
                         });
                     });
                 </script>
+                </text>
             }
             else
             {
