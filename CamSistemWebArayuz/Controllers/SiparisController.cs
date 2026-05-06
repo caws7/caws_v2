@@ -55,7 +55,11 @@ namespace CamSistemWebArayuz.Controllers
         {
             if (filterContext.HttpContext.Request.IsAjaxRequest())
             {
-                System.Diagnostics.Debug.WriteLine("[SiparisController.OnException] Hata: " + filterContext.Exception?.Message + "\n" + filterContext.Exception?.StackTrace);
+                var ex = filterContext.Exception;
+                string hataTipi = ex?.GetType().Name + ": " + ex?.Message;
+                if (ex?.InnerException != null)
+                    hataTipi += " --> " + ex.InnerException.Message;
+                System.Diagnostics.Debug.WriteLine("[SiparisController.OnException] Hata: " + hataTipi + "\n" + ex?.StackTrace);
                 filterContext.ExceptionHandled = true;
                 filterContext.HttpContext.Response.TrySkipIisCustomErrors = true;
                 filterContext.HttpContext.Response.StatusCode = 200;
@@ -64,6 +68,10 @@ namespace CamSistemWebArayuz.Controllers
                     Content = "<div class='alert alert-danger' style='margin:20px;'>" +
                               "<strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>" +
                               "Lütfen sayfayı yenileyip tekrar deneyin.<br/>" +
+                              "<details style='margin-top:8px;'>" +
+                              "<summary style='cursor:pointer;color:#a94442;font-size:12px;'>Hata Detayı (Geliştirici)</summary>" +
+                              "<pre style='font-size:11px;white-space:pre-wrap;background:#f9f2f4;padding:8px;margin-top:6px;border-radius:3px;'>" +
+                              System.Web.HttpUtility.HtmlEncode(hataTipi) + "</pre></details>" +
                               "<button class='btn btn-default' style='margin-top:10px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
                               "</div>",
                     ContentType = "text/html"
@@ -764,10 +772,24 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] Hata SiparisId=" + SiparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                string hataTipi = ex.GetType().Name + ": " + ex.Message;
+                // Inner exception da varsa ekle
+                if (ex.InnerException != null)
+                    hataTipi += " --> " + ex.InnerException.Message;
+                System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] Hata SiparisId=" + SiparisId + ": " + hataTipi + "\n" + ex.StackTrace);
                 Response.TrySkipIisCustomErrors = true;
                 Response.StatusCode = 200;
-                return Content("<div class='alert alert-danger' style='margin:20px;'><strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>Lütfen sayfayı yenileyip tekrar deneyin.<br/><button class='btn btn-default' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button></div>", "text/html");
+                return Content(
+                    "<div class='alert alert-danger' style='margin:20px;'>" +
+                    "<strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>" +
+                    "Lütfen sayfayı yenileyip tekrar deneyin.<br/>" +
+                    "<details style='margin-top:8px;'>" +
+                    "<summary style='cursor:pointer;color:#a94442;font-size:12px;'>Hata Detayı (Geliştirici)</summary>" +
+                    "<pre style='font-size:11px;white-space:pre-wrap;background:#f9f2f4;padding:8px;margin-top:6px;border-radius:3px;'>" +
+                    System.Web.HttpUtility.HtmlEncode(hataTipi) + "</pre></details>" +
+                    "<button class='btn btn-default' style='margin-top:8px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
+                    "</div>",
+                    "text/html");
             }
         }
 
@@ -832,18 +854,35 @@ namespace CamSistemWebArayuz.Controllers
                 int effectiveAltSistemId = (item.AltSistemId.HasValue && item.AltSistemId.Value > 0) ? item.AltSistemId.Value : (int)(siparis.AltSistemId ?? 0);
                 int effectiveSistemTurId = (item.SistemTurId.HasValue && item.SistemTurId.Value > 0) ? item.SistemTurId.Value : (int)(siparis.SistemTurId ?? 0);
 
-                List<Profil> profilList = SiparisHesaplamalari.profilHesaplama(
-                    siparis.Id, girilenEn, girilenSolEn, girilenBoy, girilenAdet,
-                    item.SistemId, item.AltSistemId, item.SistemTurId);
-                List<CamBilgileri> camBilgileriList = SiparisHesaplamalari.CamYukseklikHesapla(
-                    effectiveSistemId,
-                    effectiveSistemTurId,
-                    effectiveAltSistemId,
-                    girilenBoy,
-                    girilenEn,
-                    girilenSolEn,
-                    girilenAdet
-                );
+                List<Profil> profilList = null;
+                try
+                {
+                    profilList = SiparisHesaplamalari.profilHesaplama(
+                        siparis.Id, girilenEn, girilenSolEn, girilenBoy, girilenAdet,
+                        item.SistemId, item.AltSistemId, item.SistemTurId);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] profilHesaplama hatası item.Id=" + item.Id + ": " + ex.Message);
+                }
+
+                List<CamBilgileri> camBilgileriList = null;
+                try
+                {
+                    camBilgileriList = SiparisHesaplamalari.CamYukseklikHesapla(
+                        effectiveSistemId,
+                        effectiveSistemTurId,
+                        effectiveAltSistemId,
+                        girilenBoy,
+                        girilenEn,
+                        girilenSolEn,
+                        girilenAdet
+                    );
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] CamYukseklikHesapla hatası item.Id=" + item.Id + ": " + ex.Message);
+                }
 
                 ProfilDetayBilgileri profilDetay = new ProfilDetayBilgileri();
                 if (camBilgileriList != null)
@@ -883,6 +922,8 @@ namespace CamSistemWebArayuz.Controllers
                 ent.siparisCam = siparisCam;
 
                 // ==== TEKLİF / MALİYET (SiparisTeklif) ====
+                try
+                {
                 var teklifSatirlari = siparisTeklifRepo
                     .FindBy(t => t.SiparisEnBoyAdetId == item.Id)
                     .OrderBy(t => t.Id)
@@ -991,6 +1032,13 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     ent.teklifToplamDetay = null;
                 }
+                }
+                catch (Exception exTeklif)
+                {
+                    System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] Teklif/Maliyet hatası SiparisEnBoyAdetId=" + item.Id + ": " + exTeklif.GetType().Name + ": " + exTeklif.Message + (exTeklif.InnerException != null ? " --> " + exTeklif.InnerException.Message : ""));
+                    ent.teklifList = new List<SiparisTeklif>();
+                    ent.teklifToplamDetay = null;
+                }
 
                 siparisTumDetay.Add(ent);
             }
@@ -998,12 +1046,20 @@ namespace CamSistemWebArayuz.Controllers
             // Optimizasyon verilerini DB'den çekip modele ekle
             var optimizasyonHesapRepo = new OptimizasyonHesapRepo();
             string siparisIdStr = siparis.Id.ToString();
-            var optimizasyonKayitlar = optimizasyonHesapRepo
-                .FindBy(e => e.SiparisIds != null && e.SiparisIds.Contains(siparisIdStr))
-                .ToList()
-                .Where(x => x.SiparisIds.Split(',').Select(s => s.Trim()).Any(id => id == siparisIdStr))
-                .OrderByDescending(x => x.Id)
-                .ToList();
+            List<OptimizasyonHesap> optimizasyonKayitlar = new List<OptimizasyonHesap>();
+            try
+            {
+                optimizasyonKayitlar = optimizasyonHesapRepo
+                    .FindBy(e => e.SiparisIds != null && e.SiparisIds.Contains(siparisIdStr))
+                    .ToList()
+                    .Where(x => x.SiparisIds.Split(',').Select(s => s.Trim()).Any(id => id == siparisIdStr))
+                    .OrderByDescending(x => x.Id)
+                    .ToList();
+            }
+            catch (Exception exOpti)
+            {
+                System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] Optimizasyon sorgu hatası SiparisId=" + siparis.Id + ": " + exOpti.GetType().Name + ": " + exOpti.Message + (exOpti.InnerException != null ? " --> " + exOpti.InnerException.Message : ""));
+            }
             foreach (var ent in siparisTumDetay)
                 ent.optimizasyonList = optimizasyonKayitlar;
 
@@ -1015,11 +1071,14 @@ namespace CamSistemWebArayuz.Controllers
                 ViewBag.SiparisAciklamasi = "<div class='alert alert-danger'><strong>" + SiparisId + " Nolu Sipariş Açıklaması:</strong> " + siparis.Aciklama + "</div>";
 
             ViewBag.raporMu = raporMu;
-            ViewBag.minimumFire = sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault()?.SabitDeger ?? 0;
+            try { ViewBag.minimumFire = sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault()?.SabitDeger ?? 0; }
+            catch { ViewBag.minimumFire = 0; }
 
-            string viewName = (siparis.SistemId == 5 || siparis.SistemId == 2006 || siparis.SistemId == 2010)
-                ? "_siparisGiyotinSablon"
-                : "_siparisDetaySablon";
+            // Select view: check order-level SistemId AND per-row SistemIds for Giyotin Sabit Sistem
+            var giyotinIds = new[] { 5, 2006, 2010 };
+            bool isGiyotinSabit = (siparis.SistemId.HasValue && giyotinIds.Contains(siparis.SistemId.Value))
+                || siparisTumDetay.Any(e => e.SistemId.HasValue && giyotinIds.Contains(e.SistemId.Value));
+            string viewName = isGiyotinSabit ? "_siparisGiyotinSablon" : "_siparisDetaySablon";
 
             string html = RenderPartialViewToString(viewName, siparisTumDetay);
             return Content(html, "text/html");
