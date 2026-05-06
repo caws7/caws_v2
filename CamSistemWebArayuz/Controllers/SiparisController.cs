@@ -812,7 +812,26 @@ namespace CamSistemWebArayuz.Controllers
 
             ViewBag.SiparisDurumu = (siparis.DurumId == (int)Durumlar.Onaylandı || siparis.DurumId == (int)Durumlar.ImalataGonderildi || siparis.DurumId == (int)Durumlar.Sevkiyatta);
 
-            List<SiparisEnBoyAdet> siparisAdet = sebaRepo.FindBy(e => e.SiparisId == siparis.Id).ToList();
+            List<SiparisEnBoyAdet> siparisAdet;
+            try
+            {
+                siparisAdet = sebaRepo.FindBy(e => e.SiparisId == siparis.Id).ToList();
+            }
+            catch (Exception exSeba)
+            {
+                System.Diagnostics.Debug.WriteLine("[SiparisDetayGoruntule] SiparisEnBoyAdet sorgu hatası SiparisId=" + SiparisId + ": " + exSeba.GetType().Name + ": " + exSeba.Message + (exSeba.InnerException != null ? " --> " + exSeba.InnerException.Message : ""));
+                return Content(
+                    "<div class='alert alert-danger' style='margin:20px;'>" +
+                    "<strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>" +
+                    "Veritabanı şeması güncel olmayabilir. Lütfen yöneticinizle iletişime geçin.<br/>" +
+                    "<details style='margin-top:8px;'>" +
+                    "<summary style='cursor:pointer;color:#a94442;font-size:12px;'>Hata Detayı (Geliştirici)</summary>" +
+                    "<pre style='font-size:11px;white-space:pre-wrap;background:#f9f2f4;padding:8px;margin-top:6px;border-radius:3px;'>" +
+                    System.Web.HttpUtility.HtmlEncode(exSeba.GetType().Name + ": " + exSeba.Message + (exSeba.InnerException != null ? " --> " + exSeba.InnerException.Message : "")) + "</pre></details>" +
+                    "<button class='btn btn-default' style='margin-top:10px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
+                    "</div>",
+                    "text/html");
+            }
 
             List<SiparisEnBoyAdet> siparisTumDetay = new List<SiparisEnBoyAdet>();
             var siparisCam = siparisCamRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault() ?? new SiparisCam { CamKombinasyon = "" };
