@@ -808,9 +808,9 @@
                                     @FormatKesimOlculer(item2.KesilecekOlculer)
                                 </td>
                                 @{
-                                    var limit = ViewBag.minimumFire;
+                                    var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0);
 
-                                    if (item2.FireAtik > limit)
+                                    if ((item2.FireAtik ?? 0) > fireLimit)
                                     {
 
                                         @Html.Raw("<th class='bg-light-green' style='text-align:center;vertical-align:middle;'>")

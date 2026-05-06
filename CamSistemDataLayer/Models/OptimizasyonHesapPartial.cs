@@ -9,8 +9,16 @@ namespace CamSistemDataLayer.Models
         {
             get
             {
-                ProfilRepo profilRepo = new ProfilRepo();
-                return profilRepo.FindBy(e => e.Id == ProfilId).FirstOrDefault(); 
+                try
+                {
+                    if (ProfilId == null) return null;
+                    ProfilRepo profilRepo = new ProfilRepo();
+                    return profilRepo.FindBy(e => e.Id == ProfilId).FirstOrDefault();
+                }
+                catch
+                {
+                    return null;
+                }
             }
         }
     }

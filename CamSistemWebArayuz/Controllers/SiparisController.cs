@@ -50,6 +50,31 @@ namespace CamSistemWebArayuz.Controllers
         ProfilBoyRepo profilBoyRepo;
         ProfilRepo profilRepo;
 
+        #region Exception Handler
+        protected override void OnException(ExceptionContext filterContext)
+        {
+            if (filterContext.HttpContext.Request.IsAjaxRequest())
+            {
+                System.Diagnostics.Debug.WriteLine("[SiparisController.OnException] Hata: " + filterContext.Exception?.Message + "\n" + filterContext.Exception?.StackTrace);
+                filterContext.ExceptionHandled = true;
+                filterContext.HttpContext.Response.StatusCode = 200;
+                filterContext.Result = new ContentResult
+                {
+                    Content = "<div class='alert alert-danger' style='margin:20px;'>" +
+                              "<strong>Sipariş detayı yüklenirken bir hata oluştu.</strong><br/>" +
+                              "Lütfen sayfayı yenileyip tekrar deneyin.<br/>" +
+                              "<button class='btn btn-default' style='margin-top:10px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
+                              "</div>",
+                    ContentType = "text/html"
+                };
+            }
+            else
+            {
+                base.OnException(filterContext);
+            }
+        }
+        #endregion
+
         #region Helpers (Admin / Role)
         private bool CurrentUserIsAdmin()
         {

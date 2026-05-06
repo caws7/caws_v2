@@ -10,12 +10,16 @@ namespace CamSistemDataLayer.Models
         {
             get
             {
-                MusteriRepo mRepo = new MusteriRepo();
-                Musteri musteri = mRepo.FindBy(e => e.Id == MusteriId).FirstOrDefault();
-                if (musteri != null)
-                    return musteri.AdSoyadSirketAdi;
-                else
-                    return "";
+                try
+                {
+                    MusteriRepo mRepo = new MusteriRepo();
+                    Musteri musteri = mRepo.FindBy(e => e.Id == MusteriId).FirstOrDefault();
+                    if (musteri != null)
+                        return musteri.AdSoyadSirketAdi;
+                    else
+                        return "";
+                }
+                catch { return ""; }
             }
         }
 
@@ -23,14 +27,18 @@ namespace CamSistemDataLayer.Models
         {
             get
             {
-                MusteriRepo mRepo = new MusteriRepo();
-                Musteri musteri = mRepo.FindBy(e => e.Id == MusteriId).FirstOrDefault();
-                if (musteri == null)
-                    return "";
-                var adres = musteri.Adres;
-                if (adres == null)
-                    return "";
-                return adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
+                try
+                {
+                    MusteriRepo mRepo = new MusteriRepo();
+                    Musteri musteri = mRepo.FindBy(e => e.Id == MusteriId).FirstOrDefault();
+                    if (musteri == null)
+                        return "";
+                    var adres = musteri.Adres;
+                    if (adres == null)
+                        return "";
+                    return adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
+                }
+                catch { return ""; }
             }
         }
 
@@ -40,8 +48,12 @@ namespace CamSistemDataLayer.Models
         {
             get
             {
-                RenkRepo renkRepo = new RenkRepo();
-                return renkRepo.FindBy(e => e.Id == RenkId).FirstOrDefault();
+                try
+                {
+                    RenkRepo renkRepo = new RenkRepo();
+                    return renkRepo.FindBy(e => e.Id == RenkId).FirstOrDefault();
+                }
+                catch { return null; }
             }
         }
         public string Motor { get; set; }
@@ -51,16 +63,20 @@ namespace CamSistemDataLayer.Models
         {
             get
             {
-                KullaniciRepo kRepo = new KullaniciRepo();
-                Kullanici kullanici = kRepo.FindBy(e => e.Id == OnayIptalKullaniciId).FirstOrDefault();
-                if (kullanici == null)
+                try
                 {
-                    return "";
+                    KullaniciRepo kRepo = new KullaniciRepo();
+                    Kullanici kullanici = kRepo.FindBy(e => e.Id == OnayIptalKullaniciId).FirstOrDefault();
+                    if (kullanici == null)
+                    {
+                        return "";
+                    }
+                    else
+                    {
+                        return kullanici.KullaniciAdi + " " + kullanici.KullaniciSoyadi;
+                    }
                 }
-                else
-                {
-                    return kullanici.KullaniciAdi + " " + kullanici.KullaniciSoyadi;
-                }
+                catch { return ""; }
             }
         }
 
@@ -68,6 +84,8 @@ namespace CamSistemDataLayer.Models
         {
             get
             {
+                try
+                {
                 SistemRepo sRepo = new SistemRepo();
                 SistemTurRepo stRepo = new SistemTurRepo();
                 AltSistemRepo asRepo = new AltSistemRepo();
@@ -130,6 +148,8 @@ namespace CamSistemDataLayer.Models
                         retVal = retVal + " / " + altSistem.AltSistemAdi;
                 }
                 return retVal;
+                }
+                catch { return ""; }
             }
         }
 

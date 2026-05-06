@@ -25,8 +25,12 @@ namespace CamSistemDataLayer.Models
         {
             get
             {
-                AdresRepo adresRepo = new AdresRepo();
-                return adresRepo.FindBy(e => e.Id == AdresId).FirstOrDefault();
+                try
+                {
+                    AdresRepo adresRepo = new AdresRepo();
+                    return adresRepo.FindBy(e => e.Id == AdresId).FirstOrDefault();
+                }
+                catch { return null; }
             }
         }
     }

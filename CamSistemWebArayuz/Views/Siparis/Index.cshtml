@@ -298,12 +298,22 @@
         $('#searchResults').html('<div style="text-align:center;padding:40px;color:#666;"><i class="material-icons" style="font-size:48px;vertical-align:middle;">sync</i><br/><span>Yükleniyor...</span></div>');
         $('#showDuzenleModal').modal('show');
 
-        $('#searchResults').load(url, { SiparisId: _siparisId, raporMu: false }, function (response, status, xhr) {
-            if (status === 'error') {
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { SiparisId: _siparisId, raporMu: false },
+            timeout: 60000,
+            success: function (response) {
+                $('#searchResults').html(response);
+            },
+            error: function (xhr, status, errorThrown) {
+                var errMsg = status === 'timeout'
+                    ? 'Sunucu yanıt vermiyor. Lütfen tekrar deneyin.'
+                    : ('Hata: ' + xhr.status + ' ' + xhr.statusText);
                 $('#searchResults').html(
                     '<div class="alert alert-danger" style="margin:20px;">' +
                     '<strong>Sipariş detayı yüklenemedi.</strong><br/>' +
-                    'Hata: ' + xhr.status + ' ' + xhr.statusText +
+                    errMsg +
                     '<br/><button class="btn btn-default" style="margin-top:10px;" onclick="$(\'#showDuzenleModal\').modal(\'hide\')">Kapat</button>' +
                     '</div>');
             }
