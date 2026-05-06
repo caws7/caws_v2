@@ -30,9 +30,24 @@
     .siparis-row select.row-altsistem,
     .siparis-row select.row-sistemtur {
         min-width: 180px;
+        max-width: 33%;
+        width: 33%;
         display: inline-block;
         margin-right: 6px;
         vertical-align: top;
+    }
+    .row-poz-label {
+        display: inline-block;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        text-align: center;
+        font-weight: bold;
+        font-size: 13px;
+        color: #388e3c;
+        margin-right: 8px;
+        min-width: 20px;
+        vertical-align: top;
+        padding-top: 4px;
     }
     .row-actions {
         display: inline-block;
@@ -94,7 +109,7 @@
     var rowIndex = 0;
 
     // Build HTML for one row
-    function buildRowHtml(idx) {
+    function buildRowHtml(idx, pozNum) {
         var sistemOptions = '<option value="">Sistem Seçiniz...</option>';
         @foreach (var s in ViewBag.Sistemler)
         {
@@ -102,6 +117,8 @@
         }
 
         return '<div class="siparis-row" id="row_' + idx + '" data-row-index="' + idx + '">'
+            // POZ label (vertical)
+            + '<span class="row-poz-label">POZ' + pozNum + '</span>'
             // Sistem
             + '<select class="form-control row-sistem" data-row="' + idx + '" style="min-width:170px;display:inline-block;vertical-align:top;margin-right:6px;">'
             + sistemOptions
@@ -155,8 +172,17 @@
             + '</div>';
     }
 
+    function renumberRows() {
+        var pozNum = 1;
+        $('.siparis-row').each(function () {
+            $(this).find('.row-poz-label').text('POZ' + pozNum);
+            pozNum++;
+        });
+    }
+
     function addRow() {
-        var html = buildRowHtml(rowIndex);
+        var pozNum = $('.siparis-row').length + 1;
+        var html = buildRowHtml(rowIndex, pozNum);
         $('#siparisRowsContainer').append(html);
         bindRow(rowIndex);
         rowIndex++;
@@ -308,6 +334,7 @@
         var rowDiv = $(this).closest('.siparis-row');
         if ($('.siparis-row').length > 1) {
             rowDiv.remove();
+            renumberRows();
         } else {
             alert('En az bir satır olmalıdır!');
         }

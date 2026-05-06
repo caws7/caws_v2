@@ -169,12 +169,13 @@
         <div class="modal-body">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs tab-nav-right tab-col-amber" role="tablist">
-                @{ bool ilkImalatTab = true; }
+                @{ int pozImalatNo = 0; bool ilkImalatTab = true; }
                 @foreach (var item in Model)
                 {
+                    pozImalatNo++;
                     <li role="presentation" class="@(ilkImalatTab ? "active" : "")">
                         <a href="#tab_@item.Id" data-toggle="tab">
-                            @item.GirilenEn/@item.GirilenBoy/@item.GirilenAdet
+                            POZ@(pozImalatNo)- @(item.GirilenEn)x@(item.GirilenBoy)/@(item.GirilenAdet) Adet
                         </a>
                     </li>
                     ilkImalatTab = false;
@@ -351,11 +352,13 @@
         <div class="modal-body">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs tab-nav-right tab-col-amber" role="tablist">
+                @{ int pozCamNo = 0; }
                 @foreach (var item in Model)
                 {
+                    pozCamNo++;
                     <li role="presentation">
                         <a href="#@item.Id" data-toggle="tab">
-                            @item.GirilenEn/@item.GirilenBoy/@item.GirilenAdet
+                            POZ@(pozCamNo)- @(item.GirilenEn)x@(item.GirilenBoy)/@(item.GirilenAdet) Adet
                         </a>
                     </li>
                 }
@@ -481,11 +484,13 @@
         <div class="modal-body">
             <!-- Nav tabs -->
             <ul class="nav nav-tabs tab-nav-right tab-col-amber" role="tablist">
+                @{ int pozMaliyetNo = 0; }
                 @foreach (var item in Model)
                 {
+                    pozMaliyetNo++;
                     <li role="presentation">
                         <a href="#@item.Id-maliyet" data-toggle="tab">
-                            @item.GirilenEn/@item.GirilenBoy/@item.GirilenAdet
+                            POZ@(pozMaliyetNo)- @(item.GirilenEn)x@(item.GirilenBoy)/@(item.GirilenAdet) Adet
                         </a>
                     </li>
                 }
