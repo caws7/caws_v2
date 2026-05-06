@@ -249,6 +249,10 @@ namespace CamSistemDataLayer.BussinesLogic
                 int? effectiveAltSistemId = altSistemIdOverride.HasValue && altSistemIdOverride.Value > 0 ? altSistemIdOverride : siparis.AltSistemId;
                 int? effectiveSistemTurId = sistemTurIdOverride.HasValue && sistemTurIdOverride.Value > 0 ? sistemTurIdOverride : siparis.SistemTurId;
 
+                // Normalize 0 to null: form sends 0 for "not selected", treat same as null/-1
+                if (effectiveAltSistemId.HasValue && effectiveAltSistemId.Value == 0) effectiveAltSistemId = null;
+                if (effectiveSistemTurId.HasValue && effectiveSistemTurId.Value == 0) effectiveSistemTurId = null;
+
                 int joinTablosuId = 0;
                 if (effectiveSistemId != null && effectiveAltSistemId != null && effectiveAltSistemId != -1 && effectiveSistemTurId != null && effectiveSistemTurId != -1)
                 {

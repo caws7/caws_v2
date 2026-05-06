@@ -851,6 +851,9 @@ namespace CamSistemWebArayuz.Controllers
                 ent.GirilenSolEn = item.GirilenSolEn;
                 ent.SiparisId = item.SiparisId;
                 ent.Id = item.Id;
+                ent.SistemId = item.SistemId;
+                ent.AltSistemId = item.AltSistemId;
+                ent.SistemTurId = item.SistemTurId;
                 ent.siparisModel = siparis;
                 ent.siparisCam = siparisCam;
 
