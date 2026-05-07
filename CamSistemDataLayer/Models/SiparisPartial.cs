@@ -1,4 +1,5 @@
-﻿using CamSistemDataLayer.Repos;
+﻿using CamSistemDataLayer.Helpers;
+using CamSistemDataLayer.Repos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -123,6 +124,7 @@ namespace CamSistemDataLayer.Models
                                 var altSistem = asRepo.FindBy(e => e.Id == rowAltSistemId).FirstOrDefault();
                                 if (altSistem != null) rowRetVal = rowRetVal + " / " + altSistem.AltSistemAdi;
                             }
+                            rowRetVal = TurkishTextNormalizer.NormalizeDisplayText(rowRetVal);
                             if (!string.IsNullOrWhiteSpace(rowRetVal) && !sistemler.Contains(rowRetVal))
                                 sistemler.Add(rowRetVal);
                         }
@@ -150,7 +152,7 @@ namespace CamSistemDataLayer.Models
                         if (altSistem != null)
                             retVal = retVal + " / " + altSistem.AltSistemAdi;
                     }
-                    return retVal;
+                    return TurkishTextNormalizer.NormalizeDisplayText(retVal);
                 }
                 catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SistemTamami] Hata SiparisId=" + Id + ": " + ex.Message); return ""; }
             }

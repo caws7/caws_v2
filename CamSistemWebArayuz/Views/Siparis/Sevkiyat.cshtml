@@ -93,7 +93,7 @@
         @Html.Raw(item2.GirilenEn + " / " + item2.GirilenBoy + " / " + item2.GirilenAdet + "<br />")}
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.SiparisTur)
+                        @CamSistemDataLayer.Helpers.TurkishTextNormalizer.NormalizeDisplayText(item.SiparisTur)
                     </td>
                     <td>
                         @if (item.SevkiyatVarMi)

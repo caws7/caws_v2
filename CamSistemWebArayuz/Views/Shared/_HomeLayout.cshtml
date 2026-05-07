@@ -272,7 +272,7 @@
         <div class="search-icon">
             <i class="material-icons">search</i>
         </div>
-        <input type="text" placeholder="START TYPING...">
+        <input type="text" placeholder="Aramaya başlayın...">
         <div class="close-search">
             <i class="material-icons">close</i>
         </div>
@@ -315,11 +315,11 @@
                             @{
                                 var rol = Session["KullaniciRol"];
                             }
-                            @(rol != null ? rol.ToString() : "-")
+                            @(rol != null ? CamSistemDataLayer.Helpers.TurkishTextNormalizer.NormalizeDisplayText(rol.ToString()) : "-")
                         </div>
 
                         <a class="logout-link" href="@Url.Action("Logout", "Login")" title="Çıkış Yap">
-                            Logout
+                            Çıkış Yap
                         </a>
                     </div>
                 </div>

@@ -81,6 +81,7 @@
     <Compile Include="BussinesLogic\MaliyetHesapla.cs" />
     <Compile Include="BussinesLogic\SiparisHesaplamalari.cs" />
     <Compile Include="Enums\Durumlar.cs" />
+    <Compile Include="Helpers\TurkishTextNormalizer.cs" />
     <Compile Include="Models\Adres.cs">
       <DependentUpon>CamSistemModel.tt</DependentUpon>
     </Compile>

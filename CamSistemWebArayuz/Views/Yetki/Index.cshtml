@@ -134,7 +134,7 @@
                                         @Html.Raw(item.KullaniciModel.KullaniciAdi + " " + item.KullaniciModel.KullaniciSoyadi)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.RolModel.RolAdi)
+                                        @CamSistemDataLayer.Helpers.TurkishTextNormalizer.NormalizeDisplayText(item.RolModel.RolAdi)
                                     </td>
                                     <td>
                                         <button type="button" data-toggle="tooltip" data-placement="top" title="Düzenle"
@@ -185,7 +185,7 @@
                                         @Html.DisplayFor(modelItem => item.Id)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.RolAdi)
+                                        @CamSistemDataLayer.Helpers.TurkishTextNormalizer.NormalizeDisplayText(item.RolAdi)
                                     </td>                                    
                                     <td>
                                         <button type="button" data-toggle="tooltip" data-placement="top" title="Düzenle"
@@ -207,4 +207,3 @@
         </div>
     </div>
 </div>
-

@@ -466,7 +466,7 @@
                                         @Html.DisplayFor(modelItem => item.MusteriTamAdi)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.SiparisTur)
+                                        @CamSistemDataLayer.Helpers.TurkishTextNormalizer.NormalizeDisplayText(item.SiparisTur)
                                     </td>
                                     @{
                                         switch ((int)item.DurumId)

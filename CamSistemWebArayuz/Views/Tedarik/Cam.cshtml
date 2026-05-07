@@ -104,7 +104,7 @@
                                         }
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.SiparisTur)
+                                        @CamSistemDataLayer.Helpers.TurkishTextNormalizer.NormalizeDisplayText(item.SiparisTur)
                                     </td>
                                     <td>
                                         @if (item.CamTedarikId != null)

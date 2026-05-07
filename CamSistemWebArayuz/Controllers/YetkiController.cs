@@ -1,4 +1,5 @@
-﻿using CamSistemDataLayer.Models;
+﻿using CamSistemDataLayer.Helpers;
+using CamSistemDataLayer.Models;
 using CamSistemDataLayer.Repos;
 using CamSistemWebArayuz.Attributes;
 using CamSistemWebArayuz.Models;
@@ -47,12 +48,12 @@ namespace CamSistemWebArayuz.Controllers
 
             foreach (Sayfa sayfa in sayfaRepo.GetAll().ToList())
             {
-                nodes.Add(new TreeViewNode { id = sayfa.Id.ToString(), parent = "#", text = sayfa.SayfaAdi });
+                nodes.Add(new TreeViewNode { id = sayfa.Id.ToString(), parent = "#", text = TurkishTextNormalizer.NormalizeDisplayText(sayfa.SayfaAdi) });
 
                 //Loop and add the Child Nodes.
                 foreach (Yetki yetki in yetkiRepo.GetAll().ToList())
                 {
-                    nodes.Add(new TreeViewNode { id = yetki.Id.ToString() + "i" + sayfa.Id.ToString() + "-" + yetki.Id.ToString() + "i" + sayfa.Id.ToString(), parent = sayfa.Id.ToString(), text = yetki.YetkiAdi });
+                    nodes.Add(new TreeViewNode { id = yetki.Id.ToString() + "i" + sayfa.Id.ToString() + "-" + yetki.Id.ToString() + "i" + sayfa.Id.ToString(), parent = sayfa.Id.ToString(), text = TurkishTextNormalizer.NormalizeDisplayText(yetki.YetkiAdi) });
                 }
             }
 
@@ -77,12 +78,12 @@ namespace CamSistemWebArayuz.Controllers
 
                 foreach (Sayfa sayfa in sayfaRepo.GetAll().ToList())
                 {
-                    nodes.Add(new TreeViewNode { id = sayfa.Id.ToString(), parent = "#", text = sayfa.SayfaAdi });
+                    nodes.Add(new TreeViewNode { id = sayfa.Id.ToString(), parent = "#", text = TurkishTextNormalizer.NormalizeDisplayText(sayfa.SayfaAdi) });
 
                     //Loop and add the Child Nodes.
                     foreach (Yetki yetki in yetkiRepo.GetAll().ToList())
                     {
-                        nodes.Add(new TreeViewNode { id = yetki.Id.ToString() + "i" + sayfa.Id.ToString() + "-" + yetki.Id.ToString() + "i" + sayfa.Id.ToString(), parent = sayfa.Id.ToString(), text = yetki.YetkiAdi });
+                        nodes.Add(new TreeViewNode { id = yetki.Id.ToString() + "i" + sayfa.Id.ToString() + "-" + yetki.Id.ToString() + "i" + sayfa.Id.ToString(), parent = sayfa.Id.ToString(), text = TurkishTextNormalizer.NormalizeDisplayText(yetki.YetkiAdi) });
                     }
                 }
 
@@ -136,11 +137,11 @@ namespace CamSistemWebArayuz.Controllers
 
             foreach (Sayfa sayfa in sayfaRepo.GetAll().ToList())
             {
-                nodes.Add(new TreeViewNode { id = sayfa.Id.ToString(), parent = "#", text = sayfa.SayfaAdi });
+                nodes.Add(new TreeViewNode { id = sayfa.Id.ToString(), parent = "#", text = TurkishTextNormalizer.NormalizeDisplayText(sayfa.SayfaAdi) });
                 
                 foreach (Yetki yetki in yetkiRepo.GetAll().ToList())
                 {
-                    nodes.Add(new TreeViewNode { id = yetki.Id.ToString() + "i" + sayfa.Id.ToString() + "-" + yetki.Id.ToString() + "i" + sayfa.Id.ToString(), parent = sayfa.Id.ToString(), text = yetki.YetkiAdi });
+                    nodes.Add(new TreeViewNode { id = yetki.Id.ToString() + "i" + sayfa.Id.ToString() + "-" + yetki.Id.ToString() + "i" + sayfa.Id.ToString(), parent = sayfa.Id.ToString(), text = TurkishTextNormalizer.NormalizeDisplayText(yetki.YetkiAdi) });
                 }
             }
 
@@ -156,11 +157,11 @@ namespace CamSistemWebArayuz.Controllers
                 List<Yetki> yetkis = yetkiRepo.FindBy(e => yetkiIds.Contains(e.Id)).ToList();
 
                 if(yetkis.Count() == 5)
-                    selectedNodes.Add(new TreeViewNode { id = sayfa.Id.ToString(), parent = "#", text = sayfa.SayfaAdi });
+                    selectedNodes.Add(new TreeViewNode { id = sayfa.Id.ToString(), parent = "#", text = TurkishTextNormalizer.NormalizeDisplayText(sayfa.SayfaAdi) });
                 
                 foreach (Yetki yetki in yetkis)
                 {
-                    selectedNodes.Add(new TreeViewNode { id = yetki.Id.ToString() + "i" + sayfa.Id.ToString() + "-" + yetki.Id.ToString() + "i" + sayfa.Id.ToString(), parent = sayfa.Id.ToString(), text = yetki.YetkiAdi });
+                    selectedNodes.Add(new TreeViewNode { id = yetki.Id.ToString() + "i" + sayfa.Id.ToString() + "-" + yetki.Id.ToString() + "i" + sayfa.Id.ToString(), parent = sayfa.Id.ToString(), text = TurkishTextNormalizer.NormalizeDisplayText(yetki.YetkiAdi) });
                 }
             }
 
@@ -262,7 +263,13 @@ namespace CamSistemWebArayuz.Controllers
             kullaniciRepo = new KullaniciRepo();
             rolRepo = new RolRepo();
             ViewBag.Kullanicilar = kullaniciRepo.GetAll();
-            ViewBag.Roller = rolRepo.GetAll();
+            ViewBag.Roller = rolRepo.GetAll()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = TurkishTextNormalizer.NormalizeDisplayText(x.RolAdi)
+                })
+                .ToList();
             return PartialView("KullaniciYetkilendirme");
         }
 
@@ -277,7 +284,13 @@ namespace CamSistemWebArayuz.Controllers
                 kullaniciRepo = new KullaniciRepo();
                 rolRepo = new RolRepo();
                 ViewBag.Kullanicilar = kullaniciRepo.GetAll();
-                ViewBag.Roller = rolRepo.GetAll();
+                ViewBag.Roller = rolRepo.GetAll()
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = TurkishTextNormalizer.NormalizeDisplayText(x.RolAdi)
+                    })
+                    .ToList();
 
                 KullaniciRol kullaniciRolM = kullaniciRolRepo.FindBy(e => e.KullaniciId == kullaniciRol.KullaniciId).FirstOrDefault();
                 if (kullaniciRolM != null)
@@ -331,7 +344,7 @@ namespace CamSistemWebArayuz.Controllers
             {
                 return new SelectListItem()
                 {
-                    Text = a.RolAdi,
+                    Text = TurkishTextNormalizer.NormalizeDisplayText(a.RolAdi),
                     Value = a.Id.ToString(),
                     Selected = false
                 };
