@@ -1620,15 +1620,14 @@ namespace CamSistemWebArayuz.Controllers
 
         SiparisStokSablon BuildProfilGonderimSablon(long siparisId, out decimal aluKgFiyat)
         {
-            siparisRepo = new SiparisRepo();
-            sebaRepo = new SiparisEnBoyAdetRepo();
-            siparisAksesuarRepo = new SiparisAksesuarRepo();
-            musteriRepo = new MusteriRepo();
-            aksesuarRepo = new AksesuarRepo();
-            profilRepo = new ProfilRepo();
-
             AdresRepo adresRepo = new AdresRepo();
+            AksesuarRepo aksesuarRepo = new AksesuarRepo();
+            MusteriRepo musteriRepo = new MusteriRepo();
+            ProfilRepo profilRepo = new ProfilRepo();
             SabitRepo sabitRepo = new SabitRepo();
+            SiparisAksesuarRepo siparisAksesuarRepo = new SiparisAksesuarRepo();
+            SiparisEnBoyAdetRepo sebaRepo = new SiparisEnBoyAdetRepo();
+            SiparisRepo siparisRepo = new SiparisRepo();
             SiparisTeklifRepo siparisTeklifRepo = new SiparisTeklifRepo();
 
             Siparis siparis = siparisRepo.FindBy(e => e.Id == siparisId).FirstOrDefault();
@@ -1745,7 +1744,7 @@ namespace CamSistemWebArayuz.Controllers
             sablon.profilList = profilList;
             sablon.Siparis = siparis;
             sablon.SiparisId = siparis.Id;
-            sablon.SiparisTarih = siparis.KayitTarihi ?? siparis.TahminiTeslim ?? siparis.TeslimTarihi ?? DateTime.Now;
+            sablon.SiparisTarih = siparis.KayitTarihi ?? siparis.TahminiTeslim ?? siparis.TeslimTarihi ?? DateTime.MinValue;
             sablon.TeslimTarihi = siparis.TeslimTarihi ?? siparis.TahminiTeslim ?? sablon.SiparisTarih;
             sablon.SirketAd = siparis.MusteriTamAdi;
             sablon.SirketAdres = BuildAdresMetni(adres);
@@ -1770,6 +1769,11 @@ namespace CamSistemWebArayuz.Controllers
 
         void PopulateProfilGonderimExcel(ExcelWorksheet xlWorkSheet, SiparisStokSablon sablon, decimal aluKgFiyat)
         {
+            const int aksesuarToplamRowOffset = 1;
+            const int genelToplamRowOffset = 3;
+            const int kdvRowOffset = 4;
+            const int kdvDahilToplamRowOffset = 5;
+
             xlWorkSheet.Cells.Style.Font.Name = "Arial";
             xlWorkSheet.Cells["A5"].Value = sablon.SirketAd;
             xlWorkSheet.Cells["D5"].Value = sablon.SirketAdres;
@@ -1893,14 +1897,14 @@ namespace CamSistemWebArayuz.Controllers
             if (sablon.aksesuarList.Count < 1)
                 x = x + 1;
 
-            xlWorkSheet.Cells[x + 1, 11].Value = "TOPLAM";
-            xlWorkSheet.Cells[x + 1, 12].Value = sablon.AksesuarToplamTutar;
-            xlWorkSheet.Cells[x + 3, 10].Value = "GENEL TOPLAM";
-            xlWorkSheet.Cells[x + 3, 12].Value = sablon.GenelToplamTutar;
-            xlWorkSheet.Cells[x + 4, 10].Value = "K.D.V. (%20)";
-            xlWorkSheet.Cells[x + 4, 12].Value = sablon.Kdv18;
-            xlWorkSheet.Cells[x + 5, 10].Value = "K.D.V. DAHİL TOPLAM TUTAR";
-            xlWorkSheet.Cells[x + 5, 12].Value = sablon.KdvliToplam;
+            xlWorkSheet.Cells[x + aksesuarToplamRowOffset, 11].Value = "TOPLAM";
+            xlWorkSheet.Cells[x + aksesuarToplamRowOffset, 12].Value = sablon.AksesuarToplamTutar;
+            xlWorkSheet.Cells[x + genelToplamRowOffset, 10].Value = "GENEL TOPLAM";
+            xlWorkSheet.Cells[x + genelToplamRowOffset, 12].Value = sablon.GenelToplamTutar;
+            xlWorkSheet.Cells[x + kdvRowOffset, 10].Value = "K.D.V. (%20)";
+            xlWorkSheet.Cells[x + kdvRowOffset, 12].Value = sablon.Kdv18;
+            xlWorkSheet.Cells[x + kdvDahilToplamRowOffset, 10].Value = "K.D.V. DAHİL TOPLAM TUTAR";
+            xlWorkSheet.Cells[x + kdvDahilToplamRowOffset, 12].Value = sablon.KdvliToplam;
         }
 
         public ActionResult SiparisIndir(string file)
