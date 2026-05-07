@@ -1757,25 +1757,18 @@ namespace CamSistemWebArayuz.Controllers
         {
             SabitRepo sabitRepo = new SabitRepo();
             AdresRepo adresRepo = new AdresRepo();
-            SistemAltSistemJoinRepo sistemAltSistemJoinRepo = new SistemAltSistemJoinRepo();
             SiparisStokSablon sablon = new SiparisStokSablon();
             decimal aluKgFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault().SabitDeger) / 100;
             profilRepo = new ProfilRepo();
-            profilBoyRepo = new ProfilBoyRepo();
-            siparisStokRepo = new SiparisStokRepo();
             siparisRepo = new SiparisRepo();
             aksesuarRepo = new AksesuarRepo();
             musteriRepo = new MusteriRepo();
             sebaRepo = new SiparisEnBoyAdetRepo();
             siparisAksesuarRepo = new SiparisAksesuarRepo();
-            scRepo = new SiparisCamRepo();
 
-            List<SiparisStok> siparisStok = siparisStokRepo.FindBy(e => e.SiparisId == SiparisId).ToList();
             Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
             List<SiparisStokProfil> profilList = new List<SiparisStokProfil>();
             List<SiparisStokAksesuar> aksesuarList = new List<SiparisStokAksesuar>();
-            List<SiparisAksesuar> siparisAksesuar = siparisAksesuarRepo.FindBy(e => e.SiparisId == SiparisId).ToList();
-            SiparisCam siparisCam = scRepo.FindBy(e => e.SiparisId == SiparisId).FirstOrDefault();
 
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
             Adres adres = null;
@@ -1788,9 +1781,6 @@ namespace CamSistemWebArayuz.Controllers
                 aluKgFiyat = (decimal)siparis.SistemBirimFiyat;
 
             ViewBag.AluKg = aluKgFiyat;
-            SistemAltSistemJoin sistemAltSistemJoin = sistemAltSistemJoinRepo.FindBy(e => e.SistemId == siparis.SistemId &&
-                                                            e.AltSistemId == siparis.AltSistemId && e.SistemTurId == siparis.SistemTurId).FirstOrDefault();
-            if (siparis.SiparisTur == "Profil Gönderim")
             {
                 List<SiparisEnBoyAdet> enBoyList = sebaRepo.FindBy(e => e.SiparisId == SiparisId).ToList();
                 SiparisTeklifRepo siparisTeklifRepo = new SiparisTeklifRepo();
@@ -1894,19 +1884,6 @@ namespace CamSistemWebArayuz.Controllers
                 Response.ContentEncoding = Encoding.UTF8;
                 Response.Charset = "utf-8";
                 return PartialView("_stoktanSiparisSablon4Pdf", sablon);
-            }
-            else
-            {
-                Teklif4Pdf sablonPdf = new Teklif4Pdf();
-                sablonPdf = SistemCiktisi.demonteGonderimi(SiparisId);
-
-                Response.ContentEncoding = Encoding.UTF8;
-                Response.Charset = "utf-8";
-
-                if (string.IsNullOrEmpty(sablonPdf?.PartialAdi))
-                    return Content("<div class='alert alert-warning'>Bu sipariş tipi için PDF şablon bulunamadı. Lütfen sipariş verilerini kontrol ediniz.</div>");
-
-                return PartialView(sablonPdf.PartialAdi, sablonPdf);
             }
         }
 
@@ -2153,7 +2130,6 @@ namespace CamSistemWebArayuz.Controllers
 
             siparisRepo = new SiparisRepo();
             sebaRepo = new SiparisEnBoyAdetRepo();
-            scRepo = new SiparisCamRepo();
             siparisAksesuarRepo = new SiparisAksesuarRepo();
             musteriRepo = new MusteriRepo();
             aksesuarRepo = new AksesuarRepo();
@@ -2162,23 +2138,17 @@ namespace CamSistemWebArayuz.Controllers
             SiparisTeklifRepo siparisTeklifRepo = new SiparisTeklifRepo();
 
             Siparis siparis = siparisRepo.FindBy(e => e.Id == siparisId).FirstOrDefault();
-            SiparisCam siparisCam = scRepo.FindBy(e => e.SiparisId == siparisId).FirstOrDefault();
-            List<SiparisAksesuar> siparisAksesuar = siparisAksesuarRepo.FindBy(e => e.SiparisId == siparisId).ToList();
             List<SiparisEnBoyAdet> enBoyList = sebaRepo.FindBy(e => e.SiparisId == siparisId).ToList();
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
             Adres adres = null;
             if (musteri?.AdresId != null)
                 adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
-            if (siparis.SiparisTur == "Profil Gönderim")
             {
                 ViewBag.SiparisTur = "tur_profil";
                 SiparisStokSablon sablon = new SiparisStokSablon();
                 decimal aluKgFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault().SabitDeger) / 100;
                 ProfilRepo profilRepo = new ProfilRepo();
-                siparisRepo = new SiparisRepo();
-                aksesuarRepo = new AksesuarRepo();
-                musteriRepo = new MusteriRepo();
 
                 if (siparis.SistemBirimFiyat != null)
                     aluKgFiyat = (decimal)siparis.SistemBirimFiyat;
@@ -2423,379 +2393,9 @@ namespace CamSistemWebArayuz.Controllers
                 excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
                 excel.Dispose();
             }
-            else
-            {
-                if (siparisCam == null)
-                {
-                    siparisCam = new SiparisCam();
-                    siparisCam.CamKombinasyon = "";
-                }
-
-                Teklif4Pdf sablonPdf = new Teklif4Pdf();
-                sablonPdf = SistemCiktisi.demonteGonderimi(siparisId);
-
-                string path = Server.MapPath("~/Assets/" + sablonPdf.ExcelAdi);
-                ExcelPackage excel = new ExcelPackage(new FileInfo(path));
-                ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
-
-                xlWorkSheet.Cells[14, 8].Value = sablonPdf.Tarih.ToShortDateString();
-                //Firma bilgileri
-                xlWorkSheet.Cells[15, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
-                xlWorkSheet.Cells[15, 3].Style.WrapText = true;
-                xlWorkSheet.Cells[15, 3].Value = sablonPdf.Firma;
-
-                xlWorkSheet.Cells[17, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
-                xlWorkSheet.Cells[17, 3].Style.WrapText = true;
-                xlWorkSheet.Cells[17, 3].Value = sablonPdf.Adres;
-                xlWorkSheet.Cells[19, 3].Value = sablonPdf.Telefon;
-                xlWorkSheet.Cells[21, 9].Value = siparis.SiparisTur;
-
-                // sipariş en boy adet kadar liste dolacak
-                //şablonda liste 18.satırda başlıyor
-                int i = 23;
-                int p = 0;
-
-                //hangi teklife göre kayıt atacağını bulacağız ona göre alan eklenecek ya da silinecek
-                if (sablonPdf.DemonteList != null)
-                {
-                    foreach (Demonte item in sablonPdf.DemonteList)
-                    {
-                        p = p + 1;
-                        i = i + 1;
-
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                        xlWorkSheet.Cells[i, 3].Value = item.ortak.UrunAciklama;
-                        xlWorkSheet.Cells[i, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 3].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 4].Value = item.Motor;
-                        xlWorkSheet.Cells[i, 4].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 4].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 5].Value = item.Kumanda;
-                        xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 5].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 5].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 7].Value = item.AksesuarSet;
-                        xlWorkSheet.Cells[i, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 7].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 7].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 6].Value = item.CamKombinasyon;
-                        xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 6].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 6].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 8].Value = item.ortak.Adet;
-                        xlWorkSheet.Cells[i, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 9].Value = Convert.ToDouble(item.En) / 1000;
-                        xlWorkSheet.Cells[i, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 10].Value = Convert.ToDouble(item.Boy) / 1000;
-                        xlWorkSheet.Cells[i, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 11].Value = Convert.ToDouble(item.ortak.Alan);
-                        xlWorkSheet.Cells[i, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-
-                        xlWorkSheet.Cells[i, 12].Value = item.ortak.BirimFiyat;
-                        xlWorkSheet.Cells[i, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        xlWorkSheet.Cells[i, 13].Value = item.ortak.ToplamTutar;
-                        xlWorkSheet.Cells[i, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        if (p != enBoyList.Count)
-                            xlWorkSheet.InsertRow(i + 1, 1);
-                    }
-
-                    xlWorkSheet.Cells[i + 1, 13].Value = Convert.ToDecimal(sablonPdf.Toplam);
-                    xlWorkSheet.Cells[i + 1, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 1, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 2, 13].Value = Convert.ToDecimal(sablonPdf.KDV);
-                    xlWorkSheet.Cells[i + 2, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 3, 13].Value = Convert.ToDecimal(sablonPdf.GenelToplam);
-                    xlWorkSheet.Cells[i + 3, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 3, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                }
-                else if (sablonPdf.CamCatiList != null)
-                {
-                    foreach (CamCati item in sablonPdf.CamCatiList)
-                    {
-                        p = p + 1;
-                        i = i + 1;
-
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                        xlWorkSheet.Cells[i, 3].Value = item.ortak.UrunAciklama;
-                        xlWorkSheet.Cells[i, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 3].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 4].Value = item.CamKombinasyon;
-                        xlWorkSheet.Cells[i, 4].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 4].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 5].Value = item.AksesuarSet;
-                        xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 5].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 5].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 6].Value = item.OnYukseklik;
-                        xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 6].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 6].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 7].Value = item.ArkaYukseklik;
-                        xlWorkSheet.Cells[i, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 7].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 8].Value = item.ortak.Adet;
-                        xlWorkSheet.Cells[i, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 9].Value = Convert.ToDouble(item.En) / 1000;
-                        xlWorkSheet.Cells[i, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 10].Value = Convert.ToDouble(item.Boy) / 1000;
-                        xlWorkSheet.Cells[i, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 11].Value = Convert.ToDouble(item.ortak.Alan);
-
-                        xlWorkSheet.Cells[i, 12].Value = item.ortak.BirimFiyat;
-                        xlWorkSheet.Cells[i, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        xlWorkSheet.Cells[i, 13].Value = item.ortak.ToplamTutar;
-                        xlWorkSheet.Cells[i, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        if (p != enBoyList.Count)
-                            xlWorkSheet.InsertRow(i + 1, 1);
-                    }
-
-                    xlWorkSheet.Cells[i + 1, 13].Value = Convert.ToDecimal(sablonPdf.Toplam);
-                    xlWorkSheet.Cells[i + 1, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 1, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 2, 13].Value = Convert.ToDecimal(sablonPdf.KDV);
-                    xlWorkSheet.Cells[i + 2, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 3, 13].Value = Convert.ToDecimal(sablonPdf.GenelToplam);
-                    xlWorkSheet.Cells[i + 3, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 3, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                }
-                else if (sablonPdf.SurmeList != null)
-                {
-                    foreach (Surme item in sablonPdf.SurmeList)
-                    {
-                        p = p + 1;
-                        i = i + 1;
-
-                        xlWorkSheet.Cells[string.Format("C{0}:K{0}", i)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:K{0}", i)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:K{0}", i)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:K{0}", i)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                        xlWorkSheet.Cells[i, 3].Value = item.ortak.UrunAciklama;
-                        xlWorkSheet.Cells[i, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 3].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 4].Value = item.CamKombinasyon;
-                        xlWorkSheet.Cells[i, 4].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 4].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 5].Value = item.AksesuarSet;
-                        xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 5].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 5].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 6].Value = item.ortak.Adet;
-                        xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 7].Value = Convert.ToDouble(item.En) / 1000;
-                        xlWorkSheet.Cells[i, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 8].Value = Convert.ToDouble(item.Boy) / 1000;
-                        xlWorkSheet.Cells[i, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 9].Value = Convert.ToDouble(item.ortak.Alan);
-
-                        xlWorkSheet.Cells[i, 10].Value = item.ortak.BirimFiyat;
-                        xlWorkSheet.Cells[i, 10].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        xlWorkSheet.Cells[i, 11].Value = item.ortak.ToplamTutar;
-                        xlWorkSheet.Cells[i, 11].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        if (p != enBoyList.Count)
-                            xlWorkSheet.InsertRow(i + 1, 1);
-                    }
-
-                    xlWorkSheet.Cells[i + 1, 11].Value = Convert.ToDecimal(sablonPdf.Toplam);
-                    xlWorkSheet.Cells[i + 1, 11].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 1, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 2, 11].Value = Convert.ToDecimal(sablonPdf.KDV);
-                    xlWorkSheet.Cells[i + 2, 11].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 2, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 3, 11].Value = Convert.ToDecimal(sablonPdf.GenelToplam);
-                    xlWorkSheet.Cells[i + 3, 11].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 3, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                }
-                else if (sablonPdf.ZipPerdeList != null)
-                {
-                    foreach (ZipPerde item in sablonPdf.ZipPerdeList)
-                    {
-                        p = p + 1;
-                        i = i + 1;
-
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:M{0}", i)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                        xlWorkSheet.Cells[i, 3].Value = item.ortak.UrunAciklama;
-                        xlWorkSheet.Cells[i, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 3].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 4].Value = item.Motor;
-                        xlWorkSheet.Cells[i, 4].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 4].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 5].Value = item.Kumanda;
-                        xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 5].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 5].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 6].Value = item.Kumas;
-                        xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 6].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 6].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 7].Value = item.AksesuarSet;
-                        xlWorkSheet.Cells[i, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 7].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 7].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 8].Value = item.ortak.Adet;
-                        xlWorkSheet.Cells[i, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 9].Value = Convert.ToDouble(item.En) / 1000;
-                        xlWorkSheet.Cells[i, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 10].Value = Convert.ToDouble(item.Boy) / 1000;
-                        xlWorkSheet.Cells[i, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 11].Value = Convert.ToDouble(item.ortak.Alan);
-
-                        xlWorkSheet.Cells[i, 12].Value = item.ortak.BirimFiyat;
-                        xlWorkSheet.Cells[i, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        xlWorkSheet.Cells[i, 13].Value = item.ortak.ToplamTutar;
-                        xlWorkSheet.Cells[i, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        if (p != enBoyList.Count)
-                            xlWorkSheet.InsertRow(i + 1, 1);
-                    }
-
-                    xlWorkSheet.Cells[i + 1, 13].Value = Convert.ToDecimal(sablonPdf.Toplam);
-                    xlWorkSheet.Cells[i + 1, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 1, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 2, 13].Value = Convert.ToDecimal(sablonPdf.KDV);
-                    xlWorkSheet.Cells[i + 2, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 2, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 3, 13].Value = Convert.ToDecimal(sablonPdf.GenelToplam);
-                    xlWorkSheet.Cells[i + 3, 13].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 3, 13].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                }
-                else if (sablonPdf.RuzgarKiriciList != null)
-                {
-                    foreach (RuzgarKirici item in sablonPdf.RuzgarKiriciList)
-                    {
-                        p = p + 1;
-                        i = i + 1;
-
-                        xlWorkSheet.Cells[string.Format("C{0}:L{0}", i)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:L{0}", i)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:L{0}", i)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        xlWorkSheet.Cells[string.Format("C{0}:L{0}", i)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                        xlWorkSheet.Cells[i, 3].Value = item.ortak.UrunAciklama;
-                        xlWorkSheet.Cells[i, 3].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 3].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 4].Value = item.CamKombinasyon;
-                        xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 4].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 4].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 5].Value = item.AksesuarSet;
-                        xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 5].AutoFitColumns();
-                        xlWorkSheet.Cells[i, 5].Style.WrapText = true;
-
-                        xlWorkSheet.Cells[i, 6].Value = item.BaglantiSistem;
-                        xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 6].Style.WrapText = true;
-
-
-                        xlWorkSheet.Cells[i, 7].Value = item.ortak.Adet;
-                        xlWorkSheet.Cells[i, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 8].Value = Convert.ToDouble(item.En) / 1000;
-                        xlWorkSheet.Cells[i, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 9].Value = Convert.ToDouble(item.Boy) / 1000;
-                        xlWorkSheet.Cells[i, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                        xlWorkSheet.Cells[i, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                        xlWorkSheet.Cells[i, 10].Value = Convert.ToDouble(item.ortak.Alan);
-
-                        xlWorkSheet.Cells[i, 11].Value = item.ortak.BirimFiyat;
-                        xlWorkSheet.Cells[i, 11].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        xlWorkSheet.Cells[i, 12].Value = item.ortak.ToplamTutar;
-                        xlWorkSheet.Cells[i, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                        xlWorkSheet.Cells[i, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                        if (p != enBoyList.Count)
-                            xlWorkSheet.InsertRow(i + 1, 1);
-                    }
-
-                    xlWorkSheet.Cells[i + 1, 12].Value = Convert.ToDecimal(sablonPdf.Toplam);
-                    xlWorkSheet.Cells[i + 1, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 1, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 2, 12].Value = Convert.ToDecimal(sablonPdf.KDV);
-                    xlWorkSheet.Cells[i + 2, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 2, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i + 3, 12].Value = Convert.ToDecimal(sablonPdf.GenelToplam);
-                    xlWorkSheet.Cells[i + 3, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                    xlWorkSheet.Cells[i + 3, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                }
-                else if (sablonPdf.PergolaList != null)
-                {
-                }
-
-                excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
-                excel.Dispose();
-            }
 
         }
+
 
         [HttpPost]
         public JsonResult AciklamaDosyaYukleme()
