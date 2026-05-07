@@ -26,7 +26,12 @@
         padding-left: revert;
     }
 </style>
+<div id="siparisTeklifAntiForgeryToken" style="display:none;">
+    @Html.AntiForgeryToken()
+</div>
 <script>
+    var KAR_PAYI_METNI = 'KAR PAYI';
+
     function OptimizasyonHesapla(siparisId, _retryCount) {
         if (!siparisId) {
             Swal.fire("Hata", "Sipariş ID bulunamadı.", "error");
@@ -114,7 +119,7 @@
         $row.find('.BirimFiyat span,.Miktar span,.ToplamTutar span').toggle(!editMode);
         $row.find('.BirimFiyat input,.Miktar input').toggle(editMode);
 
-        var isKarPayi = (($row.find('.Malzeme span').text() || '').trim().toUpperCase() === 'KAR PAYI');
+        var isKarPayi = (($row.find('.Malzeme span').text() || '').trim().toUpperCase() === KAR_PAYI_METNI);
         $row.find('.ToplamTutar input').toggle(editMode && isKarPayi);
     }
 
@@ -147,7 +152,8 @@
             var birimFiyat = maliyetParseDecimal($row.find('.BirimFiyat input').val());
             var miktar = maliyetParseDecimal($row.find('.Miktar input').val());
             var toplamTutarInput = maliyetParseDecimal($row.find('.ToplamTutar input').val());
-            var isKarPayi = (($row.find('.Malzeme span').text() || '').trim().toUpperCase() === 'KAR PAYI');
+            var isKarPayi = (($row.find('.Malzeme span').text() || '').trim().toUpperCase() === KAR_PAYI_METNI);
+            var antiForgeryToken = $('#siparisTeklifAntiForgeryToken input[name="__RequestVerificationToken"]').val();
 
             if (birimFiyat === null || birimFiyat < 0) {
                 Swal.fire("Uyarı", "Lütfen geçerli bir birim fiyat giriniz.", "warning");
@@ -172,7 +178,8 @@
                     TeklifId: teklifId,
                     BirimFiyat: birimFiyat,
                     Miktar: miktar,
-                    ToplamTutar: toplamTutarInput
+                    ToplamTutar: toplamTutarInput,
+                    __RequestVerificationToken: antiForgeryToken
                 }
             }).done(function (data) {
                 if (data && data.Result === "OK") {

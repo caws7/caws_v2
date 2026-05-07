@@ -27,6 +27,8 @@ namespace CamSistemDataLayer.BussinesLogic
 
         /// <summary>
         /// Bir sipariş kalemi için maliyet analizi hesaplar.
+        /// Sabitler önce açıklamaya göre aranır, bulunamazsa eski Id karşılıklarına düşülür.
+        /// Legacy eşlemeler: 2=Alüminyum, 3=İmalat, 4=Sarf, 5=Kar Oranı, 8=Cam, 9=Aksesuar Seti, 10=Kar Payı Birim Fiyat.
         /// </summary>
         public static MaliyetToplam MaliyetHesaplama(
             List<Aksesuar> aksesuarEntities,

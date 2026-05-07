@@ -34,6 +34,7 @@ namespace CamSistemWebArayuz.Controllers
     {
         // Her kesimden önce ve sonra eklenen bıçak payı (mm)
         private const int BICHAK_PAYI = 4;
+        private const string KAR_PAYI_MALZEME = "KAR PAYI";
 
         SiparisRepo siparisRepo;
         MusteriRepo musteriRepo;
@@ -1394,6 +1395,7 @@ namespace CamSistemWebArayuz.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [AuthLog(Roles = "ONAYLAMA,DUZENLEME")]
         public JsonResult SiparisTeklifSatiriGuncelle(long TeklifId, string BirimFiyat, string Miktar, string ToplamTutar)
         {
@@ -1419,7 +1421,7 @@ namespace CamSistemWebArayuz.Controllers
                 teklifSatiri.BirimFiyat = birimFiyatDeger.Value;
 
                 var seciliMiktar = teklifSatiri.Miktar ?? 0m;
-                bool karPayiSatiri = string.Equals((teklifSatiri.Malzeme ?? "").Trim(), "KAR PAYI", StringComparison.OrdinalIgnoreCase);
+                bool karPayiSatiri = string.Equals((teklifSatiri.Malzeme ?? "").Trim(), KAR_PAYI_MALZEME, StringComparison.OrdinalIgnoreCase);
 
                 if (karPayiSatiri && toplamTutarDeger.HasValue && toplamTutarDeger.Value >= 0m)
                 {
