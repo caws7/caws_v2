@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml;
 
 // Optimizasyon alias
 using OptInput = Optimizasyon.Input;
@@ -36,6 +37,7 @@ namespace CamSistemWebArayuz.Controllers
         // Her kesimden önce ve sonra eklenen bıçak payı (mm)
         private const int BICHAK_PAYI = 4;
         private const string KAR_PAYI_MALZEME = "KAR PAYI";
+        private const string ExcelMimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
         SiparisRepo siparisRepo;
         MusteriRepo musteriRepo;
@@ -1584,12 +1586,141 @@ namespace CamSistemWebArayuz.Controllers
             if (adres == null)
                 return "";
 
-            return string.Format("{0} {1} {2} - {3} / {4}",
+            return SanitizeExcelText(string.Format("{0} {1} {2} - {3} / {4}",
                 adres.AcikAdres,
                 adres.PostaKodu,
                 adres.Ilce,
                 adres.Il,
-                adres.Ulke).Trim();
+                adres.Ulke)).Trim();
+        }
+
+        string SanitizeExcelText(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+
+            StringBuilder builder = new StringBuilder(value.Length);
+            foreach (char ch in value)
+            {
+                if (XmlConvert.IsXmlChar(ch))
+                    builder.Append(ch);
+            }
+
+            return builder.ToString();
+        }
+
+        decimal GetSabitDegerOrDefault(SabitRepo sabitRepo, int sabitId, decimal defaultValue = 0)
+        {
+            try
+            {
+                var sabit = sabitRepo.FindBy(e => e.Id == sabitId).FirstOrDefault();
+                return sabit?.SabitDeger != null ? Convert.ToDecimal(sabit.SabitDeger) / 100 : defaultValue;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[GetSabitDegerOrDefault] Hata SabitId=" + sabitId + ": " + ex.Message);
+                return defaultValue;
+            }
+        }
+
+        ExcelPackage CreateExcelPackage(string templatePath, string worksheetName)
+        {
+            if (System.IO.File.Exists(templatePath))
+                return new ExcelPackage(new FileInfo(templatePath));
+
+            System.Diagnostics.Debug.WriteLine("[CreateExcelPackage] Şablon bulunamadı: " + templatePath);
+            ExcelPackage excel = new ExcelPackage();
+            excel.Workbook.Worksheets.Add(worksheetName);
+            return excel;
+        }
+
+        bool TryCreateFallbackExcel(string fullPath, long siparisId, Exception ex)
+        {
+            try
+            {
+                siparisRepo = siparisRepo ?? new SiparisRepo();
+                musteriRepo = musteriRepo ?? new MusteriRepo();
+                AdresRepo adresRepo = new AdresRepo();
+
+                Siparis siparis = siparisRepo.FindBy(e => e.Id == siparisId).FirstOrDefault();
+                Musteri musteri = null;
+                Adres adres = null;
+
+                if (siparis?.MusteriId != null)
+                    musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
+
+                if (musteri?.AdresId != null)
+                    adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
+
+                using (ExcelPackage excel = new ExcelPackage())
+                {
+                    ExcelWorksheet worksheet = excel.Workbook.Worksheets.Add("Siparis");
+                    worksheet.Cells["A1"].Value = "Sipariş No";
+                    worksheet.Cells["B1"].Value = siparisId;
+                    worksheet.Cells["A2"].Value = "Müşteri";
+                    worksheet.Cells["B2"].Value = SanitizeExcelText(siparis?.MusteriTamAdi ?? "");
+                    worksheet.Cells["A3"].Value = "Adres";
+                    worksheet.Cells["B3"].Value = BuildAdresMetni(adres);
+                    worksheet.Cells["A5"].Value = "Sipariş çıktısı eksik veriler güvenli şekilde atlanarak oluşturuldu.";
+                    worksheet.Cells["A6"].Value = "Hata";
+                    worksheet.Cells["B6"].Value = SanitizeExcelText(ex?.Message ?? "Bilinmeyen hata");
+                    worksheet.Cells.AutoFitColumns();
+                    excel.SaveAs(new FileInfo(fullPath));
+                }
+
+                return true;
+            }
+            catch (Exception fallbackEx)
+            {
+                System.Diagnostics.Debug.WriteLine("[TryCreateFallbackExcel] Hata SiparisId=" + siparisId + ": " + fallbackEx.Message + "\n" + fallbackEx.StackTrace);
+                return false;
+            }
+        }
+
+        ActionResult DownloadExcelFile(string file, Action<long> exportAction)
+        {
+            string basePath = GetExportTempPath();
+
+            string safeFile = Path.GetFileName(HttpUtility.UrlDecode(file ?? string.Empty));
+            if (string.IsNullOrWhiteSpace(safeFile))
+                return new HttpStatusCodeResult(400, "Geçersiz dosya adı.");
+
+            if (!string.Equals(Path.GetExtension(safeFile), ".xlsx", StringComparison.OrdinalIgnoreCase))
+                return new HttpStatusCodeResult(400, "Yalnızca Excel dosyası indirilebilir.");
+
+            string fullPath = Path.Combine(basePath, safeFile);
+            if (!fullPath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
+                return new HttpStatusCodeResult(400, "Geçersiz dosya yolu.");
+
+            try
+            {
+                if (System.IO.File.Exists(fullPath))
+                    System.IO.File.Delete(fullPath);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[DownloadExcelFile] Var olan dosya silinemedi: " + fullPath + " | " + ex.Message);
+            }
+
+            if (!long.TryParse(safeFile.Split('_')[0], out long siparisId))
+                return new HttpStatusCodeResult(400, "Geçersiz sipariş dosya formatı.");
+
+            try
+            {
+                exportAction(siparisId);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[DownloadExcelFile] Excel export hatası SiparisId=" + siparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                TryCreateFallbackExcel(fullPath, siparisId, ex);
+            }
+
+            if (!System.IO.File.Exists(fullPath))
+                return HttpNotFound("İndirilecek dosya oluşturulamadı.");
+
+            Response.TrySkipIisCustomErrors = true;
+            Response.AppendHeader("X-Content-Type-Options", "nosniff");
+            return File(fullPath, ExcelMimeType, safeFile);
         }
 
         void TryAddProfilKesitPicture(ExcelWorksheet xlWorkSheet, int rowIndex, string kesit, string pictureName)
@@ -1620,33 +1751,12 @@ namespace CamSistemWebArayuz.Controllers
 
         public ActionResult SiparisIndir(string file)
         {
-            string basePath = GetExportTempPath();
+            return DownloadExcelFile(file, excelKaydet);
+        }
 
-            // Sanitize file parameter to prevent path traversal
-            string safeFile = Path.GetFileName(file);
-            if (string.IsNullOrWhiteSpace(safeFile))
-                return new HttpStatusCodeResult(400, "Geçersiz dosya adı.");
-
-            string fullPath = Path.Combine(basePath, safeFile);
-            if (!fullPath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
-                return new HttpStatusCodeResult(400, "Geçersiz dosya yolu.");
-
-            try
-            {
-                System.IO.File.Delete(fullPath);
-            }
-            catch { }
-
-            if (!long.TryParse(safeFile.Split('_')[0], out long siparisId))
-                return new HttpStatusCodeResult(400, "Geçersiz sipariş dosya formatı.");
-
-            excelKaydet(siparisId);
-
-            if (!System.IO.File.Exists(fullPath))
-                return HttpNotFound("İndirilecek dosya oluşturulamadı.");
-
-            byte[] fileBytes = System.IO.File.ReadAllBytes(fullPath);
-            return File(fileBytes, MimeMapping.GetMimeMapping(safeFile), safeFile);
+        public ActionResult StoktanIndir(string file)
+        {
+            return DownloadExcelFile(file, excelStoktanKaydet);
         }
 
         [HttpGet]
@@ -1894,7 +2004,7 @@ namespace CamSistemWebArayuz.Controllers
             SabitRepo sabitRepo = new SabitRepo();
             AdresRepo adresRepo = new AdresRepo();
             SiparisStokSablon sablon = new SiparisStokSablon();
-            decimal aluKgFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault().SabitDeger) / 100;
+            decimal aluKgFiyat = GetSabitDegerOrDefault(sabitRepo, 2);
             profilRepo = new ProfilRepo();
             profilBoyRepo = new ProfilBoyRepo();
             siparisStokRepo = new SiparisStokRepo();
@@ -1904,6 +2014,8 @@ namespace CamSistemWebArayuz.Controllers
 
             List<SiparisStok> siparisStok = siparisStokRepo.FindBy(e => e.SiparisId == siparisId).ToList();
             Siparis siparis = siparisRepo.FindBy(e => e.Id == siparisId).FirstOrDefault();
+            if (siparis == null)
+                throw new InvalidOperationException("Sipariş bulunamadı.");
 
             if (siparis.SistemBirimFiyat != null)
                 aluKgFiyat = (decimal)siparis.SistemBirimFiyat;
@@ -1913,34 +2025,38 @@ namespace CamSistemWebArayuz.Controllers
             foreach (var item in siparisStok.Where(e => e.ProfilId != null).ToList())
             {
                 Profil profil = profilRepo.FindBy(e => e.Id == item.ProfilId).FirstOrDefault();
+                if (profil == null)
+                    continue;
+
+                var profilBoy = item.ProfilBoyId != null ? profilBoyRepo.FindBy(e => e.Id == item.ProfilBoyId).FirstOrDefault() : null;
 
                 SiparisStokProfil siparisStokProfil = new SiparisStokProfil();
 
-                siparisStokProfil.Kodu = profil.ProfilKodu;
-                siparisStokProfil.Adi = profil.ProfilAdi;
-                siparisStokProfil.Kesit = profil.ProfilFoto;
-                siparisStokProfil.BirimAgirlik = (double)profil.BirimAgirlik / 1000;
+                siparisStokProfil.Kodu = SanitizeExcelText(profil.ProfilKodu);
+                siparisStokProfil.Adi = SanitizeExcelText(profil.ProfilAdi);
+                siparisStokProfil.Kesit = SanitizeExcelText(profil.ProfilFoto);
+                siparisStokProfil.BirimAgirlik = (double)(profil.BirimAgirlik ?? 0) / 1000;
                 siparisStokProfil.Birim = "BOY";
-                siparisStokProfil.Renk = siparis.Renk?.RenkAdi ?? "";
-                siparisStokProfil.Miktar = (int)item.ProfilAdet;
-                siparisStokProfil.Olcu = Convert.ToDouble(profilBoyRepo.FindBy(e => e.Id == item.ProfilBoyId).FirstOrDefault().ProfilBoyu) / 1000;
+                siparisStokProfil.Renk = SanitizeExcelText(siparis.Renk?.RenkAdi ?? "");
+                siparisStokProfil.Miktar = item.ProfilAdet ?? 0;
+                siparisStokProfil.Olcu = Convert.ToDouble(profilBoy?.ProfilBoyu ?? 0) / 1000;
                 siparisStokProfil.ToplamMetre = (double)(siparisStokProfil.Olcu * siparisStokProfil.Miktar);
 
                 siparisStokProfil.ToplamKg = siparisStokProfil.BirimAgirlik * siparisStokProfil.ToplamMetre;
                 siparisStokProfil.BirimFiyatKgM = aluKgFiyat;
                 siparisStokProfil.ToplamTutar = siparisStokProfil.BirimFiyatKgM * (decimal)siparisStokProfil.ToplamKg;
 
-                if (!profil.ProfilKodu.Equals("SB-101"))
+                if (!string.Equals(profil.ProfilKodu, "SB-101", StringComparison.OrdinalIgnoreCase))
                 {
                     profilList.Add(siparisStokProfil);
                 }
                 else
                 {
                     SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
-                    siparisStokAksesuar.Kodu = profil.ProfilKodu;
-                    siparisStokAksesuar.Adi = profil.ProfilAdi;
+                    siparisStokAksesuar.Kodu = SanitizeExcelText(profil.ProfilKodu);
+                    siparisStokAksesuar.Adi = SanitizeExcelText(profil.ProfilAdi);
                     siparisStokAksesuar.Birim = "METRE";
-                    siparisStokAksesuar.BirimFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 6).FirstOrDefault().SabitDeger) / 100;
+                    siparisStokAksesuar.BirimFiyat = GetSabitDegerOrDefault(sabitRepo, 6);
                     siparisStokAksesuar.Miktar = (decimal)siparisStokProfil.ToplamMetre;
                     siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.BirimFiyat * (decimal)siparisStokProfil.ToplamMetre;
                     aksesuarList.Add(siparisStokAksesuar);
@@ -1952,10 +2068,10 @@ namespace CamSistemWebArayuz.Controllers
                 Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == item.AksesuarId).FirstOrDefault();
                 if (aksesuar == null) continue;
                 SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
-                siparisStokAksesuar.Adi = aksesuar.AksesuarAdi;
-                siparisStokAksesuar.Birim = aksesuar.AksesuarBirim;
+                siparisStokAksesuar.Adi = SanitizeExcelText(aksesuar.AksesuarAdi);
+                siparisStokAksesuar.Birim = SanitizeExcelText(aksesuar.AksesuarBirim);
                 siparisStokAksesuar.BirimFiyat = aksesuar.BirimFiyat ?? 0;
-                siparisStokAksesuar.Kodu = aksesuar.AksesuarKodu;
+                siparisStokAksesuar.Kodu = SanitizeExcelText(aksesuar.AksesuarKodu);
                 siparisStokAksesuar.Miktar = item.AksesuarAdet != null ? (int)item.AksesuarAdet : 0;
 
                 siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.Miktar * siparisStokAksesuar.BirimFiyat;
@@ -1988,10 +2104,10 @@ namespace CamSistemWebArayuz.Controllers
 
             string path = Server.MapPath("~/Assets/sablonStokYeni.xlsx");
 
-            ExcelPackage excel = new ExcelPackage(new FileInfo(path));
+            ExcelPackage excel = CreateExcelPackage(path, "Siparis");
             ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
             xlWorkSheet.Cells.Style.Font.Name = "Arial";
-            xlWorkSheet.Cells["A5"].Value = siparis.MusteriTamAdi;
+            xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
             xlWorkSheet.Cells["D5"].Value = BuildAdresMetni(adres);
             xlWorkSheet.Cells["C6"].Value = siparisId;
             xlWorkSheet.Cells["G6"].Value = siparis.KayitTarihi;
@@ -2008,10 +2124,10 @@ namespace CamSistemWebArayuz.Controllers
                 xlWorkSheet.Row(i).Height = 34.5;
                 //xlWorkSheet.Cells[i, 1].Value = k;
                 //xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 1].Value = item.Kodu;
+                xlWorkSheet.Cells[i, 1].Value = SanitizeExcelText(item.Kodu);
                 xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 xlWorkSheet.Cells[i, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 2].Value = item.Adi;
+                xlWorkSheet.Cells[i, 2].Value = SanitizeExcelText(item.Adi);
                 xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 
@@ -2023,7 +2139,7 @@ namespace CamSistemWebArayuz.Controllers
                 xlWorkSheet.Cells[i, 5].Value = item.Birim;
                 xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 xlWorkSheet.Cells[i, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 6].Value = item.Renk;
+                xlWorkSheet.Cells[i, 6].Value = SanitizeExcelText(item.Renk);
                 xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 xlWorkSheet.Cells[i, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 xlWorkSheet.Cells[i, 7].Value = item.Olcu;
@@ -2081,12 +2197,12 @@ namespace CamSistemWebArayuz.Controllers
                 xlWorkSheet.Row(x).Height = 25;
                 //xlWorkSheet.Cells[x, 1].Value = k;
                 //xlWorkSheet.Cells[x, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 1].Value = item.Kodu;
-                xlWorkSheet.Cells[x, 2].Value = item.Adi;
+                xlWorkSheet.Cells[x, 1].Value = SanitizeExcelText(item.Kodu);
+                xlWorkSheet.Cells[x, 2].Value = SanitizeExcelText(item.Adi);
                 xlWorkSheet.Cells[x, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 xlWorkSheet.Cells[x, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 xlWorkSheet.Cells[string.Format("F{0}:J{0}", x)].Merge = true;
-                xlWorkSheet.Cells[x, 4].Value = item.Birim;
+                xlWorkSheet.Cells[x, 4].Value = SanitizeExcelText(item.Birim);
                 xlWorkSheet.Cells[x, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 xlWorkSheet.Cells[x, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 xlWorkSheet.Cells[x, 5].Value = item.Miktar;
@@ -2138,6 +2254,8 @@ namespace CamSistemWebArayuz.Controllers
             SiparisTeklifRepo siparisTeklifRepo = new SiparisTeklifRepo();
 
             Siparis siparis = siparisRepo.FindBy(e => e.Id == siparisId).FirstOrDefault();
+            if (siparis == null)
+                throw new InvalidOperationException("Sipariş bulunamadı.");
             List<SiparisEnBoyAdet> enBoyList = sebaRepo.FindBy(e => e.SiparisId == siparisId).ToList();
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
             Adres adres = null;
@@ -2147,7 +2265,7 @@ namespace CamSistemWebArayuz.Controllers
             {
                 ViewBag.SiparisTur = "tur_profil";
                 SiparisStokSablon sablon = new SiparisStokSablon();
-                decimal aluKgFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault().SabitDeger) / 100;
+                decimal aluKgFiyat = GetSabitDegerOrDefault(sabitRepo, 2);
                 ProfilRepo profilRepo = new ProfilRepo();
 
                 if (siparis.SistemBirimFiyat != null)
@@ -2156,14 +2274,29 @@ namespace CamSistemWebArayuz.Controllers
                 List<SiparisStokProfil> profilList = new List<SiparisStokProfil>();
                 List<SiparisStokAksesuar> aksesuarList = new List<SiparisStokAksesuar>();
 
-                List<OptimizasyonHesap> optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id);
+                List<OptimizasyonHesap> optimizasyonHesaps = new List<OptimizasyonHesap>();
+                try
+                {
+                    optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id) ?? new List<OptimizasyonHesap>();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[excelKaydet] Optimizasyon verisi alınamadı SiparisId=" + siparis.Id + ": " + ex.Message + "\n" + ex.StackTrace);
+                }
 
-                List<int> profDist = optimizasyonHesaps.Select(e => (int)e.ProfilId).Distinct().ToList();
+                List<int> profDist = optimizasyonHesaps
+                    .Where(e => e != null && e.ProfilId != null && e.ProfilBoy != null && e.KesimAdet != null)
+                    .Select(e => e.ProfilId.Value)
+                    .Distinct()
+                    .ToList();
                 List<ProfilGonderimSablonModel> profilGonderimList = new List<ProfilGonderimSablonModel>();
 
                 foreach (var item in profDist)
                 {
-                    Dictionary<int, int> profilBoyDict = optimizasyonHesaps.Where(e => e.ProfilId == item).GroupBy(e => (int)e.ProfilBoy).ToDictionary(d => d.Key, d => d.Sum(e => (int)e.KesimAdet));
+                    Dictionary<int, int> profilBoyDict = optimizasyonHesaps
+                        .Where(e => e != null && e.ProfilId == item && e.ProfilBoy != null && e.KesimAdet != null)
+                        .GroupBy(e => e.ProfilBoy.Value)
+                        .ToDictionary(d => d.Key, d => d.Sum(e => e.KesimAdet ?? 0));
 
                     foreach (var pb in profilBoyDict)
                     {
@@ -2179,14 +2312,17 @@ namespace CamSistemWebArayuz.Controllers
                 foreach (var item in profilGonderimList)
                 {
                     Profil profil = profilRepo.FindBy(e => e.Id == item.ProfilId).FirstOrDefault();
+                    if (profil == null)
+                        continue;
+
                     SiparisStokProfil siparisStokProfil = new SiparisStokProfil();
 
-                    siparisStokProfil.Kodu = profil.ProfilKodu;
-                    siparisStokProfil.Adi = profil.ProfilAdi;
-                    siparisStokProfil.Kesit = profil.ProfilFoto;
-                    siparisStokProfil.BirimAgirlik = (double)profil.BirimAgirlik / 1000;
+                    siparisStokProfil.Kodu = SanitizeExcelText(profil.ProfilKodu);
+                    siparisStokProfil.Adi = SanitizeExcelText(profil.ProfilAdi);
+                    siparisStokProfil.Kesit = SanitizeExcelText(profil.ProfilFoto);
+                    siparisStokProfil.BirimAgirlik = (double)(profil.BirimAgirlik ?? 0) / 1000;
                     siparisStokProfil.Birim = "BOY";
-                    siparisStokProfil.Renk = siparis.Renk?.RenkAdi ?? "";
+                    siparisStokProfil.Renk = SanitizeExcelText(siparis.Renk?.RenkAdi ?? "");
                     siparisStokProfil.Olcu = (double)item.ProfilBoy / 1000;
                     siparisStokProfil.Miktar = item.ProfilAdet;
                     siparisStokProfil.ToplamMetre = (double)(siparisStokProfil.Olcu * siparisStokProfil.Miktar);
@@ -2196,17 +2332,17 @@ namespace CamSistemWebArayuz.Controllers
                     siparisStokProfil.ToplamTutar = siparisStokProfil.BirimFiyatKgM * (decimal)siparisStokProfil.ToplamKg;
 
                     // sac boru aksesuarlarda görünecek
-                    if (!profil.ProfilKodu.Equals("SB-101"))
+                    if (!string.Equals(profil.ProfilKodu, "SB-101", StringComparison.OrdinalIgnoreCase))
                     {
                         profilList.Add(siparisStokProfil);
                     }
                     else
                     {
                         SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
-                        siparisStokAksesuar.Kodu = profil.ProfilKodu;
-                        siparisStokAksesuar.Adi = profil.ProfilAdi;
+                        siparisStokAksesuar.Kodu = SanitizeExcelText(profil.ProfilKodu);
+                        siparisStokAksesuar.Adi = SanitizeExcelText(profil.ProfilAdi);
                         siparisStokAksesuar.Birim = "METRE";
-                        siparisStokAksesuar.BirimFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 6).FirstOrDefault().SabitDeger) / 100;
+                        siparisStokAksesuar.BirimFiyat = GetSabitDegerOrDefault(sabitRepo, 6);
                         siparisStokAksesuar.Miktar = (decimal)siparisStokProfil.ToplamMetre;
                         siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.BirimFiyat * (decimal)siparisStokProfil.ToplamMetre;
                         aksesuarList.Add(siparisStokAksesuar);
@@ -2218,9 +2354,9 @@ namespace CamSistemWebArayuz.Controllers
                     Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == item.AksesuarId).FirstOrDefault();
                     if (aksesuar == null) continue;
                     SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
-                    siparisStokAksesuar.Adi = aksesuar.AksesuarAdi;
-                    siparisStokAksesuar.Birim = aksesuar.AksesuarBirim;
-                    siparisStokAksesuar.Kodu = aksesuar.AksesuarKodu;
+                    siparisStokAksesuar.Adi = SanitizeExcelText(aksesuar.AksesuarAdi);
+                    siparisStokAksesuar.Birim = SanitizeExcelText(aksesuar.AksesuarBirim);
+                    siparisStokAksesuar.Kodu = SanitizeExcelText(aksesuar.AksesuarKodu);
 
                     List<long> enBoyAdetIds = enBoyList.Select(e => e.Id).ToList();
                     List<SiparisTeklif> siparisTeklifs = siparisTeklifRepo.GetAll().Where(e => enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList();
@@ -2230,7 +2366,7 @@ namespace CamSistemWebArayuz.Controllers
                     if (item.BirimFiyat != null && item.BirimFiyat > 0)
                         siparisStokAksesuar.BirimFiyat = item.BirimFiyat.Value;
 
-                    siparisStokAksesuar.Miktar = filteredList.Sum(e => (decimal)e.Miktar);//sorulacak
+                    siparisStokAksesuar.Miktar = filteredList.Sum(e => e.Miktar ?? 0);//sorulacak
 
                     siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.Miktar * siparisStokAksesuar.BirimFiyat;
                     aksesuarList.Add(siparisStokAksesuar);
@@ -2243,7 +2379,7 @@ namespace CamSistemWebArayuz.Controllers
                 sablon.ProfilToplamKg = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamKg);
                 sablon.ProfilToplamTutar = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamTutar);
                 sablon.AksesuarToplamTutar = aksesuarList.Sum(e => e.ToplamTutar);
-                sablon.SirketAd = siparis.MusteriTamAdi;
+                sablon.SirketAd = SanitizeExcelText(siparis.MusteriTamAdi);
 
                 sablon.SirketAdres = BuildAdresMetni(adres);
                 ViewBag.AluKg = aluKgFiyat;
@@ -2251,11 +2387,11 @@ namespace CamSistemWebArayuz.Controllers
 
                 string path = Server.MapPath("~/Assets/sablonStokYeni.xlsx");
 
-                ExcelPackage excel = new ExcelPackage(new FileInfo(path));
+                ExcelPackage excel = CreateExcelPackage(path, "Siparis");
                 ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
 
                 xlWorkSheet.Cells.Style.Font.Name = "Arial";
-                xlWorkSheet.Cells["A5"].Value = siparis.MusteriTamAdi;
+                xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
                 xlWorkSheet.Cells["D5"].Value = BuildAdresMetni(adres);
                 xlWorkSheet.Cells["C6"].Value = siparisId;
                 xlWorkSheet.Cells["G6"].Value = siparis.KayitTarihi;
@@ -2273,10 +2409,10 @@ namespace CamSistemWebArayuz.Controllers
                     xlWorkSheet.Row(i).Height = 34.5;
                     //xlWorkSheet.Cells[i, 1].Value = k;
                     //xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    xlWorkSheet.Cells[i, 1].Value = item.Kodu;
+                    xlWorkSheet.Cells[i, 1].Value = SanitizeExcelText(item.Kodu);
                     xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     xlWorkSheet.Cells[i, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    xlWorkSheet.Cells[i, 2].Value = item.Adi;
+                    xlWorkSheet.Cells[i, 2].Value = SanitizeExcelText(item.Adi);
                     xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 
@@ -2292,7 +2428,7 @@ namespace CamSistemWebArayuz.Controllers
                     xlWorkSheet.Cells[i, 5].Value = item.Birim;
                     xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     xlWorkSheet.Cells[i, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    xlWorkSheet.Cells[i, 6].Value = item.Renk;
+                    xlWorkSheet.Cells[i, 6].Value = SanitizeExcelText(item.Renk);
                     xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     xlWorkSheet.Cells[i, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     xlWorkSheet.Cells[i, 7].Value = item.Olcu;
@@ -2351,12 +2487,12 @@ namespace CamSistemWebArayuz.Controllers
                     xlWorkSheet.Row(x).Height = 25;
                     //xlWorkSheet.Cells[x, 1].Value = k;
                     //xlWorkSheet.Cells[x, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    xlWorkSheet.Cells[x, 1].Value = item.Kodu;
-                    xlWorkSheet.Cells[x, 2].Value = item.Adi;
+                    xlWorkSheet.Cells[x, 1].Value = SanitizeExcelText(item.Kodu);
+                    xlWorkSheet.Cells[x, 2].Value = SanitizeExcelText(item.Adi);
                     xlWorkSheet.Cells[x, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     xlWorkSheet.Cells[x, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                     xlWorkSheet.Cells[string.Format("F{0}:J{0}", x)].Merge = true;
-                    xlWorkSheet.Cells[x, 4].Value = item.Birim;
+                    xlWorkSheet.Cells[x, 4].Value = SanitizeExcelText(item.Birim);
                     xlWorkSheet.Cells[x, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     xlWorkSheet.Cells[x, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     xlWorkSheet.Cells[x, 5].Value = item.Miktar;
