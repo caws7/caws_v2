@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -76,7 +77,8 @@ namespace CamSistemWebArayuz.Controllers
                               System.Web.HttpUtility.HtmlEncode(hataTipi) + "</pre></details>" +
                               "<button class='btn btn-default' style='margin-top:10px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
                               "</div>",
-                    ContentType = "text/html"
+                    ContentType = "text/html; charset=utf-8",
+                    ContentEncoding = Encoding.UTF8
                 };
             }
             else
@@ -791,7 +793,7 @@ namespace CamSistemWebArayuz.Controllers
                     System.Web.HttpUtility.HtmlEncode(hataTipi) + "</pre></details>" +
                     "<button class='btn btn-default' style='margin-top:8px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
                     "</div>",
-                    "text/html");
+                    "text/html", Encoding.UTF8);
             }
         }
 
@@ -832,7 +834,7 @@ namespace CamSistemWebArayuz.Controllers
                     System.Web.HttpUtility.HtmlEncode(exSeba.GetType().Name + ": " + exSeba.Message + (exSeba.InnerException != null ? " --> " + exSeba.InnerException.Message : "")) + "</pre></details>" +
                     "<button class='btn btn-default' style='margin-top:10px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
                     "</div>",
-                    "text/html");
+                    "text/html", Encoding.UTF8);
             }
 
             List<SiparisEnBoyAdet> siparisTumDetay = new List<SiparisEnBoyAdet>();
@@ -1108,7 +1110,7 @@ namespace CamSistemWebArayuz.Controllers
             string viewName = isGiyotinSabit ? "_siparisGiyotinSablon" : "_siparisDetaySablon";
 
             string html = RenderPartialViewToString(viewName, siparisTumDetay);
-            return Content(html, "text/html");
+            return Content(html, "text/html", Encoding.UTF8);
         }
 
         private string RenderPartialViewToString(string viewName, object model)
