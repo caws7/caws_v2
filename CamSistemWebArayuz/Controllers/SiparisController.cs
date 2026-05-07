@@ -1687,12 +1687,16 @@ namespace CamSistemWebArayuz.Controllers
                 }
             }
 
-            List<long> enBoyAdetIds = (enBoyList ?? new List<SiparisEnBoyAdet>()).Select(e => e.Id).ToList();
-            List<SiparisTeklif> siparisTeklifs = enBoyAdetIds.Count > 0
+            HashSet<long> enBoyAdetIdSet = new HashSet<long>((enBoyList ?? new List<SiparisEnBoyAdet>()).Select(e => e.Id));
+            List<SiparisTeklif> siparisTeklifs = enBoyAdetIdSet.Count > 0
                 ? siparisTeklifRepo.GetAll()
-                    .Where(e => e.SiparisEnBoyAdetId.HasValue && enBoyAdetIds.Contains(e.SiparisEnBoyAdetId.Value))
+                    .Where(e => e.SiparisEnBoyAdetId.HasValue && enBoyAdetIdSet.Contains(e.SiparisEnBoyAdetId.Value))
                     .ToList()
                 : new List<SiparisTeklif>();
+            Dictionary<string, decimal> aksesuarMiktarlari = siparisTeklifs
+                .Where(e => !string.IsNullOrWhiteSpace(e.Malzeme))
+                .GroupBy(e => e.Malzeme, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.Sum(e => e.Miktar ?? 0), StringComparer.OrdinalIgnoreCase);
 
             foreach (var item in siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList())
             {
@@ -1709,9 +1713,9 @@ namespace CamSistemWebArayuz.Controllers
                     continue;
                 }
 
-                decimal toplamMiktar = siparisTeklifs
-                    .Where(e => string.Equals(e.Malzeme, aksesuar.AksesuarAdi, StringComparison.OrdinalIgnoreCase))
-                    .Sum(e => e.Miktar ?? 0);
+                decimal toplamMiktar = 0;
+                if (!string.IsNullOrWhiteSpace(aksesuar.AksesuarAdi))
+                    aksesuarMiktarlari.TryGetValue(aksesuar.AksesuarAdi, out toplamMiktar);
 
                 decimal birimFiyat = aksesuar.BirimFiyat ?? 0;
                 if (item.BirimFiyat.HasValue && item.BirimFiyat.Value > 0)
@@ -1792,7 +1796,7 @@ namespace CamSistemWebArayuz.Controllers
             {
                 excelKaydet(siparisId);
             }
-            catch (FileNotFoundException ex)
+            catch (InvalidOperationException ex)
             {
                 System.Diagnostics.Debug.WriteLine("[SiparisIndir] Sipariş/dosya bulunamadı. SiparisId=" + siparisId + ": " + ex.Message);
                 return HttpNotFound(ex.Message);
@@ -2204,7 +2208,7 @@ namespace CamSistemWebArayuz.Controllers
 
             Siparis siparis = siparisRepo.FindBy(e => e.Id == siparisId).FirstOrDefault();
             if (siparis == null)
-                throw new FileNotFoundException("Sipariş bulunamadı.", siparisId.ToString());
+                throw new InvalidOperationException("Sipariş bulunamadı.");
 
             List<SiparisEnBoyAdet> enBoyList = sebaRepo.FindBy(e => e.SiparisId == siparisId).ToList();
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
