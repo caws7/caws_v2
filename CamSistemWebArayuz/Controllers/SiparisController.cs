@@ -1592,6 +1592,150 @@ namespace CamSistemWebArayuz.Controllers
                 adres.Ulke).Trim();
         }
 
+        decimal GetSabitDeger(SabitRepo sabitRepo, int sabitId, decimal defaultValue = 0m, decimal bolen = 1m)
+        {
+            var sabitDeger = sabitRepo.FindBy(e => e.Id == sabitId).Select(e => e.SabitDeger).FirstOrDefault();
+            decimal value = sabitDeger.HasValue ? sabitDeger.Value : defaultValue;
+            return bolen == 0 ? value : value / bolen;
+        }
+
+        bool SacBoruProfilMi(string profilKodu)
+        {
+            return string.Equals(profilKodu, "SB-101", StringComparison.OrdinalIgnoreCase);
+        }
+
+        bool DemonteProfilMi(string profilKodu)
+        {
+            return !string.IsNullOrWhiteSpace(profilKodu) &&
+                   profilKodu.IndexOf("DP-", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        SiparisStokSablon BuildProfilGonderimSablon(Siparis siparis, List<SiparisEnBoyAdet> enBoyList, SabitRepo sabitRepo, SiparisTeklifRepo siparisTeklifRepo)
+        {
+            var sablon = new SiparisStokSablon
+            {
+                SiparisId = siparis?.Id ?? 0,
+                SiparisTarih = siparis?.TahminiTeslim ?? siparis?.TeslimTarihi ?? siparis?.KayitTarihi ?? DateTime.Now,
+                SirketAd = siparis?.MusteriTamAdi ?? ""
+            };
+
+            if (siparis == null)
+                return sablon;
+
+            decimal sacBoruBirimFiyat = GetSabitDeger(sabitRepo, 6, 0m, 100m);
+            decimal profilBirimFiyat = siparis.SistemBirimFiyat ?? GetSabitDeger(sabitRepo, 2, 0m, 100m);
+            List<OptimizasyonHesap> optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id)
+                .Where(e => e != null && e.ProfilId.HasValue && e.ProfilBoy.HasValue)
+                .ToList();
+
+            List<ProfilGonderimSablonModel> profilGonderimList = optimizasyonHesaps
+                .GroupBy(e => new { ProfilId = e.ProfilId.Value, ProfilBoy = e.ProfilBoy.Value })
+                .Select(g => new ProfilGonderimSablonModel
+                {
+                    ProfilId = g.Key.ProfilId,
+                    ProfilBoy = g.Key.ProfilBoy,
+                    ProfilAdet = g.Sum(e => Math.Max(e.KesimAdet ?? 0, 0))
+                })
+                .Where(e => e.ProfilAdet > 0)
+                .ToList();
+
+            foreach (var item in profilGonderimList)
+            {
+                Profil profil = profilRepo.FindBy(e => e.Id == item.ProfilId).FirstOrDefault();
+                if (profil == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("[BuildProfilGonderimSablon] Profil bulunamadı. SiparisId=" + siparis.Id + ", ProfilId=" + item.ProfilId);
+                    continue;
+                }
+
+                SiparisStokProfil siparisStokProfil = new SiparisStokProfil
+                {
+                    Kodu = profil.ProfilKodu ?? "",
+                    Adi = profil.ProfilAdi ?? "",
+                    Kesit = profil.ProfilFoto ?? "",
+                    BirimAgirlik = (profil.BirimAgirlik ?? 0) / 1000d,
+                    Birim = "BOY",
+                    Renk = siparis.Renk?.RenkAdi ?? "",
+                    Olcu = item.ProfilBoy / 1000d,
+                    Miktar = Math.Max(item.ProfilAdet, 0)
+                };
+
+                siparisStokProfil.ToplamMetre = siparisStokProfil.Olcu * siparisStokProfil.Miktar;
+                siparisStokProfil.ToplamKg = siparisStokProfil.BirimAgirlik * siparisStokProfil.ToplamMetre;
+                siparisStokProfil.BirimFiyatKgM = profilBirimFiyat;
+                siparisStokProfil.ToplamTutar = siparisStokProfil.BirimFiyatKgM * (decimal)siparisStokProfil.ToplamKg;
+
+                if (!SacBoruProfilMi(siparisStokProfil.Kodu))
+                {
+                    sablon.profilList.Add(siparisStokProfil);
+                }
+                else
+                {
+                    sablon.aksesuarList.Add(new SiparisStokAksesuar
+                    {
+                        Kodu = siparisStokProfil.Kodu,
+                        Adi = siparisStokProfil.Adi,
+                        Birim = "METRE",
+                        BirimFiyat = sacBoruBirimFiyat,
+                        Miktar = (decimal)siparisStokProfil.ToplamMetre,
+                        ToplamTutar = sacBoruBirimFiyat * (decimal)siparisStokProfil.ToplamMetre
+                    });
+                }
+            }
+
+            List<long> enBoyAdetIds = (enBoyList ?? new List<SiparisEnBoyAdet>()).Select(e => e.Id).ToList();
+            List<SiparisTeklif> siparisTeklifs = enBoyAdetIds.Count > 0
+                ? siparisTeklifRepo.GetAll()
+                    .Where(e => e.SiparisEnBoyAdetId.HasValue && enBoyAdetIds.Contains(e.SiparisEnBoyAdetId.Value))
+                    .ToList()
+                : new List<SiparisTeklif>();
+
+            foreach (var item in siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList())
+            {
+                if (!item.AksesuarId.HasValue)
+                {
+                    System.Diagnostics.Debug.WriteLine("[BuildProfilGonderimSablon] AksesuarId boş geçti. SiparisId=" + siparis.Id);
+                    continue;
+                }
+
+                Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == item.AksesuarId.Value).FirstOrDefault();
+                if (aksesuar == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("[BuildProfilGonderimSablon] Aksesuar bulunamadı. SiparisId=" + siparis.Id + ", AksesuarId=" + item.AksesuarId.Value);
+                    continue;
+                }
+
+                decimal miktar = siparisTeklifs
+                    .Where(e => string.Equals(e.Malzeme, aksesuar.AksesuarAdi, StringComparison.OrdinalIgnoreCase))
+                    .Sum(e => e.Miktar ?? 0);
+
+                decimal birimFiyat = aksesuar.BirimFiyat ?? 0;
+                if (item.BirimFiyat.HasValue && item.BirimFiyat.Value > 0)
+                    birimFiyat = item.BirimFiyat.Value;
+
+                sablon.aksesuarList.Add(new SiparisStokAksesuar
+                {
+                    Adi = aksesuar.AksesuarAdi ?? "",
+                    Birim = aksesuar.AksesuarBirim ?? "",
+                    Kodu = aksesuar.AksesuarKodu ?? "",
+                    BirimFiyat = birimFiyat,
+                    Miktar = miktar,
+                    ToplamTutar = miktar * birimFiyat
+                });
+            }
+
+            sablon.ProfilToplamKg = siparis.ToplamAluKg != null
+                ? (double)siparis.ToplamAluKg.Value / 1000
+                : sablon.profilList.Where(e => !DemonteProfilMi(e.Kodu)).Sum(e => e.ToplamKg);
+
+            sablon.ProfilToplamTutar = siparis.ToplamAluKgFiyat ?? sablon.profilList
+                .Where(e => !DemonteProfilMi(e.Kodu))
+                .Sum(e => e.ToplamTutar);
+
+            sablon.AksesuarToplamTutar = sablon.aksesuarList.Sum(e => e.ToplamTutar);
+            return sablon;
+        }
+
         void TryAddProfilKesitPicture(ExcelWorksheet xlWorkSheet, int rowIndex, string kesit, string pictureName)
         {
             if (string.IsNullOrWhiteSpace(kesit))
@@ -1640,7 +1784,20 @@ namespace CamSistemWebArayuz.Controllers
             if (!long.TryParse(safeFile.Split('_')[0], out long siparisId))
                 return new HttpStatusCodeResult(400, "Geçersiz sipariş dosya formatı.");
 
-            excelKaydet(siparisId);
+            try
+            {
+                excelKaydet(siparisId);
+            }
+            catch (FileNotFoundException ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SiparisIndir] Sipariş/dosya bulunamadı. SiparisId=" + siparisId + ": " + ex.Message);
+                return HttpNotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SiparisIndir] Excel oluşturma hatası SiparisId=" + siparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                return new HttpStatusCodeResult(500, "Excel dosyası oluşturulurken beklenmeyen bir hata oluştu.");
+            }
 
             if (!System.IO.File.Exists(fullPath))
                 return HttpNotFound("İndirilecek dosya oluşturulamadı.");
@@ -1757,8 +1914,7 @@ namespace CamSistemWebArayuz.Controllers
         {
             SabitRepo sabitRepo = new SabitRepo();
             AdresRepo adresRepo = new AdresRepo();
-            SiparisStokSablon sablon = new SiparisStokSablon();
-            decimal aluKgFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault().SabitDeger) / 100;
+            decimal aluKgFiyat = GetSabitDeger(sabitRepo, 2, 0m, 100m);
             profilRepo = new ProfilRepo();
             siparisRepo = new SiparisRepo();
             aksesuarRepo = new AksesuarRepo();
@@ -1767,15 +1923,13 @@ namespace CamSistemWebArayuz.Controllers
             siparisAksesuarRepo = new SiparisAksesuarRepo();
 
             Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
-            List<SiparisStokProfil> profilList = new List<SiparisStokProfil>();
-            List<SiparisStokAksesuar> aksesuarList = new List<SiparisStokAksesuar>();
+            if (siparis == null)
+                return HttpNotFound("Sipariş bulunamadı.");
 
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
             Adres adres = null;
             if (musteri?.AdresId != null)
                 adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
-
-            sablon.SirketAdres = BuildAdresMetni(adres);
 
             if (siparis.SistemBirimFiyat != null)
                 aluKgFiyat = (decimal)siparis.SistemBirimFiyat;
@@ -1784,102 +1938,8 @@ namespace CamSistemWebArayuz.Controllers
             {
                 List<SiparisEnBoyAdet> enBoyList = sebaRepo.FindBy(e => e.SiparisId == SiparisId).ToList();
                 SiparisTeklifRepo siparisTeklifRepo = new SiparisTeklifRepo();
-
-                List<OptimizasyonHesap> optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id);
-
-                List<int> profDist = optimizasyonHesaps.Select(e => (int)e.ProfilId).Distinct().ToList();
-                List<ProfilGonderimSablonModel> profilGonderimList = new List<ProfilGonderimSablonModel>();
-
-                foreach (var item in profDist)
-                {
-                    Dictionary<int, int> profilBoyDict = optimizasyonHesaps.Where(e => e.ProfilId == item).GroupBy(e => (int)e.ProfilBoy).ToDictionary(d => d.Key, d => d.Sum(e => (int)e.KesimAdet));
-                    foreach (var pb in profilBoyDict)
-                    {
-                        ProfilGonderimSablonModel ent = new ProfilGonderimSablonModel();
-                        ent.ProfilId = item;
-                        ent.ProfilBoy = pb.Key;
-                        ent.ProfilAdet = pb.Value;
-                        profilGonderimList.Add(ent);
-                    }
-                }
-
-                foreach (var item in profilGonderimList)
-                {
-                    Profil profil = profilRepo.FindBy(e => e.Id == item.ProfilId).FirstOrDefault();
-                    SiparisStokProfil siparisStokProfil = new SiparisStokProfil();
-
-                    siparisStokProfil.Kodu = profil.ProfilKodu;
-                    siparisStokProfil.Adi = profil.ProfilAdi;
-                    siparisStokProfil.Kesit = profil.ProfilFoto;
-                    siparisStokProfil.BirimAgirlik = (double)profil.BirimAgirlik / 1000;
-                    siparisStokProfil.Birim = "BOY";
-                    siparisStokProfil.Renk = siparis.Renk?.RenkAdi ?? "";
-                    siparisStokProfil.Olcu = (double)item.ProfilBoy / 1000;
-                    siparisStokProfil.Miktar = item.ProfilAdet;
-                    siparisStokProfil.ToplamMetre = (double)(siparisStokProfil.Olcu * siparisStokProfil.Miktar);
-                    siparisStokProfil.ToplamKg = siparisStokProfil.BirimAgirlik * siparisStokProfil.ToplamMetre;
-
-                    siparisStokProfil.BirimFiyatKgM = aluKgFiyat;
-                    siparisStokProfil.ToplamTutar = siparisStokProfil.BirimFiyatKgM * (decimal)siparisStokProfil.ToplamKg;
-
-                    // sac boru aksesuarlarda görünecek
-                    if (!profil.ProfilKodu.Equals("SB-101"))
-                    {
-                        profilList.Add(siparisStokProfil);
-                    }
-                    else
-                    {
-                        SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
-                        siparisStokAksesuar.Kodu = profil.ProfilKodu;
-                        siparisStokAksesuar.Adi = profil.ProfilAdi;
-                        siparisStokAksesuar.Birim = "METRE";
-                        siparisStokAksesuar.BirimFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 6).FirstOrDefault().SabitDeger) / 100;
-                        siparisStokAksesuar.Miktar = (decimal)siparisStokProfil.ToplamMetre;
-                        siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.BirimFiyat * (decimal)siparisStokProfil.ToplamMetre;
-                        aksesuarList.Add(siparisStokAksesuar);
-                    }
-                }
-
-                foreach (var item in siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList())
-                {
-                    Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == item.AksesuarId).FirstOrDefault();
-                    if (aksesuar == null) continue;
-                    SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
-                    siparisStokAksesuar.Adi = aksesuar.AksesuarAdi;
-                    siparisStokAksesuar.Birim = aksesuar.AksesuarBirim;
-                    siparisStokAksesuar.Kodu = aksesuar.AksesuarKodu;
-
-                    List<long> enBoyAdetIds = enBoyList.Select(e => e.Id).ToList();
-                    List<SiparisTeklif> siparisTeklifs = siparisTeklifRepo.GetAll().Where(e => enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList();
-                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => string.Equals(e.Malzeme, aksesuar.AksesuarAdi)).ToList();
-
-                    siparisStokAksesuar.BirimFiyat = aksesuar.BirimFiyat ?? 0;
-                    if (item.BirimFiyat != null && item.BirimFiyat > 0)
-                        siparisStokAksesuar.BirimFiyat = item.BirimFiyat.Value;
-
-                    siparisStokAksesuar.Miktar = filteredList.Sum(e => (decimal)e.Miktar);//sorulacak
-
-                    siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.Miktar * siparisStokAksesuar.BirimFiyat;
-                    aksesuarList.Add(siparisStokAksesuar);
-                }
-
-                sablon.aksesuarList = aksesuarList;
-                sablon.profilList = profilList;
-                sablon.SiparisId = SiparisId;
-                sablon.SiparisTarih = Convert.ToDateTime(siparis.TahminiTeslim);
-
-                if (siparis.ToplamAluKg != null)
-                    sablon.ProfilToplamKg = (double)siparis.ToplamAluKg / 1000;
-                else
-                    sablon.ProfilToplamKg = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamKg);
-
-                if (siparis.ToplamAluKgFiyat != null)
-                    sablon.ProfilToplamTutar = (decimal)siparis.ToplamAluKgFiyat;
-                else
-                    sablon.ProfilToplamTutar = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamTutar);
-
-                sablon.AksesuarToplamTutar = aksesuarList.Sum(e => e.ToplamTutar);
-                sablon.SirketAd = siparis.MusteriTamAdi;
+                SiparisStokSablon sablon = BuildProfilGonderimSablon(siparis, enBoyList, sabitRepo, siparisTeklifRepo);
+                sablon.SirketAdres = BuildAdresMetni(adres);
 
                 Response.ContentEncoding = Encoding.UTF8;
                 Response.Charset = "utf-8";
@@ -2133,11 +2193,15 @@ namespace CamSistemWebArayuz.Controllers
             siparisAksesuarRepo = new SiparisAksesuarRepo();
             musteriRepo = new MusteriRepo();
             aksesuarRepo = new AksesuarRepo();
+            profilRepo = new ProfilRepo();
             AdresRepo adresRepo = new AdresRepo();
             SabitRepo sabitRepo = new SabitRepo();
             SiparisTeklifRepo siparisTeklifRepo = new SiparisTeklifRepo();
 
             Siparis siparis = siparisRepo.FindBy(e => e.Id == siparisId).FirstOrDefault();
+            if (siparis == null)
+                throw new FileNotFoundException("Sipariş bulunamadı.", siparisId.ToString());
+
             List<SiparisEnBoyAdet> enBoyList = sebaRepo.FindBy(e => e.SiparisId == siparisId).ToList();
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
             Adres adres = null;
@@ -2146,104 +2210,12 @@ namespace CamSistemWebArayuz.Controllers
 
             {
                 ViewBag.SiparisTur = "tur_profil";
-                SiparisStokSablon sablon = new SiparisStokSablon();
-                decimal aluKgFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault().SabitDeger) / 100;
-                ProfilRepo profilRepo = new ProfilRepo();
+                decimal aluKgFiyat = GetSabitDeger(sabitRepo, 2, 0m, 100m);
 
                 if (siparis.SistemBirimFiyat != null)
                     aluKgFiyat = (decimal)siparis.SistemBirimFiyat;
 
-                List<SiparisStokProfil> profilList = new List<SiparisStokProfil>();
-                List<SiparisStokAksesuar> aksesuarList = new List<SiparisStokAksesuar>();
-
-                List<OptimizasyonHesap> optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id);
-
-                List<int> profDist = optimizasyonHesaps.Select(e => (int)e.ProfilId).Distinct().ToList();
-                List<ProfilGonderimSablonModel> profilGonderimList = new List<ProfilGonderimSablonModel>();
-
-                foreach (var item in profDist)
-                {
-                    Dictionary<int, int> profilBoyDict = optimizasyonHesaps.Where(e => e.ProfilId == item).GroupBy(e => (int)e.ProfilBoy).ToDictionary(d => d.Key, d => d.Sum(e => (int)e.KesimAdet));
-
-                    foreach (var pb in profilBoyDict)
-                    {
-                        ProfilGonderimSablonModel ent = new ProfilGonderimSablonModel();
-                        ent.ProfilId = item;
-                        ent.ProfilBoy = pb.Key;
-                        ent.ProfilAdet = pb.Value;
-                        profilGonderimList.Add(ent);
-                    }
-
-                }
-
-                foreach (var item in profilGonderimList)
-                {
-                    Profil profil = profilRepo.FindBy(e => e.Id == item.ProfilId).FirstOrDefault();
-                    SiparisStokProfil siparisStokProfil = new SiparisStokProfil();
-
-                    siparisStokProfil.Kodu = profil.ProfilKodu;
-                    siparisStokProfil.Adi = profil.ProfilAdi;
-                    siparisStokProfil.Kesit = profil.ProfilFoto;
-                    siparisStokProfil.BirimAgirlik = (double)profil.BirimAgirlik / 1000;
-                    siparisStokProfil.Birim = "BOY";
-                    siparisStokProfil.Renk = siparis.Renk?.RenkAdi ?? "";
-                    siparisStokProfil.Olcu = (double)item.ProfilBoy / 1000;
-                    siparisStokProfil.Miktar = item.ProfilAdet;
-                    siparisStokProfil.ToplamMetre = (double)(siparisStokProfil.Olcu * siparisStokProfil.Miktar);
-                    siparisStokProfil.ToplamKg = siparisStokProfil.BirimAgirlik * siparisStokProfil.ToplamMetre;
-
-                    siparisStokProfil.BirimFiyatKgM = aluKgFiyat;
-                    siparisStokProfil.ToplamTutar = siparisStokProfil.BirimFiyatKgM * (decimal)siparisStokProfil.ToplamKg;
-
-                    // sac boru aksesuarlarda görünecek
-                    if (!profil.ProfilKodu.Equals("SB-101"))
-                    {
-                        profilList.Add(siparisStokProfil);
-                    }
-                    else
-                    {
-                        SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
-                        siparisStokAksesuar.Kodu = profil.ProfilKodu;
-                        siparisStokAksesuar.Adi = profil.ProfilAdi;
-                        siparisStokAksesuar.Birim = "METRE";
-                        siparisStokAksesuar.BirimFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 6).FirstOrDefault().SabitDeger) / 100;
-                        siparisStokAksesuar.Miktar = (decimal)siparisStokProfil.ToplamMetre;
-                        siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.BirimFiyat * (decimal)siparisStokProfil.ToplamMetre;
-                        aksesuarList.Add(siparisStokAksesuar);
-                    }
-                }
-
-                foreach (var item in siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList())
-                {
-                    Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == item.AksesuarId).FirstOrDefault();
-                    if (aksesuar == null) continue;
-                    SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
-                    siparisStokAksesuar.Adi = aksesuar.AksesuarAdi;
-                    siparisStokAksesuar.Birim = aksesuar.AksesuarBirim;
-                    siparisStokAksesuar.Kodu = aksesuar.AksesuarKodu;
-
-                    List<long> enBoyAdetIds = enBoyList.Select(e => e.Id).ToList();
-                    List<SiparisTeklif> siparisTeklifs = siparisTeklifRepo.GetAll().Where(e => enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList();
-                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => string.Equals(e.Malzeme, aksesuar.AksesuarAdi)).ToList();
-
-                    siparisStokAksesuar.BirimFiyat = aksesuar.BirimFiyat ?? 0;
-                    if (item.BirimFiyat != null && item.BirimFiyat > 0)
-                        siparisStokAksesuar.BirimFiyat = item.BirimFiyat.Value;
-
-                    siparisStokAksesuar.Miktar = filteredList.Sum(e => (decimal)e.Miktar);//sorulacak
-
-                    siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.Miktar * siparisStokAksesuar.BirimFiyat;
-                    aksesuarList.Add(siparisStokAksesuar);
-                }
-
-                sablon.aksesuarList = aksesuarList;
-                sablon.profilList = profilList;
-                sablon.SiparisId = siparis.Id;
-                sablon.SiparisTarih = Convert.ToDateTime(siparis.TahminiTeslim);
-                sablon.ProfilToplamKg = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamKg);
-                sablon.ProfilToplamTutar = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamTutar);
-                sablon.AksesuarToplamTutar = aksesuarList.Sum(e => e.ToplamTutar);
-                sablon.SirketAd = siparis.MusteriTamAdi;
+                SiparisStokSablon sablon = BuildProfilGonderimSablon(siparis, enBoyList, sabitRepo, siparisTeklifRepo);
 
                 sablon.SirketAdres = BuildAdresMetni(adres);
                 ViewBag.AluKg = aluKgFiyat;
