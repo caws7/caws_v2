@@ -1734,12 +1734,12 @@ namespace CamSistemWebArayuz.Controllers
             if (string.IsNullOrWhiteSpace(kesit))
                 return;
 
-            var imagePath = Server.MapPath("/images/profilicons/" + kesit);
-            if (!System.IO.File.Exists(imagePath))
-                return;
-
             try
             {
+                var imagePath = Server.MapPath("/images/profilicons/" + kesit);
+                if (!System.IO.File.Exists(imagePath))
+                    return;
+
                 using (Image img = Image.FromFile(imagePath))
                 {
                     int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
@@ -1751,7 +1751,7 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch
             {
-                // Geçersiz/bozuk görsel olması durumunda Excel üretimine devam edilir.
+                // Geçersiz/bozuk görsel veya path hatası durumunda Excel üretimine devam edilir.
             }
         }
 
@@ -2407,8 +2407,7 @@ namespace CamSistemWebArayuz.Controllers
 
                 int k = 0;
                 int i = 8;
-                List<string> tempKesitler = sablon.profilList.Select(e => e.Kesit).ToList();
-                int repeatCount = 0;
+                int uniqueName = 0;
                 foreach (var item in sablon.profilList)
                 {
                     k = k + 1;
@@ -2423,10 +2422,6 @@ namespace CamSistemWebArayuz.Controllers
                     xlWorkSheet.Cells[i, 2].Value = SanitizeExcelText(item.Adi);
                     xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-
-                    string tempKesit = item.Kesit;
-                    if (!string.IsNullOrWhiteSpace(tempKesit) && tempKesitler.Count(e => e.Equals(tempKesit)) > 1)
-                        tempKesit += "_" + repeatCount++;
 
                     xlWorkSheet.Cells[i, 4].Value = item.BirimAgirlik;
                     xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
@@ -2470,10 +2465,8 @@ namespace CamSistemWebArayuz.Controllers
                     }
                     // Picture is added after InsertRow to avoid EPPlus ArgumentException when
                     // adjusting existing drawing positions during row insertion.
-                    TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, tempKesit);
+                    TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
                 }
-
-                repeatCount = 0;
                 xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
                 xlWorkSheet.Cells[i + 1, 10].Style.Font.Bold = true;
                 xlWorkSheet.Cells[i + 1, 12].Value = sablon.ProfilToplamTutar;
