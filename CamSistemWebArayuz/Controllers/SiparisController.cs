@@ -38,6 +38,7 @@ namespace CamSistemWebArayuz.Controllers
         private const int BICHAK_PAYI = 4;
         private const string KAR_PAYI_MALZEME = "KAR PAYI";
         private const string ExcelMimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        private const string SacBoruProfilKodu = "SB-101";
 
         SiparisRepo siparisRepo;
         MusteriRepo musteriRepo;
@@ -1586,12 +1587,14 @@ namespace CamSistemWebArayuz.Controllers
             if (adres == null)
                 return "";
 
-            return SanitizeExcelText(string.Format("{0} {1} {2} - {3} / {4}",
+            string adresMetni = string.Format("{0} {1} {2} - {3} / {4}",
                 adres.AcikAdres,
                 adres.PostaKodu,
                 adres.Ilce,
                 adres.Il,
-                adres.Ulke)).Trim();
+                adres.Ulke).Trim();
+
+            return SanitizeExcelText(adresMetni).Trim();
         }
 
         string SanitizeExcelText(string value)
@@ -1681,7 +1684,8 @@ namespace CamSistemWebArayuz.Controllers
         {
             string basePath = GetExportTempPath();
 
-            string safeFile = Path.GetFileName(HttpUtility.UrlDecode(file ?? string.Empty));
+            string requestedFile = Path.GetFileName(file ?? string.Empty);
+            string safeFile = Path.GetFileName(HttpUtility.UrlDecode(requestedFile ?? string.Empty));
             if (string.IsNullOrWhiteSpace(safeFile))
                 return new HttpStatusCodeResult(400, "Geçersiz dosya adı.");
 
@@ -1702,7 +1706,8 @@ namespace CamSistemWebArayuz.Controllers
                 System.Diagnostics.Debug.WriteLine("[DownloadExcelFile] Var olan dosya silinemedi: " + fullPath + " | " + ex.Message);
             }
 
-            if (!long.TryParse(safeFile.Split('_')[0], out long siparisId))
+            string[] fileParts = safeFile.Split('_');
+            if (fileParts.Length == 0 || string.IsNullOrWhiteSpace(fileParts[0]) || !long.TryParse(fileParts[0], out long siparisId))
                 return new HttpStatusCodeResult(400, "Geçersiz sipariş dosya formatı.");
 
             try
@@ -1712,7 +1717,8 @@ namespace CamSistemWebArayuz.Controllers
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("[DownloadExcelFile] Excel export hatası SiparisId=" + siparisId + ": " + ex.Message + "\n" + ex.StackTrace);
-                TryCreateFallbackExcel(fullPath, siparisId, ex);
+                if (!TryCreateFallbackExcel(fullPath, siparisId, ex))
+                    System.Diagnostics.Debug.WriteLine("[DownloadExcelFile] Fallback Excel de oluşturulamadı SiparisId=" + siparisId + " | Hedef: " + fullPath);
             }
 
             if (!System.IO.File.Exists(fullPath))
@@ -2025,7 +2031,8 @@ namespace CamSistemWebArayuz.Controllers
             foreach (var item in siparisStok.Where(e => e.ProfilId != null).ToList())
             {
                 Profil profil = profilRepo.FindBy(e => e.Id == item.ProfilId).FirstOrDefault();
-                if (profil == null)
+                int? profilAdet = item.ProfilAdet;
+                if (profil == null || profilAdet == null)
                     continue;
 
                 var profilBoy = item.ProfilBoyId != null ? profilBoyRepo.FindBy(e => e.Id == item.ProfilBoyId).FirstOrDefault() : null;
@@ -2038,7 +2045,7 @@ namespace CamSistemWebArayuz.Controllers
                 siparisStokProfil.BirimAgirlik = (double)(profil.BirimAgirlik ?? 0) / 1000;
                 siparisStokProfil.Birim = "BOY";
                 siparisStokProfil.Renk = SanitizeExcelText(siparis.Renk?.RenkAdi ?? "");
-                siparisStokProfil.Miktar = item.ProfilAdet ?? 0;
+                siparisStokProfil.Miktar = profilAdet.Value;
                 siparisStokProfil.Olcu = Convert.ToDouble(profilBoy?.ProfilBoyu ?? 0) / 1000;
                 siparisStokProfil.ToplamMetre = (double)(siparisStokProfil.Olcu * siparisStokProfil.Miktar);
 
@@ -2046,7 +2053,7 @@ namespace CamSistemWebArayuz.Controllers
                 siparisStokProfil.BirimFiyatKgM = aluKgFiyat;
                 siparisStokProfil.ToplamTutar = siparisStokProfil.BirimFiyatKgM * (decimal)siparisStokProfil.ToplamKg;
 
-                if (!string.Equals(profil.ProfilKodu, "SB-101", StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(profil.ProfilKodu, SacBoruProfilKodu, StringComparison.OrdinalIgnoreCase))
                 {
                     profilList.Add(siparisStokProfil);
                 }
@@ -2332,7 +2339,7 @@ namespace CamSistemWebArayuz.Controllers
                     siparisStokProfil.ToplamTutar = siparisStokProfil.BirimFiyatKgM * (decimal)siparisStokProfil.ToplamKg;
 
                     // sac boru aksesuarlarda görünecek
-                    if (!string.Equals(profil.ProfilKodu, "SB-101", StringComparison.OrdinalIgnoreCase))
+                    if (!string.Equals(profil.ProfilKodu, SacBoruProfilKodu, StringComparison.OrdinalIgnoreCase))
                     {
                         profilList.Add(siparisStokProfil);
                     }
