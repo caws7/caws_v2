@@ -61,7 +61,7 @@ namespace CamSistemDataLayer.Helpers
 
             if (ShouldHumanize(normalized))
             {
-                normalized = System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(normalized.ToLowerInvariant());
+                normalized = HumanizeWords(normalized);
             }
 
             foreach (var replacement in Replacements.OrderByDescending(x => x.Key.Length))
@@ -97,9 +97,45 @@ namespace CamSistemDataLayer.Helpers
             var decomposed = text.Replace("_", " ").Normalize(NormalizationForm.FormD);
             var chars = decomposed
                 .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                .Select(c => c == 'ı' ? 'i' : c == 'İ' ? 'I' : c);
+                .Select(NormalizeLegacyTurkishChar);
 
             return new string(chars.ToArray()).Normalize(NormalizationForm.FormC);
+        }
+
+        private static string HumanizeWords(string text)
+        {
+            var builder = new StringBuilder(text.Length);
+            var startOfWord = true;
+
+            foreach (var character in text)
+            {
+                if (!char.IsLetter(character))
+                {
+                    builder.Append(character);
+                    startOfWord = true;
+                    continue;
+                }
+
+                builder.Append(startOfWord ? char.ToUpperInvariant(character) : char.ToLowerInvariant(character));
+                startOfWord = false;
+            }
+
+            return builder.ToString();
+        }
+
+        private static char NormalizeLegacyTurkishChar(char character)
+        {
+            if (character == 'ı')
+            {
+                return 'i';
+            }
+
+            if (character == 'İ')
+            {
+                return 'I';
+            }
+
+            return character;
         }
     }
 }
