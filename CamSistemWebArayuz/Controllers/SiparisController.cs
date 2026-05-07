@@ -1744,8 +1744,8 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
                     int iColumnHeight = (int)(xlWorkSheet.Row(rowIndex).Height * 1.333);
-                    int xOffset = iColumnWidth / 2 - img.Width / 2;
-                    int yOffset = iColumnHeight / 2 - img.Height / 2;
+                    int xOffset = Math.Max(0, iColumnWidth / 2 - img.Width / 2);
+                    int yOffset = Math.Max(0, iColumnHeight / 2 - img.Height / 2);
                     xlWorkSheet.Drawings.AddPicture(pictureName, img).SetPosition(rowIndex - 1, yOffset, 2, xOffset);
                 }
             }
