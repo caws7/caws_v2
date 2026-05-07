@@ -27,6 +27,41 @@ namespace CamSistemWebArayuz.Controllers
         CamKombinasyonRepo camKombinasyonRepo;
         SabitRepo sabitRepo;
 
+        private void EnsureMaliyetSabitleri()
+        {
+            var gerekliSabitler = new List<Tuple<int?, string, int>>
+            {
+                Tuple.Create<int?, string, int>(2, "ALÜMİNYUM BİRİM FİYAT", 0),
+                Tuple.Create<int?, string, int>(3, "İMALAT BEDELİ", 0),
+                Tuple.Create<int?, string, int>(4, "SARF MALZEME BEDELİ", 0),
+                Tuple.Create<int?, string, int>(5, "KAR PAYI ORANI", 0),
+                Tuple.Create<int?, string, int>(8, "CAM BİRİM FİYAT", 0),
+                Tuple.Create<int?, string, int>(9, "AKSESUAR SETİ BİRİM FİYAT", 0),
+                Tuple.Create<int?, string, int>(10, "KAR PAYI BİRİM FİYAT", 0)
+            };
+
+            var tumSabitler = sabitRepo.GetAll().ToList();
+            foreach (var sabit in gerekliSabitler)
+            {
+                var aciklamaIle = tumSabitler.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Aciklama) &&
+                                                                   x.Aciklama.Trim().Equals(sabit.Item2, StringComparison.OrdinalIgnoreCase));
+                var idIle = sabit.Item1.HasValue ? tumSabitler.FirstOrDefault(x => x.Id == sabit.Item1.Value) : null;
+                var mevcut = aciklamaIle ?? idIle;
+
+                if (mevcut == null)
+                {
+                    var yeni = new Sabitler { Aciklama = sabit.Item2, SabitDeger = sabit.Item3 };
+                    sabitRepo.AddAndSave(yeni);
+                    tumSabitler.Add(yeni);
+                }
+                else if (string.IsNullOrWhiteSpace(mevcut.Aciklama))
+                {
+                    mevcut.Aciklama = sabit.Item2;
+                    sabitRepo.EditAndSave(mevcut);
+                }
+            }
+        }
+
         // GET: Tanimlama
         [AuthLog(Roles = "TANİMLAMA,GORUNTULEME")]
         public ActionResult Renk()
@@ -97,6 +132,7 @@ namespace CamSistemWebArayuz.Controllers
             TempData["loader"] = "Lütfen bekleyiniz...";
             TempData["ActiveMenu"] = "TanimlamaSayfasiSabit";
             sabitRepo = new SabitRepo();
+            EnsureMaliyetSabitleri();
 
             return View(sabitRepo.GetAll());
         }

@@ -11,6 +11,7 @@ using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -1390,6 +1391,92 @@ namespace CamSistemWebArayuz.Controllers
             {
                 return Json(ex.Message, JsonRequestBehavior.AllowGet);
             }
+        }
+
+        [HttpPost]
+        [AuthLog(Roles = "ONAYLAMA,DUZENLEME")]
+        public JsonResult SiparisTeklifSatiriGuncelle(long TeklifId, string BirimFiyat, string Miktar, string ToplamTutar)
+        {
+            try
+            {
+                var siparisTeklifRepo = new SiparisTeklifRepo();
+                var sebaRepo = new SiparisEnBoyAdetRepo();
+
+                var teklifSatiri = siparisTeklifRepo.FindBy(x => x.Id == TeklifId).FirstOrDefault();
+                if (teklifSatiri == null)
+                    return Json(new { Result = "ERR", Message = "Teklif satırı bulunamadı." }, JsonRequestBehavior.AllowGet);
+
+                var birimFiyatDeger = ParseDecimalFlexible(BirimFiyat);
+                if (!birimFiyatDeger.HasValue || birimFiyatDeger.Value < 0m)
+                    return Json(new { Result = "ERR", Message = "Birim fiyat geçersiz." }, JsonRequestBehavior.AllowGet);
+
+                var miktarDeger = ParseDecimalFlexible(Miktar);
+                var toplamTutarDeger = ParseDecimalFlexible(ToplamTutar);
+
+                if (miktarDeger.HasValue && miktarDeger.Value >= 0m)
+                    teklifSatiri.Miktar = miktarDeger.Value;
+
+                teklifSatiri.BirimFiyat = birimFiyatDeger.Value;
+
+                var seciliMiktar = teklifSatiri.Miktar ?? 0m;
+                bool karPayiSatiri = string.Equals((teklifSatiri.Malzeme ?? "").Trim(), "KAR PAYI", StringComparison.OrdinalIgnoreCase);
+
+                if (karPayiSatiri && toplamTutarDeger.HasValue && toplamTutarDeger.Value >= 0m)
+                {
+                    teklifSatiri.ToplamTutar = toplamTutarDeger.Value;
+                    if (seciliMiktar > 0m)
+                        teklifSatiri.BirimFiyat = toplamTutarDeger.Value / seciliMiktar;
+                }
+                else
+                {
+                    teklifSatiri.ToplamTutar = seciliMiktar * birimFiyatDeger.Value;
+                }
+
+                siparisTeklifRepo.EditAndSave(teklifSatiri);
+
+                var satirlar = siparisTeklifRepo
+                    .FindBy(x => x.SiparisEnBoyAdetId == teklifSatiri.SiparisEnBoyAdetId)
+                    .ToList();
+
+                var toplamMaliyet = satirlar.Sum(x => x.ToplamTutar ?? 0m);
+                decimal alan = 0m;
+
+                if (teklifSatiri.SiparisEnBoyAdetId.HasValue)
+                {
+                    var seba = sebaRepo.FindBy(x => x.Id == teklifSatiri.SiparisEnBoyAdetId.Value).FirstOrDefault();
+                    if (seba != null && (seba.GirilenEn ?? 0) > 0 && (seba.GirilenBoy ?? 0) > 0)
+                    {
+                        var enToplam = (seba.GirilenEn ?? 0) + (seba.GirilenSolEn ?? 0);
+                        alan = ((decimal)enToplam * (decimal)(seba.GirilenBoy ?? 0)) / 1000000m;
+                    }
+                }
+
+                return Json(new
+                {
+                    Result = "OK",
+                    BirimFiyat = teklifSatiri.BirimFiyat ?? 0m,
+                    Miktar = teklifSatiri.Miktar ?? 0m,
+                    ToplamTutar = teklifSatiri.ToplamTutar ?? 0m,
+                    ToplamMaliyet = toplamMaliyet,
+                    M2 = (alan > 0m ? (toplamMaliyet / alan) : 0m),
+                    Teklif = toplamMaliyet
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = "ERR", Message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        private static decimal? ParseDecimalFlexible(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return null;
+            decimal parsed;
+            if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.GetCultureInfo("tr-TR"), out parsed))
+                return parsed;
+            if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out parsed))
+                return parsed;
+            return null;
         }
         #endregion
 

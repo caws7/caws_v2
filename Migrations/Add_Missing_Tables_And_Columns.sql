@@ -103,9 +103,12 @@ END;
 -- -----------------------------------------------------------------------
 -- 6. Sabitler tablosuna maliyet hesaplama için gerekli varsayılan kayıtlar
 --    Id=2 -> Alüminyum kg fiyatı (kuruş cinsinden, /100 ile TL'ye çevrilir)
+--    Id=8 -> Cam birim fiyatı (kuruş cinsinden, /100 ile TL'ye çevrilir)
+--    Id=9 -> Aksesuar seti birim fiyatı (kuruş cinsinden, /100 ile TL'ye çevrilir)
 --    Id=3 -> İmalat bedeli (kuruş/m2, /100 ile TL'ye çevrilir)
 --    Id=4 -> Sarf malzeme bedeli (kuruş/m2, /100 ile TL'ye çevrilir)
 --    Id=5 -> Kar payı yüzdesi
+--    Id=10 -> Kar payı birim fiyatı (kuruş cinsinden, /100 ile TL'ye çevrilir)
 --    NOT: Varsayılan değerler 0 olarak eklenmiştir. Uygulamanın doğru maliyet
 --         hesaplaması yapabilmesi için bu değerlerin uygulama içindeki
 --         "Tanımlamalar > Sabitler" ekranından güncellenmesi GEREKMEKTEDİR.
@@ -123,5 +126,14 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Sabitler WHERE Id = 4)
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Sabitler WHERE Id = 5)
     INSERT INTO dbo.Sabitler (Id, SabitDeger) VALUES (5, 0);
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Sabitler WHERE Id = 8)
+    INSERT INTO dbo.Sabitler (Id, SabitDeger) VALUES (8, 0);
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Sabitler WHERE Id = 9)
+    INSERT INTO dbo.Sabitler (Id, SabitDeger) VALUES (9, 0);
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Sabitler WHERE Id = 10)
+    INSERT INTO dbo.Sabitler (Id, SabitDeger) VALUES (10, 0);
 
 SET IDENTITY_INSERT dbo.Sabitler OFF;

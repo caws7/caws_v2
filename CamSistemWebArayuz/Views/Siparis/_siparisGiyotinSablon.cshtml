@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CamSistemDataLayer.Models.SiparisEnBoyAdet>
+@model IEnumerable<CamSistemDataLayer.Models.SiparisEnBoyAdet>
 @using CamSistemWebArayuz.Models;
 @using System.Linq;
 
@@ -91,9 +91,108 @@
         });
     }
 
-    $(document).ready(function () {
+    function maliyetParseDecimal(value) {
+        if (value === null || value === undefined) return null;
+        var text = (value + '').trim().replace(/₺/g, '').replace(/\s/g, '');
+        if (text === '') return null;
+        if (text.indexOf(',') > -1 && text.indexOf('.') > -1) {
+            text = text.replace(/\./g, '').replace(',', '.');
+        } else if (text.indexOf(',') > -1) {
+            text = text.replace(',', '.');
+        }
+        var parsed = parseFloat(text);
+        return isNaN(parsed) ? null : parsed;
+    }
 
-         $('#aciklamaDosyaKaydet').click(function () {
+    function maliyetFormatCurrency(value) {
+        return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(value || 0);
+    }
+
+    function maliyetToggleEditRow($row, editMode) {
+        $row.find('.Edit').toggle(!editMode);
+        $row.find('.Update,.Cancel').toggle(editMode);
+        $row.find('.BirimFiyat span,.Miktar span,.ToplamTutar span').toggle(!editMode);
+        $row.find('.BirimFiyat input,.Miktar input').toggle(editMode);
+
+        var isKarPayi = (($row.find('.Malzeme span').text() || '').trim().toUpperCase() === 'KAR PAYI');
+        $row.find('.ToplamTutar input').toggle(editMode && isKarPayi);
+    }
+
+    function maliyetSetFooterValues($table, toplamMaliyet, m2, teklif) {
+        $table.find('[data-role="toplamMaliyet"]').text(maliyetFormatCurrency(toplamMaliyet));
+        $table.find('[data-role="m2"]').text(maliyetFormatCurrency(m2));
+        $table.find('[data-role="teklif"]').text(maliyetFormatCurrency(teklif));
+    }
+
+    $(document).ready(function () {
+        $(document).off('click.maliyetEdit', '.maliyet-table .Edit').on('click.maliyetEdit', '.maliyet-table .Edit', function () {
+            var $row = $(this).closest('tr');
+            $row.find('input').each(function () { $(this).data('old-value', $(this).val()); });
+            maliyetToggleEditRow($row, true);
+        });
+
+        $(document).off('click.maliyetCancel', '.maliyet-table .Cancel').on('click.maliyetCancel', '.maliyet-table .Cancel', function () {
+            var $row = $(this).closest('tr');
+            $row.find('input').each(function () {
+                var oldValue = $(this).data('old-value');
+                if (oldValue !== undefined) $(this).val(oldValue);
+            });
+            maliyetToggleEditRow($row, false);
+        });
+
+        $(document).off('click.maliyetUpdate', '.maliyet-table .Update').on('click.maliyetUpdate', '.maliyet-table .Update', function () {
+            var $row = $(this).closest('tr');
+            var $table = $row.closest('.maliyet-table');
+            var teklifId = $.trim($row.find('.TeklifId span').text());
+            var birimFiyat = maliyetParseDecimal($row.find('.BirimFiyat input').val());
+            var miktar = maliyetParseDecimal($row.find('.Miktar input').val());
+            var toplamTutarInput = maliyetParseDecimal($row.find('.ToplamTutar input').val());
+            var isKarPayi = (($row.find('.Malzeme span').text() || '').trim().toUpperCase() === 'KAR PAYI');
+
+            if (birimFiyat === null || birimFiyat < 0) {
+                Swal.fire("Uyarı", "Lütfen geçerli bir birim fiyat giriniz.", "warning");
+                return;
+            }
+            if (miktar === null || miktar < 0) {
+                Swal.fire("Uyarı", "Lütfen geçerli bir miktar giriniz.", "warning");
+                return;
+            }
+
+            if (!isKarPayi) {
+                toplamTutarInput = miktar * birimFiyat;
+            } else if (toplamTutarInput === null || toplamTutarInput < 0) {
+                toplamTutarInput = miktar * birimFiyat;
+            }
+
+            $.ajax({
+                url: '@Url.Action("SiparisTeklifSatiriGuncelle", "Siparis")',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    TeklifId: teklifId,
+                    BirimFiyat: birimFiyat,
+                    Miktar: miktar,
+                    ToplamTutar: toplamTutarInput
+                }
+            }).done(function (data) {
+                if (data && data.Result === "OK") {
+                    $row.find('.BirimFiyat span').text(maliyetFormatCurrency(data.BirimFiyat));
+                    $row.find('.Miktar span').text((data.Miktar || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    $row.find('.ToplamTutar span').text(maliyetFormatCurrency(data.ToplamTutar));
+                    $row.find('.BirimFiyat input').val(data.BirimFiyat);
+                    $row.find('.Miktar input').val(data.Miktar);
+                    $row.find('.ToplamTutar input').val(data.ToplamTutar);
+                    maliyetSetFooterValues($table, data.ToplamMaliyet, data.M2, data.Teklif);
+                    maliyetToggleEditRow($row, false);
+                } else {
+                    Swal.fire("Hata", (data && data.Message) ? data.Message : "Güncelleme sırasında hata oluştu.", "error");
+                }
+            }).fail(function () {
+                Swal.fire("Hata", "Güncelleme sırasında sunucu hatası oluştu.", "error");
+            });
+        });
+
+          $('#aciklamaDosyaKaydet').click(function () {
 
             // Checking whether FormData is available in browser
             if (window.FormData !== undefined) {
@@ -493,7 +592,7 @@
                         </div>
 
                         <div id="maliyetyazdir_@item.Id" class="dtcustom-@item.Id">
-                            <table class="table table-bordered customeditabletable dtcustom-@item.Id">
+                            <table class="table table-bordered customeditabletable dtcustom-@item.Id maliyet-table">
                                 <thead>
                                     <tr>
                                         <th colspan=2>
@@ -590,15 +689,15 @@
                                     }
                                     <tr>
                                         <th colspan=7 class="text-right">TOPLAM MALİYET</th>
-                                        <th>@Html.Raw(string.Format("{0:c2}", toplamMaliyet.GetValueOrDefault(0)))</th>
+                                        <th data-role="toplamMaliyet">@Html.Raw(string.Format("{0:c2}", toplamMaliyet.GetValueOrDefault(0)))</th>
                                     </tr>
                                     <tr>
                                         <th colspan=7 class="text-right">M2</th>
-                                        <th>@Html.Raw(string.Format("{0:c2}", m2.GetValueOrDefault(0)))</th>
+                                        <th data-role="m2">@Html.Raw(string.Format("{0:c2}", m2.GetValueOrDefault(0)))</th>
                                     </tr>
                                     <tr>
                                         <th colspan=7 class="text-right">TEKLİF</th>
-                                        <th>@Html.Raw(string.Format("{0:c2}", teklif.GetValueOrDefault(0)))</th>
+                                        <th data-role="teklif">@Html.Raw(string.Format("{0:c2}", teklif.GetValueOrDefault(0)))</th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
@@ -631,7 +730,7 @@
                         </td>
                         <td class="ToplamTutar">
                             <span>@Html.Raw(string.Format("{0:c2}", item2.ToplamTutar))</span>
-                            @*<input type="text" value="@item2.ToplamTutar" style="display:none" />*@
+                            <input type="text" value="@item2.ToplamTutar" style="display:none" />
                         </td>
                         <td>
                             @if (!ViewBag.raporMu)

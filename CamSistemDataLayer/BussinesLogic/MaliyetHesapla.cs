@@ -8,9 +8,25 @@ namespace CamSistemDataLayer.BussinesLogic
 {
     public static class MaliyetHesapla
     {
+        private static Sabitler FindSabit(List<Sabitler> tumSabitler, int legacyId, string aciklama)
+        {
+            var sabit = tumSabitler.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Aciklama) &&
+                                                        x.Aciklama.Trim().Equals(aciklama, StringComparison.OrdinalIgnoreCase));
+            if (sabit != null) return sabit;
+            return tumSabitler.FirstOrDefault(x => x.Id == legacyId);
+        }
+
+        private static decimal GetSabitDeger(List<Sabitler> tumSabitler, int legacyId, string aciklama, bool divideBy100)
+        {
+            var sabit = FindSabit(tumSabitler, legacyId, aciklama);
+            if (sabit?.SabitDeger == null) return 0m;
+
+            var deger = Convert.ToDecimal(sabit.SabitDeger.Value);
+            return divideBy100 ? (deger / 100m) : deger;
+        }
+
         /// <summary>
         /// Bir sipariş kalemi için maliyet analizi hesaplar.
-        /// Sabit tablosu kullanımı: Id=2 -> Alüminyum kg fiyatı (kuruş/100), Id=3 -> İmalat bedeli (kuruş/100 per m2), Id=4 -> Sarf malzeme bedeli (kuruş/100 per m2), Id=5 -> Kar payı yüzdesi
         /// </summary>
         public static MaliyetToplam MaliyetHesaplama(
             List<Aksesuar> aksesuarEntities,
@@ -22,12 +38,10 @@ namespace CamSistemDataLayer.BussinesLogic
             var sabitRepo = new SabitRepo();
             var camKombinasyonRepo = new CamKombinasyonRepo();
             var maliyetList = new List<Maliyet>();
+            var tumSabitler = sabitRepo.GetAll().ToList();
 
             // --- 1. ALÜMİNYUM ---
-            decimal aluKgFiyat = 0m;
-            var aluSabit = sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault();
-            if (aluSabit?.SabitDeger != null)
-                aluKgFiyat = Convert.ToDecimal(aluSabit.SabitDeger) / 100m;
+            decimal aluKgFiyat = GetSabitDeger(tumSabitler, 2, "ALÜMİNYUM BİRİM FİYAT", true);
 
             decimal aluMiktar = (decimal)(camModel?.ToplamPresKG ?? 0);
             maliyetList.Add(new Maliyet
@@ -56,6 +70,11 @@ namespace CamSistemDataLayer.BussinesLogic
                         camBirim = kombRecord.Birim;
                 }
             }
+
+            var camSabitFiyat = GetSabitDeger(tumSabitler, 8, "CAM BİRİM FİYAT", true);
+            if (camSabitFiyat > 0m)
+                camBirimFiyat = camSabitFiyat;
+
             maliyetList.Add(new Maliyet
             {
                 Malzeme = "CAM",
@@ -75,6 +94,11 @@ namespace CamSistemDataLayer.BussinesLogic
                 foreach (var aks in aksesuarEntities)
                     aksesuarToplamTutar += (aks.BirimFiyat ?? 0m) * girilenAdet;
             }
+
+            var aksesuarSetiSabitFiyat = GetSabitDeger(tumSabitler, 9, "AKSESUAR SETİ BİRİM FİYAT", true);
+            if (aksesuarSetiSabitFiyat > 0m)
+                aksesuarToplamTutar = aksesuarSetiSabitFiyat * girilenAdet;
+
             maliyetList.Add(new Maliyet
             {
                 Malzeme = "AKSESUAR SETİ",
@@ -95,10 +119,7 @@ namespace CamSistemDataLayer.BussinesLogic
                 sistemM2 = (decimal)(camModel?.ToplamAlan ?? 0);
 
             // --- 4. İMALAT BEDELİ ---
-            decimal imalatBirimFiyat = 0m;
-            var imalatSabit = sabitRepo.FindBy(e => e.Id == 3).FirstOrDefault();
-            if (imalatSabit?.SabitDeger != null)
-                imalatBirimFiyat = Convert.ToDecimal(imalatSabit.SabitDeger) / 100m;
+            decimal imalatBirimFiyat = GetSabitDeger(tumSabitler, 3, "İMALAT BEDELİ", true);
 
             maliyetList.Add(new Maliyet
             {
@@ -110,10 +131,7 @@ namespace CamSistemDataLayer.BussinesLogic
             });
 
             // --- 5. SARF MALZEME BEDELİ ---
-            decimal sarfBirimFiyat = 0m;
-            var sarfSabit = sabitRepo.FindBy(e => e.Id == 4).FirstOrDefault();
-            if (sarfSabit?.SabitDeger != null)
-                sarfBirimFiyat = Convert.ToDecimal(sarfSabit.SabitDeger) / 100m;
+            decimal sarfBirimFiyat = GetSabitDeger(tumSabitler, 4, "SARF MALZEME BEDELİ", true);
 
             maliyetList.Add(new Maliyet
             {
@@ -125,20 +143,24 @@ namespace CamSistemDataLayer.BussinesLogic
             });
 
             // --- 6. KAR PAYI ---
-            decimal karPayiOran = 0m;
-            var karSabit = sabitRepo.FindBy(e => e.Id == 5).FirstOrDefault();
-            if (karSabit?.SabitDeger != null)
-                karPayiOran = Convert.ToDecimal(karSabit.SabitDeger);
+            decimal karPayiOran = GetSabitDeger(tumSabitler, 5, "KAR PAYI ORANI", false);
 
             decimal araToplamTutar = maliyetList.Sum(m => m.ToplamTutar);
             decimal karPayiTutar = araToplamTutar * karPayiOran / 100m;
+            decimal karPayiBirimFiyat = araToplamTutar > 0m ? araToplamTutar / 100m : 0m;
+            var karPayiSabitBirimFiyat = GetSabitDeger(tumSabitler, 10, "KAR PAYI BİRİM FİYAT", true);
+            if (karPayiSabitBirimFiyat > 0m)
+            {
+                karPayiBirimFiyat = karPayiSabitBirimFiyat;
+                karPayiTutar = karPayiBirimFiyat * karPayiOran;
+            }
 
             maliyetList.Add(new Maliyet
             {
                 Malzeme = "KAR PAYI",
                 Birim = "%",
                 Miktar = karPayiOran,
-                BirimFiyat = araToplamTutar > 0m ? araToplamTutar / 100m : 0m, // araToplamın 1%'i, karPayiTutar = Miktar(%) * BirimFiyat hesabına göre
+                BirimFiyat = karPayiBirimFiyat,
                 ToplamTutar = karPayiTutar
             });
 
