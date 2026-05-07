@@ -2138,8 +2138,6 @@ namespace CamSistemWebArayuz.Controllers
                 xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 
-                TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
-
                 xlWorkSheet.Cells[i, 4].Value = item.BirimAgirlik;
                 xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 xlWorkSheet.Cells[i, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -2180,6 +2178,9 @@ namespace CamSistemWebArayuz.Controllers
                     xlWorkSheet.InsertRow(i + 1, 1);
                     xlWorkSheet.Row(i + 1).Height = 34.5;
                 }
+                // Picture is added after InsertRow to avoid EPPlus ArgumentException when
+                // adjusting existing drawing positions during row insertion.
+                TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
             }
 
             xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
@@ -2427,8 +2428,6 @@ namespace CamSistemWebArayuz.Controllers
                     if (!string.IsNullOrWhiteSpace(tempKesit) && tempKesitler.Count(e => e.Equals(tempKesit)) > 1)
                         tempKesit += "_" + repeatCount++;
 
-                    TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, tempKesit);
-
                     xlWorkSheet.Cells[i, 4].Value = item.BirimAgirlik;
                     xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     xlWorkSheet.Cells[i, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -2469,6 +2468,9 @@ namespace CamSistemWebArayuz.Controllers
                         xlWorkSheet.InsertRow(i + 1, 1);
                         xlWorkSheet.Row(i + 1).Height = 34.5;
                     }
+                    // Picture is added after InsertRow to avoid EPPlus ArgumentException when
+                    // adjusting existing drawing positions during row insertion.
+                    TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, tempKesit);
                 }
 
                 repeatCount = 0;
