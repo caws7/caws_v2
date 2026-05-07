@@ -1640,11 +1640,13 @@ namespace CamSistemWebArayuz.Controllers
             if (musteri?.AdresId != null)
                 adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
-            aluKgFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault().SabitDeger) / 100;
+            var aluKgSabit = sabitRepo.FindBy(e => e.Id == 2).FirstOrDefault();
+            aluKgFiyat = Convert.ToDecimal(aluKgSabit?.SabitDeger ?? 0) / 100;
             if (siparis.SistemBirimFiyat != null)
                 aluKgFiyat = siparis.SistemBirimFiyat.Value;
 
-            decimal sacBoruBirimFiyat = Convert.ToDecimal(sabitRepo.FindBy(e => e.Id == 6).FirstOrDefault().SabitDeger) / 100;
+            var sacBoruSabit = sabitRepo.FindBy(e => e.Id == 6).FirstOrDefault();
+            decimal sacBoruBirimFiyat = Convert.ToDecimal(sacBoruSabit?.SabitDeger ?? 0) / 100;
             List<SiparisStokProfil> profilList = new List<SiparisStokProfil>();
             List<SiparisStokAksesuar> aksesuarList = new List<SiparisStokAksesuar>();
 
