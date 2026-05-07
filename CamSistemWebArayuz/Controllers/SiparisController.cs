@@ -1565,7 +1565,16 @@ namespace CamSistemWebArayuz.Controllers
         {
             string tempPath = Server.MapPath("~/Assets/temp/");
             if (!Directory.Exists(tempPath))
-                Directory.CreateDirectory(tempPath);
+            {
+                try
+                {
+                    Directory.CreateDirectory(tempPath);
+                }
+                catch (Exception ex)
+                {
+                    throw new IOException("İndirme için geçici klasör oluşturulamadı: " + tempPath, ex);
+                }
+            }
 
             return tempPath;
         }
@@ -1592,13 +1601,20 @@ namespace CamSistemWebArayuz.Controllers
             if (!System.IO.File.Exists(imagePath))
                 return;
 
-            using (Image img = Image.FromFile(imagePath))
+            try
             {
-                int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
-                int iColumnHeight = (int)(xlWorkSheet.Row(rowIndex).Height * 1.333);
-                int xOffset = iColumnWidth / 2 - img.Width / 2;
-                int yOffset = iColumnHeight / 2 - img.Height / 2;
-                xlWorkSheet.Drawings.AddPicture(pictureName, img).SetPosition(rowIndex - 1, yOffset, 2, xOffset);
+                using (Image img = Image.FromFile(imagePath))
+                {
+                    int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
+                    int iColumnHeight = (int)(xlWorkSheet.Row(rowIndex).Height * 1.333);
+                    int xOffset = iColumnWidth / 2 - img.Width / 2;
+                    int yOffset = iColumnHeight / 2 - img.Height / 2;
+                    xlWorkSheet.Drawings.AddPicture(pictureName, img).SetPosition(rowIndex - 1, yOffset, 2, xOffset);
+                }
+            }
+            catch
+            {
+                // Geçersiz/bozuk görsel olması durumunda Excel üretimine devam edilir.
             }
         }
 

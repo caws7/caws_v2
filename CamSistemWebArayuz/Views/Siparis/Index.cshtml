@@ -371,12 +371,12 @@
                         $("#yazdirPdfKayitlar").css("visibility", "hidden");
                     }).catch(function () {
                         $("#yazdirPdfKayitlar").css("visibility", "hidden");
-                        Swal.fire("Oops", "PDF oluşturulurken bir hata oluştu.", "error");
+                        Swal.fire("PDF Oluşturma Hatası", "PDF şablonu işlendi ancak dosya oluşturulamadı. Lütfen sipariş verilerini kontrol edip tekrar deneyin.", "error");
                     });
                 })
                 .fail(function () {
                     $("#yazdirPdfKayitlar").css("visibility", "hidden");
-                    Swal.fire("Oops", "PDF şablonu alınamadı. Lütfen tekrar deneyin.", "error");
+                    Swal.fire("PDF Şablonu Alınamadı", "Sunucudan PDF şablonu alınamadı. Bağlantıyı kontrol edip tekrar deneyin veya sistem yöneticisine başvurun.", "error");
                 });
             }
         })
