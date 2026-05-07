@@ -6,8 +6,8 @@ namespace CamSistemWebArayuz.Models
 {
     public class SiparisStokSablon
     {
-        public List<SiparisStokProfil> profilList { get; set; }
-        public List<SiparisStokAksesuar> aksesuarList { get; set; }
+        public List<SiparisStokProfil> profilList { get; set; } = new List<SiparisStokProfil>();
+        public List<SiparisStokAksesuar> aksesuarList { get; set; } = new List<SiparisStokAksesuar>();
         public double ProfilToplamKg { get; set; }
         public decimal ProfilToplamTutar { get; set; }
         public decimal AksesuarToplamTutar { get; set; }
@@ -24,7 +24,7 @@ namespace CamSistemWebArayuz.Models
         public CamTedarik CamTedarik { get; set; }
         public DisTedarik DisTedarik { get; set; }
         public Sevkiyat sevkiyat { get; set; }
-        public List<SiparisSevkiyatProfil> sevkiyatProfil { get; set; }
-        public List<SiparisSevkiyatAksesuar> sevkiyatAksesuar { get; set; }
+        public List<SiparisSevkiyatProfil> sevkiyatProfil { get; set; } = new List<SiparisSevkiyatProfil>();
+        public List<SiparisSevkiyatAksesuar> sevkiyatAksesuar { get; set; } = new List<SiparisSevkiyatAksesuar>();
     }
 }
