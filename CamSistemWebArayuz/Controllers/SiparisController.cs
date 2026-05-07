@@ -1740,13 +1740,22 @@ namespace CamSistemWebArayuz.Controllers
                 if (!System.IO.File.Exists(imagePath))
                     return;
 
+                string safePictureName = string.IsNullOrWhiteSpace(pictureName) ? "profil_kesit" : pictureName;
+                if (!char.IsLetter(safePictureName[0]) && safePictureName[0] != '_')
+                    safePictureName = "p_" + safePictureName;
+
+                int suffix = 0;
+                string uniquePictureName = safePictureName;
+                while (xlWorkSheet.Drawings[uniquePictureName] != null)
+                    uniquePictureName = safePictureName + "_" + (++suffix);
+
                 using (Image img = Image.FromFile(imagePath))
                 {
                     int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
                     int iColumnHeight = (int)(xlWorkSheet.Row(rowIndex).Height * 1.333);
                     int xOffset = Math.Max(0, iColumnWidth / 2 - img.Width / 2);
                     int yOffset = Math.Max(0, iColumnHeight / 2 - img.Height / 2);
-                    xlWorkSheet.Drawings.AddPicture(pictureName, img).SetPosition(rowIndex - 1, yOffset, 2, xOffset);
+                    xlWorkSheet.Drawings.AddPicture(uniquePictureName, img).SetPosition(rowIndex - 1, yOffset, 2, xOffset);
                 }
             }
             catch
@@ -2180,7 +2189,7 @@ namespace CamSistemWebArayuz.Controllers
                 }
                 // Picture is added after InsertRow to avoid EPPlus ArgumentException when
                 // adjusting existing drawing positions during row insertion.
-                TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
+                TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, "profil_resim_" + uniqueName++);
             }
 
             xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
@@ -2465,7 +2474,7 @@ namespace CamSistemWebArayuz.Controllers
                     }
                     // Picture is added after InsertRow to avoid EPPlus ArgumentException when
                     // adjusting existing drawing positions during row insertion.
-                    TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
+                    TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, "profil_resim_" + uniqueName++);
                 }
                 xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
                 xlWorkSheet.Cells[i + 1, 10].Style.Font.Bold = true;
