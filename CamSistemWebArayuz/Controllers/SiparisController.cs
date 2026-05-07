@@ -1561,18 +1561,59 @@ namespace CamSistemWebArayuz.Controllers
         // Not: Bunlar eski çalışan controller'dan taşındı.
         // Projede action isimleri / view'lar farklıysa uyarlamak gerekebilir.
 
-        public FileResult SiparisIndir(string file)
+        string GetExportTempPath()
         {
-            string basePath = Server.MapPath("~/Assets/temp/");
+            string tempPath = Server.MapPath("~/Assets/temp/");
+            if (!Directory.Exists(tempPath))
+                Directory.CreateDirectory(tempPath);
+
+            return tempPath;
+        }
+
+        string BuildAdresMetni(Adres adres)
+        {
+            if (adres == null)
+                return "";
+
+            return string.Format("{0} {1} {2} - {3} / {4}",
+                adres.AcikAdres,
+                adres.PostaKodu,
+                adres.Ilce,
+                adres.Il,
+                adres.Ulke).Trim();
+        }
+
+        void TryAddProfilKesitPicture(ExcelWorksheet xlWorkSheet, int rowIndex, string kesit, string pictureName)
+        {
+            if (string.IsNullOrWhiteSpace(kesit))
+                return;
+
+            var imagePath = Server.MapPath("/images/profilicons/" + kesit);
+            if (!System.IO.File.Exists(imagePath))
+                return;
+
+            using (Image img = Image.FromFile(imagePath))
+            {
+                int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
+                int iColumnHeight = (int)(xlWorkSheet.Row(rowIndex).Height * 1.333);
+                int xOffset = iColumnWidth / 2 - img.Width / 2;
+                int yOffset = iColumnHeight / 2 - img.Height / 2;
+                xlWorkSheet.Drawings.AddPicture(pictureName, img).SetPosition(rowIndex - 1, yOffset, 2, xOffset);
+            }
+        }
+
+        public ActionResult SiparisIndir(string file)
+        {
+            string basePath = GetExportTempPath();
 
             // Sanitize file parameter to prevent path traversal
             string safeFile = Path.GetFileName(file);
             if (string.IsNullOrWhiteSpace(safeFile))
-                throw new ArgumentException("Geçersiz dosya adı.");
+                return new HttpStatusCodeResult(400, "Geçersiz dosya adı.");
 
             string fullPath = Path.Combine(basePath, safeFile);
             if (!fullPath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
-                throw new ArgumentException("Geçersiz dosya yolu.");
+                return new HttpStatusCodeResult(400, "Geçersiz dosya yolu.");
 
             try
             {
@@ -1580,11 +1621,16 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch { }
 
-            long siparisId = Convert.ToInt64(safeFile.Split('_')[0]);
+            if (!long.TryParse(safeFile.Split('_')[0], out long siparisId))
+                return new HttpStatusCodeResult(400, "Geçersiz sipariş dosya formatı.");
+
             excelKaydet(siparisId);
 
+            if (!System.IO.File.Exists(fullPath))
+                return HttpNotFound("İndirilecek dosya oluşturulamadı.");
+
             byte[] fileBytes = System.IO.File.ReadAllBytes(fullPath);
-            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, safeFile);
+            return File(fileBytes, MimeMapping.GetMimeMapping(safeFile), safeFile);
         }
 
         [HttpGet]
@@ -1679,10 +1725,15 @@ namespace CamSistemWebArayuz.Controllers
             sablon.AksesuarToplamTutar = aksesuarList.Sum(e => e.ToplamTutar);
             sablon.SirketAd = siparis.MusteriTamAdi;
 
-            int adresId = (int)musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault().AdresId;
-            Adres adres = adresRepo.FindBy(e => e.Id == adresId).FirstOrDefault();
-            sablon.SirketAdres = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
+            var musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
+
+            sablon.SirketAdres = BuildAdresMetni(adres);
             ViewBag.AluKg = aluKgFiyat;
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.Charset = "utf-8";
             return PartialView("_stoktanSiparisSablon4Pdf", sablon);
         }
 
@@ -1711,9 +1762,11 @@ namespace CamSistemWebArayuz.Controllers
             SiparisCam siparisCam = scRepo.FindBy(e => e.SiparisId == SiparisId).FirstOrDefault();
 
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
-            int adresId = (int)musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault().AdresId;
-            Adres adres = adresRepo.FindBy(e => e.Id == adresId).FirstOrDefault();
-            sablon.SirketAdres = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
+
+            sablon.SirketAdres = BuildAdresMetni(adres);
 
             if (siparis.SistemBirimFiyat != null)
                 aluKgFiyat = (decimal)siparis.SistemBirimFiyat;
@@ -1821,6 +1874,8 @@ namespace CamSistemWebArayuz.Controllers
                 sablon.AksesuarToplamTutar = aksesuarList.Sum(e => e.ToplamTutar);
                 sablon.SirketAd = siparis.MusteriTamAdi;
 
+                Response.ContentEncoding = Encoding.UTF8;
+                Response.Charset = "utf-8";
                 return PartialView("_stoktanSiparisSablon4Pdf", sablon);
             }
             else
@@ -1828,13 +1883,15 @@ namespace CamSistemWebArayuz.Controllers
                 Teklif4Pdf sablonPdf = new Teklif4Pdf();
                 sablonPdf = SistemCiktisi.demonteGonderimi(SiparisId);
 
+                Response.ContentEncoding = Encoding.UTF8;
+                Response.Charset = "utf-8";
                 return PartialView(sablonPdf.PartialAdi, sablonPdf);
             }
         }
 
         void excelStoktanKaydet(long siparisId)
         {
-            string pathAfter = Server.MapPath("~/Assets/temp/") + siparisId + "_nolu_siparis";
+            string pathAfter = Path.Combine(GetExportTempPath(), siparisId + "_nolu_siparis");
 
             SabitRepo sabitRepo = new SabitRepo();
             AdresRepo adresRepo = new AdresRepo();
@@ -1923,8 +1980,10 @@ namespace CamSistemWebArayuz.Controllers
             else
                 sablon.ProfilToplamTutar = sablon.profilList.Sum(e => e.ToplamTutar);
 
-            int adresId = (int)musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault().AdresId;
-            Adres adres = adresRepo.FindBy(e => e.Id == adresId).FirstOrDefault();
+            var musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
             ViewBag.AluKg = aluKgFiyat;
 
@@ -1934,7 +1993,7 @@ namespace CamSistemWebArayuz.Controllers
             ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
             xlWorkSheet.Cells.Style.Font.Name = "Arial";
             xlWorkSheet.Cells["A5"].Value = siparis.MusteriTamAdi;
-            xlWorkSheet.Cells["D5"].Value = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
+            xlWorkSheet.Cells["D5"].Value = BuildAdresMetni(adres);
             xlWorkSheet.Cells["C6"].Value = siparisId;
             xlWorkSheet.Cells["G6"].Value = siparis.KayitTarihi;
             xlWorkSheet.Cells["K6"].Value = siparis.TeslimTarihi;
@@ -1957,19 +2016,7 @@ namespace CamSistemWebArayuz.Controllers
                 xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                 xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 
-                if (item.Kesit != null)
-                {
-                    var imagePath = Server.MapPath("/images/profilicons/" + item.Kesit);
-                    Image img = Image.FromFile(imagePath);
-
-                    int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
-                    int iColumnHeight = (int)(xlWorkSheet.Row(i).Height * 1.333);
-                    int xOffset = iColumnWidth / 2 - img.Width / 2;
-                    int yOffset = iColumnHeight / 2 - img.Height / 2;
-
-                    var pic = xlWorkSheet.Drawings.AddPicture(uniqueName++.ToString(), img);
-                    pic.SetPosition(i - 1, yOffset, 2, xOffset);
-                }
+                TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
 
                 xlWorkSheet.Cells[i, 4].Value = item.BirimAgirlik;
                 xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
@@ -2080,7 +2127,7 @@ namespace CamSistemWebArayuz.Controllers
 
         void excelKaydet(long siparisId)
         {
-            string pathAfter = Server.MapPath("~/Assets/temp/") + siparisId + "_nolu_siparis";
+            string pathAfter = Path.Combine(GetExportTempPath(), siparisId + "_nolu_siparis");
 
             siparisRepo = new SiparisRepo();
             sebaRepo = new SiparisEnBoyAdetRepo();
@@ -2097,7 +2144,9 @@ namespace CamSistemWebArayuz.Controllers
             List<SiparisAksesuar> siparisAksesuar = siparisAksesuarRepo.FindBy(e => e.SiparisId == siparisId).ToList();
             List<SiparisEnBoyAdet> enBoyList = sebaRepo.FindBy(e => e.SiparisId == siparisId).ToList();
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
-            Adres adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
             if (siparis.SiparisTur == "Profil Gönderim")
             {
@@ -2203,7 +2252,7 @@ namespace CamSistemWebArayuz.Controllers
                 sablon.AksesuarToplamTutar = aksesuarList.Sum(e => e.ToplamTutar);
                 sablon.SirketAd = siparis.MusteriTamAdi;
 
-                sablon.SirketAdres = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
+                sablon.SirketAdres = BuildAdresMetni(adres);
                 ViewBag.AluKg = aluKgFiyat;
                 ViewBag.SiparisStokSablon = sablon;
 
@@ -2214,7 +2263,7 @@ namespace CamSistemWebArayuz.Controllers
 
                 xlWorkSheet.Cells.Style.Font.Name = "Arial";
                 xlWorkSheet.Cells["A5"].Value = siparis.MusteriTamAdi;
-                xlWorkSheet.Cells["D5"].Value = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
+                xlWorkSheet.Cells["D5"].Value = BuildAdresMetni(adres);
                 xlWorkSheet.Cells["C6"].Value = siparisId;
                 xlWorkSheet.Cells["G6"].Value = siparis.KayitTarihi;
                 xlWorkSheet.Cells["K6"].Value = siparis.TeslimTarihi;
@@ -2238,22 +2287,11 @@ namespace CamSistemWebArayuz.Controllers
                     xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 
-                    if (item.Kesit != null)
-                    {
-                        var imagePath = Server.MapPath("/images/profilicons/" + item.Kesit);
-                        Image img = Image.FromFile(imagePath);
+                    string tempKesit = item.Kesit;
+                    if (!string.IsNullOrWhiteSpace(tempKesit) && tempKesitler.Count(e => e.Equals(tempKesit)) > 1)
+                        tempKesit += "_" + repeatCount++;
 
-                        int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
-                        int iColumnHeight = (int)(xlWorkSheet.Row(i).Height * 1.333);
-                        int xOffset = iColumnWidth / 2 - img.Width / 2;
-                        int yOffset = iColumnHeight / 2 - img.Height / 2;
-                        string tempKesit = item.Kesit;
-                        if (tempKesitler.Count(e => e.Equals(tempKesit)) > 1)
-                        {
-                            tempKesit += "_" + repeatCount++;
-                        }
-                        xlWorkSheet.Drawings.AddPicture(tempKesit, img).SetPosition(i - 1, yOffset, 2, xOffset);
-                    }
+                    TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, tempKesit);
 
                     xlWorkSheet.Cells[i, 4].Value = item.BirimAgirlik;
                     xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;

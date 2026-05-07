@@ -43,12 +43,12 @@
                     data: { 'SiparisId': _siparisId },
                     dataType: 'html'
                 })
-                .success(function (result) {
+                .done(function (result) {
                    $("#yazdirPdfKayitlar").css("visibility", "visible");
                    $('#yazdirPdfKayitlar').html(result);
                     var doc = window.jspdf.jsPDF("portrait");
 
-                   html2canvas($("#yazdirPdfKayitlar")[0]).then((canvas) => {
+                   html2canvas($("#yazdirPdfKayitlar")[0], { useCORS: true }).then((canvas) => {
                         const pageWidth = doc.internal.pageSize.getWidth();
                         const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -66,8 +66,15 @@
 
                         doc.save(pdfName);
                         $("#yazdirPdfKayitlar").css("visibility", "hidden");
+                   }).catch(function () {
+                       $("#yazdirPdfKayitlar").css("visibility", "hidden");
+                       Swal.fire("Oops", "PDF oluşturulurken bir hata oluştu.", "error");
                    });
                 })
+                .fail(function () {
+                    $("#yazdirPdfKayitlar").css("visibility", "hidden");
+                    Swal.fire("Oops", "PDF şablonu alınamadı. Lütfen tekrar deneyin.", "error");
+                });
             }
         })
     }
