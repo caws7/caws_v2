@@ -1592,11 +1592,11 @@ namespace CamSistemWebArayuz.Controllers
                 adres.Ulke).Trim();
         }
 
-        decimal GetSabitDeger(SabitRepo sabitRepo, int sabitId, decimal defaultValue = 0m, decimal bolen = 1m)
+        decimal GetSabitDeger(SabitRepo sabitRepo, int sabitId, decimal defaultValue = 0m, decimal divisor = 1m)
         {
             var sabitDeger = sabitRepo.FindBy(e => e.Id == sabitId).Select(e => e.SabitDeger).FirstOrDefault();
             decimal value = sabitDeger.HasValue ? sabitDeger.Value : defaultValue;
-            return bolen == 0 ? value : value / bolen;
+            return divisor == 0 ? value : value / divisor;
         }
 
         bool SacBoruProfilMi(string profilKodu)
@@ -1612,10 +1612,14 @@ namespace CamSistemWebArayuz.Controllers
 
         SiparisStokSablon BuildProfilGonderimSablon(Siparis siparis, List<SiparisEnBoyAdet> enBoyList, SabitRepo sabitRepo, SiparisTeklifRepo siparisTeklifRepo)
         {
+            DateTime siparisTarih = siparis?.TahminiTeslim ?? siparis?.TeslimTarihi ?? siparis?.KayitTarihi ?? DateTime.Today;
+            if (siparis != null && !siparis.TahminiTeslim.HasValue && !siparis.TeslimTarihi.HasValue && !siparis.KayitTarihi.HasValue)
+                System.Diagnostics.Debug.WriteLine("[BuildProfilGonderimSablon] Sipariş tarihi boş geldi. SiparisId=" + siparis.Id);
+
             var sablon = new SiparisStokSablon
             {
                 SiparisId = siparis?.Id ?? 0,
-                SiparisTarih = siparis?.TahminiTeslim ?? siparis?.TeslimTarihi ?? siparis?.KayitTarihi ?? DateTime.Now,
+                SiparisTarih = siparisTarih,
                 SirketAd = siparis?.MusteriTamAdi ?? ""
             };
 
@@ -1634,7 +1638,7 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     ProfilId = g.Key.ProfilId,
                     ProfilBoy = g.Key.ProfilBoy,
-                    ProfilAdet = g.Sum(e => Math.Max(e.KesimAdet ?? 0, 0))
+                    ProfilAdet = g.Sum(e => e.KesimAdet ?? 0)
                 })
                 .Where(e => e.ProfilAdet > 0)
                 .ToList();
@@ -1657,7 +1661,7 @@ namespace CamSistemWebArayuz.Controllers
                     Birim = "BOY",
                     Renk = siparis.Renk?.RenkAdi ?? "",
                     Olcu = item.ProfilBoy / 1000d,
-                    Miktar = Math.Max(item.ProfilAdet, 0)
+                    Miktar = item.ProfilAdet
                 };
 
                 siparisStokProfil.ToplamMetre = siparisStokProfil.Olcu * siparisStokProfil.Miktar;
@@ -1705,7 +1709,7 @@ namespace CamSistemWebArayuz.Controllers
                     continue;
                 }
 
-                decimal miktar = siparisTeklifs
+                decimal toplamMiktar = siparisTeklifs
                     .Where(e => string.Equals(e.Malzeme, aksesuar.AksesuarAdi, StringComparison.OrdinalIgnoreCase))
                     .Sum(e => e.Miktar ?? 0);
 
@@ -1719,8 +1723,8 @@ namespace CamSistemWebArayuz.Controllers
                     Birim = aksesuar.AksesuarBirim ?? "",
                     Kodu = aksesuar.AksesuarKodu ?? "",
                     BirimFiyat = birimFiyat,
-                    Miktar = miktar,
-                    ToplamTutar = miktar * birimFiyat
+                    Miktar = toplamMiktar,
+                    ToplamTutar = toplamMiktar * birimFiyat
                 });
             }
 
