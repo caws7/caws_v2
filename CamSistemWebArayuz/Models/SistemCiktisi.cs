@@ -29,8 +29,13 @@ namespace CamSistemWebArayuz.Models
             siparisRepo = new SiparisRepo();
 
             Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
+            if (siparis == null)
+                return sablon;
+
             SistemRepo sistemRepo = new SistemRepo();
             Sistem sistem = sistemRepo.FindBy(e => e.Id == siparis.SistemId).FirstOrDefault();
+            if (sistem == null || sistem.SistemAdi == null)
+                return sablon;
 
             switch (sistem.SistemAdi)
             {
@@ -64,8 +69,9 @@ namespace CamSistemWebArayuz.Models
             SiparisCam siparisCam = scRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault();
 
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
-            int adresId = (int)musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault().AdresId;
-            Adres adres = adresRepo.FindBy(e => e.Id == adresId).FirstOrDefault();
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
             if (siparis.SistemBirimFiyat == null)
             {
@@ -84,9 +90,9 @@ namespace CamSistemWebArayuz.Models
             teklif4Pdf.SiparisNo = siparis.Id;
             teklif4Pdf.Tarih = Convert.ToDateTime(siparis.KayitTarihi);
             teklif4Pdf.TeslimTarihi = Convert.ToDateTime(siparis.TahminiTeslim);
-            teklif4Pdf.Firma = musteri.AdSoyadSirketAdi;
-            teklif4Pdf.Adres = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
-            teklif4Pdf.Telefon = musteri.MusteriTelefon;
+            teklif4Pdf.Firma = musteri?.AdSoyadSirketAdi ?? "";
+            teklif4Pdf.Adres = adres != null ? adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke : "";
+            teklif4Pdf.Telefon = musteri?.MusteriTelefon ?? "";
             List<Demonte> demonteTeklif4Pdfs = new List<Demonte>();
             foreach (SiparisEnBoyAdet item in enBoyList)
             {
@@ -109,6 +115,7 @@ namespace CamSistemWebArayuz.Models
                 foreach (var itemAksesuar in siparisAksesuar)
                 {
                     Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == itemAksesuar.AksesuarId).FirstOrDefault();
+                    if (aksesuar == null) continue;
                     if (aksesuar.Motor != null && (bool)aksesuar.Motor)
                     {
                         demonteTeklif4Pdf.Motor = aksesuar.AksesuarAdi;
@@ -117,7 +124,7 @@ namespace CamSistemWebArayuz.Models
                     {
                         demonteTeklif4Pdf.Kumanda = aksesuar.AksesuarAdi;
                     }
-                    else if (aksesuar.AksesuarAdi.ToLower().Contains("kayış") || aksesuar.AksesuarAdi.ToLower().Contains("zincir"))
+                    else if (aksesuar.AksesuarAdi != null && (aksesuar.AksesuarAdi.ToLower().Contains("kayış") || aksesuar.AksesuarAdi.ToLower().Contains("zincir")))
                     {
                         demonteTeklif4Pdf.AksesuarSet = aksesuar.AksesuarAdi;
                     }
@@ -158,8 +165,9 @@ namespace CamSistemWebArayuz.Models
             SiparisCam siparisCam = scRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault();
 
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
-            int adresId = (int)musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault().AdresId;
-            Adres adres = adresRepo.FindBy(e => e.Id == adresId).FirstOrDefault();
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
             if (siparis.SistemBirimFiyat == null)
             {
@@ -176,14 +184,14 @@ namespace CamSistemWebArayuz.Models
             Teklif4Pdf teklif4Pdf = new Teklif4Pdf();
             teklif4Pdf.SiparisNo = siparis.Id;
             teklif4Pdf.Tarih = Convert.ToDateTime(siparis.KayitTarihi);
-            teklif4Pdf.Firma = musteri.AdSoyadSirketAdi;
-            teklif4Pdf.Adres = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
-            teklif4Pdf.Telefon = musteri.MusteriTelefon;
+            teklif4Pdf.Firma = musteri?.AdSoyadSirketAdi ?? "";
+            teklif4Pdf.Adres = adres != null ? adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke : "";
+            teklif4Pdf.Telefon = musteri?.MusteriTelefon ?? "";
             List<CamCati> camCatiTeklif4Pdfs = new List<CamCati>();
             foreach (SiparisEnBoyAdet item in enBoyList)
             {
                 CamCati camCatiTeklif4Pdf = new CamCati();
-                camCatiTeklif4Pdf.CamKombinasyon = siparisCam.CamKombinasyon;
+                camCatiTeklif4Pdf.CamKombinasyon = siparisCam?.CamKombinasyon ?? "";
                 camCatiTeklif4Pdf.En = Convert.ToInt32(item.GirilenEn);
                 camCatiTeklif4Pdf.Boy = Convert.ToInt32(item.GirilenBoy);
 
@@ -201,7 +209,8 @@ namespace CamSistemWebArayuz.Models
                 foreach (var itemAksesuar in siparisAksesuar)
                 {
                     Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == itemAksesuar.AksesuarId).FirstOrDefault();
-                    if (aksesuar.AksesuarAdi.ToLower().Contains("aksesuar seti") && !aksesuar.AksesuarAdi.ToLower().Contains("aparat"))
+                    if (aksesuar == null) continue;
+                    if (aksesuar.AksesuarAdi != null && aksesuar.AksesuarAdi.ToLower().Contains("aksesuar seti") && !aksesuar.AksesuarAdi.ToLower().Contains("aparat"))
                     {
                         camCatiTeklif4Pdf.AksesuarSet = aksesuar.AksesuarAdi;
                     }
@@ -238,8 +247,9 @@ namespace CamSistemWebArayuz.Models
             SiparisCam siparisCam = scRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault();
 
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
-            int adresId = (int)musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault().AdresId;
-            Adres adres = adresRepo.FindBy(e => e.Id == adresId).FirstOrDefault();
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
             if (siparis.SistemBirimFiyat == null)
             {
@@ -257,14 +267,14 @@ namespace CamSistemWebArayuz.Models
             Teklif4Pdf teklif4Pdf = new Teklif4Pdf();
             teklif4Pdf.SiparisNo = siparis.Id;
             teklif4Pdf.Tarih = Convert.ToDateTime(siparis.KayitTarihi);
-            teklif4Pdf.Firma = musteri.AdSoyadSirketAdi;
-            teklif4Pdf.Adres = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
-            teklif4Pdf.Telefon = musteri.MusteriTelefon;
+            teklif4Pdf.Firma = musteri?.AdSoyadSirketAdi ?? "";
+            teklif4Pdf.Adres = adres != null ? adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke : "";
+            teklif4Pdf.Telefon = musteri?.MusteriTelefon ?? "";
             List<Surme> surmeTeklif4Pdfs = new List<Surme>();
             foreach (SiparisEnBoyAdet item in enBoyList)
             {
                 Surme surmeTeklif4Pdf = new Surme();
-                surmeTeklif4Pdf.CamKombinasyon = siparisCam.CamKombinasyon;
+                surmeTeklif4Pdf.CamKombinasyon = siparisCam?.CamKombinasyon ?? "";
                 surmeTeklif4Pdf.En = Convert.ToInt32(item.GirilenEn);
                 surmeTeklif4Pdf.Boy = Convert.ToInt32(item.GirilenBoy);
 
@@ -278,7 +288,8 @@ namespace CamSistemWebArayuz.Models
                 foreach (var itemAksesuar in siparisAksesuar)
                 {
                     Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == itemAksesuar.AksesuarId).FirstOrDefault();
-                    if (aksesuar.AksesuarAdi.ToLower().Contains("aksesuar seti") && !aksesuar.AksesuarAdi.ToLower().Contains("aparat"))
+                    if (aksesuar == null) continue;
+                    if (aksesuar.AksesuarAdi != null && aksesuar.AksesuarAdi.ToLower().Contains("aksesuar seti") && !aksesuar.AksesuarAdi.ToLower().Contains("aparat"))
                     {
                         surmeTeklif4Pdf.AksesuarSet = aksesuar.AksesuarAdi;
                     }
@@ -314,8 +325,9 @@ namespace CamSistemWebArayuz.Models
             List<SiparisAksesuar> siparisAksesuar = siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList();
             SiparisCam siparisCam = scRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault();
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
-            int adresId = (int)musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault().AdresId;
-            Adres adres = adresRepo.FindBy(e => e.Id == adresId).FirstOrDefault();
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
             if (siparis.SistemBirimFiyat == null)
             {
@@ -332,14 +344,14 @@ namespace CamSistemWebArayuz.Models
             Teklif4Pdf teklif4Pdf = new Teklif4Pdf();
             teklif4Pdf.SiparisNo = siparis.Id;
             teklif4Pdf.Tarih = Convert.ToDateTime(siparis.KayitTarihi);
-            teklif4Pdf.Firma = musteri.AdSoyadSirketAdi;
-            teklif4Pdf.Adres = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
-            teklif4Pdf.Telefon = musteri.MusteriTelefon;
+            teklif4Pdf.Firma = musteri?.AdSoyadSirketAdi ?? "";
+            teklif4Pdf.Adres = adres != null ? adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke : "";
+            teklif4Pdf.Telefon = musteri?.MusteriTelefon ?? "";
             List<RuzgarKirici> ruzgarKiriciTeklif4Pdfs = new List<RuzgarKirici>();
             foreach (SiparisEnBoyAdet item in enBoyList)
             {
                 RuzgarKirici ruzgarKiriciTeklif4Pdf = new RuzgarKirici();
-                ruzgarKiriciTeklif4Pdf.CamKombinasyon = siparisCam.CamKombinasyon;
+                ruzgarKiriciTeklif4Pdf.CamKombinasyon = siparisCam?.CamKombinasyon ?? "";
                 ruzgarKiriciTeklif4Pdf.En = Convert.ToInt32(item.GirilenEn);
                 ruzgarKiriciTeklif4Pdf.Boy = Convert.ToInt32(item.GirilenBoy);
 
@@ -353,7 +365,8 @@ namespace CamSistemWebArayuz.Models
                 foreach (var itemAksesuar in siparisAksesuar)
                 {
                     Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == itemAksesuar.AksesuarId).FirstOrDefault();
-                    if (aksesuar.AksesuarAdi.ToLower().Contains("aksesuar seti") && !aksesuar.AksesuarAdi.ToLower().Contains("aparat"))
+                    if (aksesuar == null) continue;
+                    if (aksesuar.AksesuarAdi != null && aksesuar.AksesuarAdi.ToLower().Contains("aksesuar seti") && !aksesuar.AksesuarAdi.ToLower().Contains("aparat"))
                     {
                         ruzgarKiriciTeklif4Pdf.AksesuarSet = aksesuar.AksesuarAdi;
                     }
@@ -393,8 +406,9 @@ namespace CamSistemWebArayuz.Models
             List<SiparisAksesuar> siparisAksesuar = siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList();
             SiparisCam siparisCam = scRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault();
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
-            int adresId = (int)musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault().AdresId;
-            Adres adres = adresRepo.FindBy(e => e.Id == adresId).FirstOrDefault();
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
             if (siparis.SistemBirimFiyat == null)
             {
@@ -411,9 +425,9 @@ namespace CamSistemWebArayuz.Models
             Teklif4Pdf teklif4Pdf = new Teklif4Pdf();
             teklif4Pdf.SiparisNo = siparis.Id;
             teklif4Pdf.Tarih = Convert.ToDateTime(siparis.KayitTarihi);
-            teklif4Pdf.Firma = musteri.AdSoyadSirketAdi;
-            teklif4Pdf.Adres = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
-            teklif4Pdf.Telefon = musteri.MusteriTelefon;
+            teklif4Pdf.Firma = musteri?.AdSoyadSirketAdi ?? "";
+            teklif4Pdf.Adres = adres != null ? adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke : "";
+            teklif4Pdf.Telefon = musteri?.MusteriTelefon ?? "";
             List<ZipPerde> zipPerdeTeklif4Pdfs = new List<ZipPerde>();
             foreach (SiparisEnBoyAdet item in enBoyList)
             {
@@ -434,6 +448,7 @@ namespace CamSistemWebArayuz.Models
                 foreach (var itemAksesuar in siparisAksesuar)
                 {
                     Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == itemAksesuar.AksesuarId).FirstOrDefault();
+                    if (aksesuar == null) continue;
                     if (aksesuar.Motor != null && (bool)aksesuar.Motor)
                     {
                         zipPerdeTeklif4Pdf.Motor = aksesuar.AksesuarAdi;
@@ -442,7 +457,7 @@ namespace CamSistemWebArayuz.Models
                     {
                         zipPerdeTeklif4Pdf.Kumanda = aksesuar.AksesuarAdi;
                     }
-                    else if (aksesuar.AksesuarAdi.ToLower().Contains("aksesuar seti") && !aksesuar.AksesuarAdi.ToLower().Contains("aparat"))
+                    else if (aksesuar.AksesuarAdi != null && aksesuar.AksesuarAdi.ToLower().Contains("aksesuar seti") && !aksesuar.AksesuarAdi.ToLower().Contains("aparat"))
                     {
                         zipPerdeTeklif4Pdf.AksesuarSet = aksesuar.AksesuarAdi;
                     }
@@ -479,8 +494,9 @@ namespace CamSistemWebArayuz.Models
             SiparisCam siparisCam = scRepo.FindBy(e => e.SiparisId == siparis.Id).FirstOrDefault();
 
             Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
-            int adresId = (int)musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault().AdresId;
-            Adres adres = adresRepo.FindBy(e => e.Id == adresId).FirstOrDefault();
+            Adres adres = null;
+            if (musteri?.AdresId != null)
+                adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
 
             if (siparis.SistemBirimFiyat == null)
             {
@@ -498,9 +514,9 @@ namespace CamSistemWebArayuz.Models
             Teklif4Pdf teklif4Pdf = new Teklif4Pdf();
             teklif4Pdf.SiparisNo = siparis.Id;
             teklif4Pdf.Tarih = Convert.ToDateTime(siparis.KayitTarihi);
-            teklif4Pdf.Firma = musteri.AdSoyadSirketAdi;
-            teklif4Pdf.Adres = adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke;
-            teklif4Pdf.Telefon = musteri.MusteriTelefon;
+            teklif4Pdf.Firma = musteri?.AdSoyadSirketAdi ?? "";
+            teklif4Pdf.Adres = adres != null ? adres.AcikAdres + " " + adres.PostaKodu + " " + adres.Ilce + " - " + adres.Il + " / " + adres.Ulke : "";
+            teklif4Pdf.Telefon = musteri?.MusteriTelefon ?? "";
             List<Pergola> pergolaTeklif4Pdfs = new List<Pergola>();
             foreach (SiparisEnBoyAdet item in enBoyList)
             {
@@ -515,6 +531,7 @@ namespace CamSistemWebArayuz.Models
                 foreach (var itemAksesuar in siparisAksesuar)
                 {
                     Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == itemAksesuar.AksesuarId).FirstOrDefault();
+                    if (aksesuar == null) continue;
                     if (aksesuar.Motor != null && (bool)aksesuar.Motor)
                     {
                         pergolaTeklif4Pdf.Motor = aksesuar.AksesuarAdi;

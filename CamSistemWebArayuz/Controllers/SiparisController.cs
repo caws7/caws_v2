@@ -1823,7 +1823,7 @@ namespace CamSistemWebArayuz.Controllers
                     siparisStokProfil.Kesit = profil.ProfilFoto;
                     siparisStokProfil.BirimAgirlik = (double)profil.BirimAgirlik / 1000;
                     siparisStokProfil.Birim = "BOY";
-                    siparisStokProfil.Renk = siparis.Renk.RenkAdi;
+                    siparisStokProfil.Renk = siparis.Renk?.RenkAdi ?? "";
                     siparisStokProfil.Olcu = (double)item.ProfilBoy / 1000;
                     siparisStokProfil.Miktar = item.ProfilAdet;
                     siparisStokProfil.ToplamMetre = (double)(siparisStokProfil.Olcu * siparisStokProfil.Miktar);
@@ -1853,6 +1853,7 @@ namespace CamSistemWebArayuz.Controllers
                 foreach (var item in siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList())
                 {
                     Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == item.AksesuarId).FirstOrDefault();
+                    if (aksesuar == null) continue;
                     SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
                     siparisStokAksesuar.Adi = aksesuar.AksesuarAdi;
                     siparisStokAksesuar.Birim = aksesuar.AksesuarBirim;
@@ -1860,9 +1861,9 @@ namespace CamSistemWebArayuz.Controllers
 
                     List<long> enBoyAdetIds = enBoyList.Select(e => e.Id).ToList();
                     List<SiparisTeklif> siparisTeklifs = siparisTeklifRepo.GetAll().Where(e => enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList();
-                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => e.Malzeme.Equals(aksesuar.AksesuarAdi)).ToList();
+                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => e.Malzeme != null && e.Malzeme.Equals(aksesuar.AksesuarAdi)).ToList();
 
-                    siparisStokAksesuar.BirimFiyat = (decimal)aksesuar.BirimFiyat;
+                    siparisStokAksesuar.BirimFiyat = aksesuar.BirimFiyat ?? 0;
                     if (item.BirimFiyat != null && item.BirimFiyat > 0)
                         siparisStokAksesuar.BirimFiyat = item.BirimFiyat.Value;
 
@@ -1901,6 +1902,10 @@ namespace CamSistemWebArayuz.Controllers
 
                 Response.ContentEncoding = Encoding.UTF8;
                 Response.Charset = "utf-8";
+
+                if (string.IsNullOrEmpty(sablonPdf?.PartialAdi))
+                    return Content("<div class='alert alert-warning'>Bu sipariş tipi için PDF şablonu bulunamadı. Lütfen sipariş verilerini kontrol ediniz.</div>");
+
                 return PartialView(sablonPdf.PartialAdi, sablonPdf);
             }
         }
@@ -1939,7 +1944,7 @@ namespace CamSistemWebArayuz.Controllers
                 siparisStokProfil.Kesit = profil.ProfilFoto;
                 siparisStokProfil.BirimAgirlik = (double)profil.BirimAgirlik / 1000;
                 siparisStokProfil.Birim = "BOY";
-                siparisStokProfil.Renk = siparis.Renk.RenkAdi;
+                siparisStokProfil.Renk = siparis.Renk?.RenkAdi ?? "";
                 siparisStokProfil.Miktar = (int)item.ProfilAdet;
                 siparisStokProfil.Olcu = Convert.ToDouble(profilBoyRepo.FindBy(e => e.Id == item.ProfilBoyId).FirstOrDefault().ProfilBoyu) / 1000;
                 siparisStokProfil.ToplamMetre = (double)(siparisStokProfil.Olcu * siparisStokProfil.Miktar);
@@ -1968,12 +1973,13 @@ namespace CamSistemWebArayuz.Controllers
             foreach (var item in siparisStok.Where(e => e.AksesuarId != null).ToList())
             {
                 Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == item.AksesuarId).FirstOrDefault();
+                if (aksesuar == null) continue;
                 SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
                 siparisStokAksesuar.Adi = aksesuar.AksesuarAdi;
                 siparisStokAksesuar.Birim = aksesuar.AksesuarBirim;
-                siparisStokAksesuar.BirimFiyat = (decimal)aksesuar.BirimFiyat;
+                siparisStokAksesuar.BirimFiyat = aksesuar.BirimFiyat ?? 0;
                 siparisStokAksesuar.Kodu = aksesuar.AksesuarKodu;
-                siparisStokAksesuar.Miktar = (int)item.AksesuarAdet;
+                siparisStokAksesuar.Miktar = item.AksesuarAdet != null ? (int)item.AksesuarAdet : 0;
 
                 siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.Miktar * siparisStokAksesuar.BirimFiyat;
                 aksesuarList.Add(siparisStokAksesuar);
@@ -2210,7 +2216,7 @@ namespace CamSistemWebArayuz.Controllers
                     siparisStokProfil.Kesit = profil.ProfilFoto;
                     siparisStokProfil.BirimAgirlik = (double)profil.BirimAgirlik / 1000;
                     siparisStokProfil.Birim = "BOY";
-                    siparisStokProfil.Renk = siparis.Renk.RenkAdi;
+                    siparisStokProfil.Renk = siparis.Renk?.RenkAdi ?? "";
                     siparisStokProfil.Olcu = (double)item.ProfilBoy / 1000;
                     siparisStokProfil.Miktar = item.ProfilAdet;
                     siparisStokProfil.ToplamMetre = (double)(siparisStokProfil.Olcu * siparisStokProfil.Miktar);
@@ -2240,6 +2246,7 @@ namespace CamSistemWebArayuz.Controllers
                 foreach (var item in siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList())
                 {
                     Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == item.AksesuarId).FirstOrDefault();
+                    if (aksesuar == null) continue;
                     SiparisStokAksesuar siparisStokAksesuar = new SiparisStokAksesuar();
                     siparisStokAksesuar.Adi = aksesuar.AksesuarAdi;
                     siparisStokAksesuar.Birim = aksesuar.AksesuarBirim;
@@ -2247,9 +2254,9 @@ namespace CamSistemWebArayuz.Controllers
 
                     List<long> enBoyAdetIds = enBoyList.Select(e => e.Id).ToList();
                     List<SiparisTeklif> siparisTeklifs = siparisTeklifRepo.GetAll().Where(e => enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList();
-                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => e.Malzeme.Equals(aksesuar.AksesuarAdi)).ToList();
+                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => e.Malzeme != null && e.Malzeme.Equals(aksesuar.AksesuarAdi)).ToList();
 
-                    siparisStokAksesuar.BirimFiyat = (decimal)aksesuar.BirimFiyat;
+                    siparisStokAksesuar.BirimFiyat = aksesuar.BirimFiyat ?? 0;
                     if (item.BirimFiyat != null && item.BirimFiyat > 0)
                         siparisStokAksesuar.BirimFiyat = item.BirimFiyat.Value;
 

@@ -479,7 +479,7 @@
                                 <tr>
                                     <th colspan=2>Sipariş No: @Html.DisplayFor(model => Model.Siparis.Id)</th>
                                     <th colspan=4>Sipariş Tarihi: @Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.Siparis.KayitTarihi))</th>
-                                    <th colspan=4>Sevk Tarihi: @Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.sevkiyat.SevkiyatTarihi))</th>
+                                    <th colspan=4>Sevk Tarihi: @Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.sevkiyat != null ? Model.sevkiyat.SevkiyatTarihi : (DateTime?)null))</th>
                                 </tr>
                                 <tr>
                                     <th>KOD</th>
@@ -495,6 +495,8 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @if (Model.sevkiyatProfil != null)
+                                {
                                 @foreach (var item in Model.sevkiyatProfil)
                                 {
                                     <tr>
@@ -552,11 +554,12 @@
                                         </td>
                                     </tr>
                                 }
+                                }
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="9" class="text-right font-weight-bold">Toplam KG</td>
-                                    <td colspan="2" class="text-right font-weight-bold">@string.Format("{0:N2}", Model.sevkiyatProfil.Sum(e => e.ToplamKgS))</td>
+                                    <td colspan="2" class="text-right font-weight-bold">@string.Format("{0:N2}", Model.sevkiyatProfil != null ? Model.sevkiyatProfil.Sum(e => e.ToplamKgS) : 0)</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -572,6 +575,8 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @if (Model.sevkiyatAksesuar != null)
+                                {
                                 @foreach (var item in Model.sevkiyatAksesuar)
                                 {
                                     <tr>
@@ -626,9 +631,13 @@
                                         </td>
                                     </tr>
                                 }
+                                }
                             </tbody>
                         </table>
+                        @if (Model.sevkiyat != null)
+                        {
                         <div class='alert alert-danger'><strong>@Model.Siparis.Id Nolu Siparişin Sevkiyat Açıklaması:</strong> @Model.sevkiyat.Aciklama </div>
+                        }
                     </div>
                     <button type="button" onclick="PrintElem('sevkiyatprofilyazdir')" class="btn bg-red waves-effect waves-light pull-right">
                         <i class="material-icons">print</i>
