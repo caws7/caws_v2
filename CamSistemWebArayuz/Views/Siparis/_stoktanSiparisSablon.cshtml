@@ -636,7 +636,7 @@
                         </table>
                         @if (Model.sevkiyat != null)
                         {
-                        <div class='alert alert-danger'><strong>@Model.Siparis.Id Nolu Siparişin Sevkiyat Açıklaması:</strong> @Model.sevkiyat.Aciklama </div>
+                        <div class='alert alert-danger'><strong>@Model.Siparis.Id Nolu Siparişin Sevkiyat Açıklaması:</strong> @(Model.sevkiyat?.Aciklama) </div>
                         }
                     </div>
                     <button type="button" onclick="PrintElem('sevkiyatprofilyazdir')" class="btn bg-red waves-effect waves-light pull-right">

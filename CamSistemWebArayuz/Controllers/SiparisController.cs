@@ -1861,7 +1861,7 @@ namespace CamSistemWebArayuz.Controllers
 
                     List<long> enBoyAdetIds = enBoyList.Select(e => e.Id).ToList();
                     List<SiparisTeklif> siparisTeklifs = siparisTeklifRepo.GetAll().Where(e => enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList();
-                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => e.Malzeme != null && e.Malzeme.Equals(aksesuar.AksesuarAdi)).ToList();
+                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => string.Equals(e.Malzeme, aksesuar.AksesuarAdi)).ToList();
 
                     siparisStokAksesuar.BirimFiyat = aksesuar.BirimFiyat ?? 0;
                     if (item.BirimFiyat != null && item.BirimFiyat > 0)
@@ -1904,7 +1904,7 @@ namespace CamSistemWebArayuz.Controllers
                 Response.Charset = "utf-8";
 
                 if (string.IsNullOrEmpty(sablonPdf?.PartialAdi))
-                    return Content("<div class='alert alert-warning'>Bu sipariş tipi için PDF şablonu bulunamadı. Lütfen sipariş verilerini kontrol ediniz.</div>");
+                    return Content("<div class='alert alert-warning'>Bu sipariş tipi için PDF şablon bulunamadı. Lütfen sipariş verilerini kontrol ediniz.</div>");
 
                 return PartialView(sablonPdf.PartialAdi, sablonPdf);
             }
@@ -2254,7 +2254,7 @@ namespace CamSistemWebArayuz.Controllers
 
                     List<long> enBoyAdetIds = enBoyList.Select(e => e.Id).ToList();
                     List<SiparisTeklif> siparisTeklifs = siparisTeklifRepo.GetAll().Where(e => enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList();
-                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => e.Malzeme != null && e.Malzeme.Equals(aksesuar.AksesuarAdi)).ToList();
+                    List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => string.Equals(e.Malzeme, aksesuar.AksesuarAdi)).ToList();
 
                     siparisStokAksesuar.BirimFiyat = aksesuar.BirimFiyat ?? 0;
                     if (item.BirimFiyat != null && item.BirimFiyat > 0)
