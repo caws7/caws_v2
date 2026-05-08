@@ -854,6 +854,7 @@ namespace CamSistemWebArayuz.Controllers
         [HttpPost]
         public ActionResult SiparisDetayGoruntule(long SiparisId, bool raporMu)
         {
+            EnsureUtf8HtmlResponse();
             try
             {
                 return SiparisDetayGoruntuleInternal(SiparisId, raporMu);
@@ -883,6 +884,7 @@ namespace CamSistemWebArayuz.Controllers
 
         private ActionResult SiparisDetayGoruntuleInternal(long SiparisId, bool raporMu)
         {
+            EnsureUtf8HtmlResponse();
             // null-safe repo nesneleri
             var siparisRepo = new SiparisRepo();
             var sebaRepo = new SiparisEnBoyAdetRepo();
@@ -896,7 +898,7 @@ namespace CamSistemWebArayuz.Controllers
 
             var siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
             if (siparis == null)
-                return Content("Sipariş bulunamadı!");
+                return Content("Sipariş bulunamadı!", "text/html", Encoding.UTF8);
 
             ViewBag.SiparisDurumu = (siparis.DurumId == (int)Durumlar.Onaylandı || siparis.DurumId == (int)Durumlar.ImalataGonderildi || siparis.DurumId == (int)Durumlar.Sevkiyatta);
 
@@ -1200,7 +1202,7 @@ namespace CamSistemWebArayuz.Controllers
         private string RenderPartialViewToString(string viewName, object model)
         {
             ViewData.Model = model;
-            using (var sw = new System.IO.StringWriter())
+            using (var sw = new Utf8StringWriter())
             {
                 var viewResult = System.Web.Mvc.ViewEngines.Engines.FindPartialView(ControllerContext, viewName);
                 if (viewResult == null || viewResult.View == null)
@@ -1210,6 +1212,18 @@ namespace CamSistemWebArayuz.Controllers
                 viewResult.ViewEngine.ReleaseView(ControllerContext, viewResult.View);
                 return sw.GetStringBuilder().ToString();
             }
+        }
+
+        private void EnsureUtf8HtmlResponse()
+        {
+            Response.ContentType = "text/html; charset=utf-8";
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.Charset = "utf-8";
+        }
+
+        private sealed class Utf8StringWriter : StringWriter
+        {
+            public override Encoding Encoding => Encoding.UTF8;
         }
         #endregion
 

@@ -302,7 +302,14 @@
             url: url,
             type: 'POST',
             data: { SiparisId: _siparisId, raporMu: false },
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            dataType: 'html',
             timeout: 60000,
+            beforeSend: function (xhr) {
+                if (xhr && xhr.overrideMimeType) {
+                    xhr.overrideMimeType('text/html; charset=UTF-8');
+                }
+            },
             success: function (response) {
                 $('#searchResults').html(response);
             },
