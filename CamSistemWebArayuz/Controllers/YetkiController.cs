@@ -264,6 +264,7 @@ namespace CamSistemWebArayuz.Controllers
             rolRepo = new RolRepo();
             ViewBag.Kullanicilar = kullaniciRepo.GetAll();
             ViewBag.Roller = rolRepo.GetAll()
+                .AsEnumerable()
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -285,6 +286,7 @@ namespace CamSistemWebArayuz.Controllers
                 rolRepo = new RolRepo();
                 ViewBag.Kullanicilar = kullaniciRepo.GetAll();
                 ViewBag.Roller = rolRepo.GetAll()
+                    .AsEnumerable()
                     .Select(x => new SelectListItem
                     {
                         Value = x.Id.ToString(),
