@@ -10,7 +10,7 @@ namespace CamSistemWebArayuz
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        private static readonly Encoding Utf8 = new UTF8Encoding(false);
+        private static readonly Encoding _utf8 = new UTF8Encoding(false);
 
         protected void Application_Start()
         {
@@ -24,9 +24,11 @@ namespace CamSistemWebArayuz
             var context = HttpContext.Current;
             if (context == null) return;
 
-            context.Request.ContentEncoding = Utf8;
-            context.Response.ContentEncoding = Utf8;
-            context.Response.Charset = "utf-8";
+            string requestContentType = context.Request.ContentType ?? string.Empty;
+            if (IsTextBasedContentType(requestContentType))
+            {
+                context.Request.ContentEncoding = _utf8;
+            }
         }
 
         protected void Application_PreSendRequestHeaders()
@@ -37,16 +39,32 @@ namespace CamSistemWebArayuz
             string contentType = response.ContentType ?? string.Empty;
             if (string.IsNullOrWhiteSpace(contentType)) return;
 
-            bool textBasedResponse =
-                contentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase) ||
-                contentType.IndexOf("json", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                contentType.IndexOf("xml", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                contentType.IndexOf("javascript", StringComparison.OrdinalIgnoreCase) >= 0;
+            bool textBasedResponse = IsTextBasedContentType(contentType);
 
-            if (textBasedResponse && contentType.IndexOf("charset=", StringComparison.OrdinalIgnoreCase) < 0)
+            if (textBasedResponse)
             {
-                response.ContentType = contentType + "; charset=utf-8";
+                response.ContentEncoding = _utf8;
+                response.Charset = "utf-8";
+                if (contentType.IndexOf("charset=", StringComparison.OrdinalIgnoreCase) < 0)
+                {
+                    response.ContentType = contentType + "; charset=utf-8";
+                }
             }
+        }
+
+        private static bool IsTextBasedContentType(string contentType)
+        {
+            if (string.IsNullOrWhiteSpace(contentType)) return false;
+
+            string mimeType = contentType.Split(';')[0].Trim();
+            if (mimeType.StartsWith("text/", StringComparison.OrdinalIgnoreCase)) return true;
+
+            return mimeType.Equals("application/json", StringComparison.OrdinalIgnoreCase)
+                || mimeType.Equals("application/javascript", StringComparison.OrdinalIgnoreCase)
+                || mimeType.Equals("application/x-javascript", StringComparison.OrdinalIgnoreCase)
+                || mimeType.Equals("application/xml", StringComparison.OrdinalIgnoreCase)
+                || mimeType.EndsWith("+json", StringComparison.OrdinalIgnoreCase)
+                || mimeType.EndsWith("+xml", StringComparison.OrdinalIgnoreCase);
         }
 
         private void RunDatabaseMigrations()
