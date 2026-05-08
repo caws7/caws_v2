@@ -2381,19 +2381,10 @@ namespace CamSistemWebArayuz.Controllers
                 List<SiparisStokProfil> profilList = new List<SiparisStokProfil>();
                 List<SiparisStokAksesuar> aksesuarList = new List<SiparisStokAksesuar>();
 
-                List<OptimizasyonHesap> optimizasyonHesaps = new List<OptimizasyonHesap>();
-                try
-                {
-                    optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id) ?? new List<OptimizasyonHesap>();
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("[excelKaydet] Optimizasyon verisi alınamadı SiparisId=" + siparis.Id + ": " + ex.Message + "\n" + ex.StackTrace);
-                }
+                List<OptimizasyonHesap> optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id);
 
                 List<int> profDist = optimizasyonHesaps
-                    .Where(e => e != null && e.ProfilId != null && e.ProfilBoy != null && e.KesimAdet != null)
-                    .Select(e => e.ProfilId.Value)
+                    .Select(e => (int)e.ProfilId)
                     .Distinct()
                     .ToList();
                 List<ProfilGonderimSablonModel> profilGonderimList = new List<ProfilGonderimSablonModel>();
@@ -2401,9 +2392,9 @@ namespace CamSistemWebArayuz.Controllers
                 foreach (var item in profDist)
                 {
                     Dictionary<int, int> profilBoyDict = optimizasyonHesaps
-                        .Where(e => e != null && e.ProfilId == item && e.ProfilBoy != null && e.KesimAdet != null)
-                        .GroupBy(e => e.ProfilBoy.Value)
-                        .ToDictionary(d => d.Key, d => d.Sum(e => e.KesimAdet ?? 0));
+                        .Where(e => e.ProfilId == item)
+                        .GroupBy(e => (int)e.ProfilBoy)
+                        .ToDictionary(d => d.Key, d => d.Sum(e => (int)e.KesimAdet));
 
                     foreach (var pb in profilBoyDict)
                     {
@@ -2483,8 +2474,15 @@ namespace CamSistemWebArayuz.Controllers
                 sablon.profilList = profilList;
                 sablon.SiparisId = siparis.Id;
                 sablon.SiparisTarih = Convert.ToDateTime(siparis.TahminiTeslim);
-                sablon.ProfilToplamKg = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamKg);
-                sablon.ProfilToplamTutar = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamTutar);
+                if (siparis.ToplamAluKg != null)
+                    sablon.ProfilToplamKg = (double)siparis.ToplamAluKg / 1000;
+                else
+                    sablon.ProfilToplamKg = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamKg);
+
+                if (siparis.ToplamAluKgFiyat != null)
+                    sablon.ProfilToplamTutar = (decimal)siparis.ToplamAluKgFiyat;
+                else
+                    sablon.ProfilToplamTutar = sablon.profilList.Where(e => !e.Kodu.Contains("DP-")).Sum(e => e.ToplamTutar);
                 sablon.AksesuarToplamTutar = aksesuarList.Sum(e => e.ToplamTutar);
                 sablon.SirketAd = SanitizeExcelText(siparis.MusteriTamAdi);
 
