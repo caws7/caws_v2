@@ -1997,7 +1997,10 @@ namespace CamSistemWebArayuz.Controllers
             if (siparis == null)
                 throw new InvalidOperationException("Sipariş bulunamadı.");
 
-            Musteri musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
+            long localSiparisId = siparis.Id;
+            long? localMusteriId = siparis.MusteriId;
+
+            Musteri musteri = musteriRepo.FindBy(e => e.Id == localMusteriId).FirstOrDefault();
             Adres adres = null;
             if (musteri?.AdresId != null)
                 adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
@@ -2076,7 +2079,7 @@ namespace CamSistemWebArayuz.Controllers
                 ? siparisTeklifRepo.FindBy(e => e.SiparisEnBoyAdetId != null && enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList()
                 : new List<SiparisTeklif>();
 
-            foreach (var item in siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList())
+            foreach (var item in siparisAksesuarRepo.FindBy(e => e.SiparisId == localSiparisId).ToList())
             {
                 Aksesuar aksesuar = aksesuarRepo.FindBy(e => e.Id == item.AksesuarId).FirstOrDefault();
                 if (aksesuar == null)
@@ -2210,27 +2213,28 @@ namespace CamSistemWebArayuz.Controllers
                 aksesuarList.Add(siparisStokAksesuar);
             }
 
-            sablon.aksesuarList = aksesuarList;
-            sablon.profilList = profilList;
+            sablon.aksesuarList = aksesuarList.OrderBy(e => e.Kodu ?? string.Empty).ThenBy(e => e.Adi ?? string.Empty).ToList();
+            sablon.profilList = profilList.OrderBy(e => e.Kodu ?? string.Empty).ThenBy(e => e.Olcu).ToList();
             sablon.SiparisId = siparisId;
             sablon.SiparisTarih = Convert.ToDateTime(siparis.TahminiTeslim);
             sablon.AksesuarToplamTutar = aksesuarList.Sum(e => e.ToplamTutar);
-            sablon.SirketAd = siparis.MusteriTamAdi;
+            sablon.SirketAd = SanitizeExcelText(siparis.MusteriTamAdi);
 
             if (siparis.ToplamAluKg != null)
                 sablon.ProfilToplamKg = (double)siparis.ToplamAluKg / 1000;
             else
-                sablon.ProfilToplamKg = sablon.profilList.Sum(e => e.ToplamKg);
+                sablon.ProfilToplamKg = sablon.profilList.Where(e => !(e.Kodu ?? string.Empty).Contains("DP-")).Sum(e => e.ToplamKg);
 
             if (siparis.ToplamAluKgFiyat != null)
                 sablon.ProfilToplamTutar = (decimal)siparis.ToplamAluKgFiyat;
             else
-                sablon.ProfilToplamTutar = sablon.profilList.Sum(e => e.ToplamTutar);
+                sablon.ProfilToplamTutar = sablon.profilList.Where(e => !(e.Kodu ?? string.Empty).Contains("DP-")).Sum(e => e.ToplamTutar);
 
             var musteri = musteriRepo.FindBy(e => e.Id == siparis.MusteriId).FirstOrDefault();
             Adres adres = null;
             if (musteri?.AdresId != null)
                 adres = adresRepo.FindBy(e => e.Id == musteri.AdresId).FirstOrDefault();
+            sablon.SirketAdres = BuildAdresMetni(adres);
 
             ViewBag.AluKg = aluKgFiyat;
 
@@ -2362,8 +2366,8 @@ namespace CamSistemWebArayuz.Controllers
                 }
             }
 
-            //if (sablon.aksesuarList.Count < 1)
-            //    x = x + 1;
+            if (sablon.aksesuarList.Count < 1)
+                x = x + 1;
             xlWorkSheet.Cells[x + 1, 12].Value = sablon.AksesuarToplamTutar;
             xlWorkSheet.Cells[x + 3, 12].Value = sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
             xlWorkSheet.Cells[x + 4, 12].Value = Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100;
