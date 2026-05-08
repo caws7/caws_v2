@@ -42,7 +42,7 @@ namespace CamSistemWebArayuz
             response.Charset = "utf-8";
 
             var contentType = response.ContentType ?? string.Empty;
-            if (!contentType.Contains("charset=", StringComparison.OrdinalIgnoreCase))
+            if (!HasCharsetParameter(contentType))
             {
                 response.ContentType = string.IsNullOrWhiteSpace(contentType)
                     ? "text/html; charset=utf-8"
@@ -55,13 +55,31 @@ namespace CamSistemWebArayuz
             if (string.IsNullOrWhiteSpace(contentType))
                 return false;
 
-            var value = contentType.ToLowerInvariant();
-            return value.StartsWith("text/")
-                   || value.Contains("application/json")
-                   || value.Contains("application/javascript")
-                   || value.Contains("application/xml")
-                   || value.Contains("application/xhtml+xml")
-                   || value.Contains("application/x-www-form-urlencoded");
+            var mediaType = contentType.Split(';')[0].Trim();
+            if (mediaType.StartsWith("text/", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return mediaType.Equals("application/json", StringComparison.OrdinalIgnoreCase)
+                   || mediaType.Equals("application/javascript", StringComparison.OrdinalIgnoreCase)
+                   || mediaType.Equals("application/xml", StringComparison.OrdinalIgnoreCase)
+                   || mediaType.Equals("application/xhtml+xml", StringComparison.OrdinalIgnoreCase)
+                   || mediaType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool HasCharsetParameter(string contentType)
+        {
+            if (string.IsNullOrWhiteSpace(contentType))
+                return false;
+
+            var parts = contentType.Split(';');
+            for (int i = 1; i < parts.Length; i++)
+            {
+                var parameter = parts[i].Trim();
+                if (parameter.StartsWith("charset=", StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+
+            return false;
         }
 
         private void RunDatabaseMigrations()
