@@ -298,6 +298,7 @@
     <Compile Include="Repos\TedarikRepo.cs" />
     <Compile Include="Repos\YetkiRepo.cs" />
     <Compile Include="ValidationClass\MusteriMetadata.cs" />
+    <Compile Include="ValidationClass\DisSiparisMetadata.cs" />
     <Compile Include="ValidationClass\SiparisMetadata.cs" />
   </ItemGroup>
   <ItemGroup>
