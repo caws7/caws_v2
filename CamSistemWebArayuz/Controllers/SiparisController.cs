@@ -1740,10 +1740,78 @@ namespace CamSistemWebArayuz.Controllers
 
         ExcelPackage CreateExcelPackage(string templatePath, string worksheetName)
         {
+            if (string.IsNullOrWhiteSpace(templatePath))
+                throw new ArgumentException("Excel şablon yolu boş olamaz.", nameof(templatePath));
+
             if (!System.IO.File.Exists(templatePath))
                 throw new FileNotFoundException("Excel şablonu bulunamadı: " + templatePath, templatePath);
 
-            return new ExcelPackage(new FileInfo(templatePath));
+            try
+            {
+                var packageStream = new MemoryStream();
+                using (var templateStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    templateStream.CopyTo(packageStream);
+                }
+
+                packageStream.Position = 0;
+                ExcelPackage excelPackage = new ExcelPackage(packageStream);
+                if (excelPackage.Workbook == null || excelPackage.Workbook.Worksheets.Count == 0)
+                {
+                    excelPackage.Dispose();
+                    throw new InvalidDataException("Excel şablonu çalışma sayfası içermiyor: " + templatePath);
+                }
+
+                return excelPackage;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new IOException("Excel şablonuna erişim izni yok: " + templatePath, ex);
+            }
+            catch (InvalidDataException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new IOException("Excel şablonu okunamadı: " + templatePath, ex);
+            }
+        }
+
+        ExcelWorksheet GetWorksheetOrThrow(ExcelPackage excelPackage, string worksheetName)
+        {
+            if (excelPackage == null || excelPackage.Workbook == null)
+                throw new InvalidOperationException("Excel şablonu yüklenemedi.");
+
+            ExcelWorksheet worksheet = null;
+            if (!string.IsNullOrWhiteSpace(worksheetName))
+                worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault(e => string.Equals(e.Name, worksheetName, StringComparison.OrdinalIgnoreCase));
+
+            if (worksheet == null)
+                worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+
+            if (worksheet == null)
+                throw new InvalidOperationException("Excel şablonunda kullanılabilir çalışma sayfası bulunamadı.");
+
+            return worksheet;
+        }
+
+        void SaveExcelToPath(ExcelPackage excelPackage, string outputPath)
+        {
+            if (excelPackage == null)
+                throw new ArgumentNullException(nameof(excelPackage));
+
+            if (string.IsNullOrWhiteSpace(outputPath))
+                throw new ArgumentException("Çıktı dosya yolu boş olamaz.", nameof(outputPath));
+
+            string outputDirectory = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrWhiteSpace(outputDirectory) && !Directory.Exists(outputDirectory))
+                Directory.CreateDirectory(outputDirectory);
+
+            using (var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                excelPackage.SaveAs(outputStream);
+            }
         }
 
         bool TryCreateFallbackExcel(string fullPath, long siparisId, Exception ex)
@@ -2191,7 +2259,9 @@ namespace CamSistemWebArayuz.Controllers
 
         void excelStoktanKaydet(long siparisId)
         {
-            string pathAfter = Path.Combine(GetExportTempPath(), siparisId + "_nolu_siparis");
+            try
+            {
+                string pathAfter = Path.Combine(GetExportTempPath(), siparisId + "_nolu_siparis");
 
             SabitRepo sabitRepo = new SabitRepo();
             AdresRepo adresRepo = new AdresRepo();
@@ -2298,8 +2368,9 @@ namespace CamSistemWebArayuz.Controllers
 
             string path = Server.MapPath("~/Assets/sablonStokYeni.xlsx");
 
-            ExcelPackage excel = CreateExcelPackage(path, "Siparis");
-            ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
+                using (ExcelPackage excel = CreateExcelPackage(path, "Siparis"))
+                {
+                    ExcelWorksheet xlWorkSheet = GetWorksheetOrThrow(excel, "Siparis");
             xlWorkSheet.Cells.Style.Font.Name = "Arial";
             xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
             xlWorkSheet.Cells["D5"].Value = BuildAdresMetni(adres);
@@ -2431,21 +2502,30 @@ namespace CamSistemWebArayuz.Controllers
             xlWorkSheet.Cells[x + 4, 12].Value = Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100;
             xlWorkSheet.Cells[x + 5, 12].Value = (Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100) + sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
 
-            excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
-            excel.Dispose();
+                    SaveExcelToPath(excel, pathAfter + ".xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[excelStoktanKaydet] Hata SiparisId=" + siparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                throw new InvalidOperationException("Stoktan excel oluşturulurken hata oluştu.", ex);
+            }
         }
 
         void excelKaydet(long siparisId)
         {
-            string pathAfter = Path.Combine(GetExportTempPath(), siparisId + "_nolu_siparis");
+            try
+            {
+                string pathAfter = Path.Combine(GetExportTempPath(), siparisId + "_nolu_siparis");
 
             SiparisStokSablon sablon = BuildSiparisSablon(siparisId, out Siparis siparis, out decimal aluKgFiyat);
             ViewBag.AluKg = aluKgFiyat;
 
             string path = Server.MapPath("~/Assets/sablonStokYeni.xlsx");
 
-            ExcelPackage excel = CreateExcelPackage(path, "Siparis");
-            ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
+                using (ExcelPackage excel = CreateExcelPackage(path, "Siparis"))
+                {
+                    ExcelWorksheet xlWorkSheet = GetWorksheetOrThrow(excel, "Siparis");
             xlWorkSheet.Cells.Style.Font.Name = "Arial";
             xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
             xlWorkSheet.Cells["D5"].Value = sablon.SirketAdres;
@@ -2572,8 +2652,14 @@ namespace CamSistemWebArayuz.Controllers
             xlWorkSheet.Cells[x + 4, 12].Value = Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100;
             xlWorkSheet.Cells[x + 5, 12].Value = (Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100) + sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
 
-            excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
-            excel.Dispose();
+                    SaveExcelToPath(excel, pathAfter + ".xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[excelKaydet] Hata SiparisId=" + siparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                throw new InvalidOperationException("Sipariş excel oluşturulurken hata oluştu.", ex);
+            }
         }
 
 
