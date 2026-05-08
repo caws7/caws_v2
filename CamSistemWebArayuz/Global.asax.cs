@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -8,11 +10,43 @@ namespace CamSistemWebArayuz
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        private static readonly Encoding Utf8 = new UTF8Encoding(false);
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             RunDatabaseMigrations();
+        }
+
+        protected void Application_BeginRequest()
+        {
+            var context = HttpContext.Current;
+            if (context == null) return;
+
+            context.Request.ContentEncoding = Utf8;
+            context.Response.ContentEncoding = Utf8;
+            context.Response.Charset = "utf-8";
+        }
+
+        protected void Application_PreSendRequestHeaders()
+        {
+            var response = HttpContext.Current?.Response;
+            if (response == null) return;
+
+            string contentType = response.ContentType ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(contentType)) return;
+
+            bool textBasedResponse =
+                contentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase) ||
+                contentType.IndexOf("json", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                contentType.IndexOf("xml", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                contentType.IndexOf("javascript", StringComparison.OrdinalIgnoreCase) >= 0;
+
+            if (textBasedResponse && contentType.IndexOf("charset=", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                response.ContentType = contentType + "; charset=utf-8";
+            }
         }
 
         private void RunDatabaseMigrations()
