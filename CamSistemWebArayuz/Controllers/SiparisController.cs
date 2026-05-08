@@ -1991,7 +1991,7 @@ namespace CamSistemWebArayuz.Controllers
             AdresRepo adresRepo = new AdresRepo();
             SabitRepo sabitRepo = new SabitRepo();
             SiparisTeklifRepo siparisTeklifRepo = new SiparisTeklifRepo();
-            ProfilRepo localProfilRepo = new ProfilRepo();
+            ProfilRepo profilRepo = new ProfilRepo();
 
             siparis = siparisRepo.FindBy(e => e.Id == siparisId).FirstOrDefault();
             if (siparis == null)
@@ -2035,7 +2035,7 @@ namespace CamSistemWebArayuz.Controllers
 
             foreach (var item in profilGonderimList)
             {
-                Profil profil = localProfilRepo.FindBy(e => e.Id == item.ProfilId).FirstOrDefault();
+                Profil profil = profilRepo.FindBy(e => e.Id == item.ProfilId).FirstOrDefault();
                 if (profil == null)
                     continue;
 
@@ -2072,7 +2072,9 @@ namespace CamSistemWebArayuz.Controllers
 
             List<SiparisEnBoyAdet> enBoyList = sebaRepo.FindBy(e => e.SiparisId == siparisId).ToList();
             List<long> enBoyAdetIds = enBoyList.Select(e => e.Id).ToList();
-            List<SiparisTeklif> siparisTeklifs = siparisTeklifRepo.GetAll().Where(e => enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList();
+            List<SiparisTeklif> siparisTeklifs = enBoyAdetIds.Count > 0
+                ? siparisTeklifRepo.FindBy(e => e.SiparisEnBoyAdetId != null && enBoyAdetIds.Contains((long)e.SiparisEnBoyAdetId)).ToList()
+                : new List<SiparisTeklif>();
 
             foreach (var item in siparisAksesuarRepo.FindBy(e => e.SiparisId == siparis.Id).ToList())
             {
@@ -2088,14 +2090,15 @@ namespace CamSistemWebArayuz.Controllers
                 if (item.BirimFiyat != null && item.BirimFiyat > 0)
                     siparisStokAksesuar.BirimFiyat = item.BirimFiyat.Value;
 
-                List<SiparisTeklif> filteredList = siparisTeklifs.Where(e => string.Equals(e.Malzeme, aksesuar.AksesuarAdi)).ToList();
-                siparisStokAksesuar.Miktar = filteredList.Sum(e => e.Miktar ?? 0);
+                siparisStokAksesuar.Miktar = siparisTeklifs
+                    .Where(e => string.Equals(e.Malzeme, aksesuar.AksesuarAdi))
+                    .Sum(e => e.Miktar ?? 0);
                 siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.Miktar * siparisStokAksesuar.BirimFiyat;
                 aksesuarList.Add(siparisStokAksesuar);
             }
 
-            sablon.aksesuarList = aksesuarList.OrderBy(e => e.Kodu).ThenBy(e => e.Adi).ToList();
-            sablon.profilList = profilList.OrderBy(e => e.Kodu).ThenBy(e => e.Olcu).ToList();
+            sablon.aksesuarList = aksesuarList.OrderBy(e => e.Kodu ?? string.Empty).ThenBy(e => e.Adi ?? string.Empty).ToList();
+            sablon.profilList = profilList.OrderBy(e => e.Kodu ?? string.Empty).ThenBy(e => e.Olcu).ToList();
             sablon.SiparisId = siparisId;
             sablon.SiparisTarih = Convert.ToDateTime(siparis.TahminiTeslim);
 
