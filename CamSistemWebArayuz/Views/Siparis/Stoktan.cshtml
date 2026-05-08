@@ -258,6 +258,17 @@
     }
 
     function SiparisDurumGuncelle(buttonId) {
+        if (!siparisId4Durum || !durumId) {
+            Swal.fire("Hata", "Sipariş bilgisi eksik olduğu için durum güncellenemedi. Lütfen sayfayı yenileyip tekrar deneyin.", "error");
+            return;
+        }
+
+        durumId = parseInt(durumId, 10);
+        if (isNaN(durumId)) {
+            Swal.fire("Hata", "Durum bilgisi okunamadı. Lütfen sayfayı yenileyip tekrar deneyin.", "error");
+            return;
+        }
+
         var onaylandiMi = false;
         if (buttonId == 1) {
             if (durumId == 7) {
@@ -280,9 +291,8 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             url: '@Url.Action("SiparisDurumGuncelleFisGir", "Siparis")',
-                            contentType: 'application/json; charset=utf-8',
                             type: "POST",
-                            data: '{ "SiparisId":"' + siparisId4Durum + '", "DurumId":"' + 4 + '", "FisNo":"' + result.value + '"}'
+                            data: { SiparisId: siparisId4Durum, DurumId: 4, FisNo: result.value }
                         }).done(function (data) {
                             if (data == 'OK') {
                                 Swal.fire({
@@ -316,9 +326,8 @@
             $.ajax({
             type: 'POST',
             url: '/Siparis/SiparisDurumGuncelle',
-            contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            data: '{ "SiparisId":"' + siparisId4Durum + '", "DurumId":"' + durumId + '"}',
+            data: { SiparisId: siparisId4Durum, DurumId: durumId },
             success: function (result) {
                     if (result == 'OK') {
                         Swal.fire({
@@ -343,7 +352,7 @@
                     window.setTimeout(function () { location.reload() }, 1800)
                 },
                 error: function (err) {
-                    alert(err);
+                    Swal.fire("Ağ Hatası", "Durum güncelleme isteği başarısız oldu. Lütfen bağlantınızı kontrol edip tekrar deneyin.", "error");
                 }
             });
         }
@@ -403,6 +412,11 @@
     $(document).ready(function () {
         $('#modalDurumGuncelle').on('show.bs.modal', function (e) {
             var siparisDurumIds = $(e.relatedTarget).data('id');
+            if (!siparisDurumIds || siparisDurumIds.toString().indexOf('+') < 0) {
+                siparisId4Durum = null;
+                durumId = null;
+                return;
+            }
             var siparisSplit = siparisDurumIds.split('+');
 
             $('#siparisId').text(siparisSplit[0]);
