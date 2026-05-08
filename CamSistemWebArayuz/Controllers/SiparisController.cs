@@ -1219,9 +1219,17 @@ namespace CamSistemWebArayuz.Controllers
         {
             try
             {
+                if (SiparisId <= 0 || !Enum.IsDefined(typeof(Durumlar), DurumId))
+                    return Json("NOT", JsonRequestBehavior.AllowGet);
+
                 siparisRepo = new SiparisRepo();
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
-                Kullanici kullaniciModel = (Kullanici)Session["CurrentUser"];
+                if (siparis == null)
+                    return Json("NOT", JsonRequestBehavior.AllowGet);
+
+                Kullanici kullaniciModel = Session["CurrentUser"] as Kullanici;
+                if (kullaniciModel == null)
+                    return Json("NOT", JsonRequestBehavior.AllowGet);
 
                 if (DurumId == (int)Durumlar.Onaylandı)
                 {
@@ -1368,8 +1376,13 @@ namespace CamSistemWebArayuz.Controllers
         {
             try
             {
+                if (SiparisId <= 0 || string.IsNullOrWhiteSpace(FisNo))
+                    return Json("NOT", JsonRequestBehavior.AllowGet);
+
                 siparisRepo = new SiparisRepo();
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
+                if (siparis == null)
+                    return Json("NOT", JsonRequestBehavior.AllowGet);
 
                 if (DurumId == (int)Durumlar.TeslimEdildi)
                 {
@@ -1395,8 +1408,13 @@ namespace CamSistemWebArayuz.Controllers
         {
             try
             {
+                if (SiparisId <= 0 || string.IsNullOrWhiteSpace(FisNo))
+                    return Json("NOT", JsonRequestBehavior.AllowGet);
+
                 siparisRepo = new SiparisRepo();
                 Siparis siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
+                if (siparis == null)
+                    return Json("NOT", JsonRequestBehavior.AllowGet);
 
                 siparis.FisNo = FisNo;
                 siparis.IslemDurum = "İşlem Onaylandı";

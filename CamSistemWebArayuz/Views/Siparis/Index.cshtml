@@ -439,10 +439,21 @@
     }
 
     function SiparisDurumGuncelle(buttonId) {
+        if (!siparisId4Durum || !durumId) {
+            Swal.fire("Hata", "Sipariş bilgisi eksik olduğu için durum güncellenemedi. Lütfen sayfayı yenileyip tekrar deneyin.", "error");
+            return;
+        }
+
+        var aktifDurumId = parseInt(durumId, 10);
+        if (isNaN(aktifDurumId)) {
+            Swal.fire("Hata", "Durum bilgisi okunamadı. Lütfen sayfayı yenileyip tekrar deneyin.", "error");
+            return;
+        }
+
         var onaylandiMi = false;
         if (buttonId == 1) {
             if (modalSiparisTur == "Profil Gönderim") {
-                if (durumId == 7) {
+                if (aktifDurumId == 7) {
                     //durumId = 4; // teslim edildiye çek
                     //------------------------//
                     onaylandiMi = true;
@@ -463,9 +474,8 @@
                         if (result.isConfirmed) {
                             $.ajax({
                                 url: '@Url.Action("SiparisDurumGuncelleFisGir", "Siparis")',
-                                contentType: 'application/json; charset=utf-8',
                                 type: "POST",
-                                data: '{ "SiparisId":"' + siparisId4Durum + '", "DurumId":"' + 4 + '", "FisNo":"' + result.value + '"}'
+                                data: { SiparisId: siparisId4Durum, DurumId: 4, FisNo: result.value }
                             }).done(function (data) {
                                 if (data == 'OK') {
                                     Swal.fire({
@@ -484,17 +494,17 @@
                     });
                     //------------------------//
                 } else {
-                    if (durumId == 2) {
-                        durumId = 6;
-                    } else if (durumId == 6) {
-                        durumId = 7;
+                    if (aktifDurumId == 2) {
+                        aktifDurumId = 6;
+                    } else if (aktifDurumId == 6) {
+                        aktifDurumId = 7;
                     } else {
-                        durumId = 2;
+                        aktifDurumId = 2;
                     }
                 }
             } else {
                 if (sistemBilgisi == 'Bioklimatik Sistem') {//
-                     if (durumId == 7) {
+                     if (aktifDurumId == 7) {
                     //durumId = 4; // teslim edildiye çek
                     //------------------------//
                     onaylandiMi = true;
@@ -515,9 +525,8 @@
                         if (result.isConfirmed) {
                             $.ajax({
                                 url: '@Url.Action("SiparisDurumGuncelleFisGir", "Siparis")',
-                                contentType: 'application/json; charset=utf-8',
                                 type: "POST",
-                                data: '{ "SiparisId":"' + siparisId4Durum + '", "DurumId":"' + 4 + '", "FisNo":"' + result.value + '"}'
+                                data: { SiparisId: siparisId4Durum, DurumId: 4, FisNo: result.value }
                             }).done(function (data) {
                                 if (data == 'OK') {
                                     Swal.fire({
@@ -536,16 +545,16 @@
                     });
                     //------------------------//
                 } else {
-                         if (durumId == 2) {
-                             durumId = 6;
-                         } else if (durumId == 6) {
-                             durumId = 7;
-                         } else {
-                             durumId = 2;
-                         }
-                }
-                } else {
-                    if (durumId == 7) {//sevkiyattan geçti
+                         if (aktifDurumId == 2) {
+                             aktifDurumId = 6;
+                         } else if (aktifDurumId == 6) {
+                             aktifDurumId = 7;
+                          } else {
+                             aktifDurumId = 2;
+                          }
+                 }
+                 } else {
+                     if (aktifDurumId == 7) {//sevkiyattan geçti
                         //------------------------//
                         onaylandiMi = true;
                         $('#modalDurumGuncelle').modal('toggle');
@@ -565,9 +574,8 @@
                             if (result.isConfirmed) {
                                 $.ajax({
                                     url: '@Url.Action("SiparisDurumGuncelleFisGir", "Siparis")',
-                                    contentType: 'application/json; charset=utf-8',
                                     type: "POST",
-                                    data: '{ "SiparisId":"' + siparisId4Durum + '", "DurumId":"' + 4 + '", "FisNo":"' + result.value + '"}'
+                                    data: { SiparisId: siparisId4Durum, DurumId: 4, FisNo: result.value }
                                 }).done(function (data) {
                                     if (data == 'OK') {
                                         Swal.fire({
@@ -586,26 +594,25 @@
                         });
                         //------------------------//
                     } else {
-                        if (durumId == 5) {
-                            durumId = 6;
-                        }else if (durumId == 6) {
-                            durumId = 7;
+                        if (aktifDurumId == 5) {
+                            aktifDurumId = 6;
+                        }else if (aktifDurumId == 6) {
+                            aktifDurumId = 7;
                         } else {
-                            durumId = 2;
+                            aktifDurumId = 2;
                         }
                     }
                 }
             }
         } else if (buttonId == 2) {
-            durumId = 3; //reddet butonuna basıldı reddedildiye setliyoruz.
+            aktifDurumId = 3; //reddet butonuna basıldı reddedildiye setliyoruz.
         };
         if (!onaylandiMi) {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Action("SiparisDurumGuncelle","Siparis")',
-                contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
-                data: '{ "SiparisId":"' + siparisId4Durum + '", "DurumId":"' + durumId + '"}',
+                data: { SiparisId: siparisId4Durum, DurumId: aktifDurumId },
                 success: function (result) {
                     if (result == 'OK') {
                         Swal.fire({
@@ -640,7 +647,7 @@
                     window.setTimeout(function () { location.reload() }, 1800)
                 },
                 error: function (err) {
-                    alert(err);
+                    Swal.fire("Ağ Hatası", "Durum güncelleme isteği başarısız oldu. Lütfen bağlantınızı kontrol edip tekrar deneyin.", "error");
                 }
             });
         }
@@ -874,6 +881,13 @@
             var siparisTur = $(e.relatedTarget).data('profil-id');
             var siparisSistemi = $(e.relatedTarget).data('siparis-tur');
             var siparisDurumIds = $(e.relatedTarget).data('id');
+            if (!siparisDurumIds || siparisDurumIds.toString().indexOf('+') < 0) {
+                siparisId4Durum = null;
+                durumId = null;
+                e.preventDefault();
+                Swal.fire("Hata", "Durum güncelleme bilgisi eksik. Lütfen sayfayı yenileyip tekrar deneyin.", "error");
+                return;
+            }
             var siparisSplit = siparisDurumIds.split('+');
 
             modalSiparisTur = siparisTur;
