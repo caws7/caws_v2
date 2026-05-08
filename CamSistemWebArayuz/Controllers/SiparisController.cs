@@ -1746,16 +1746,18 @@ namespace CamSistemWebArayuz.Controllers
             if (!System.IO.File.Exists(templatePath))
                 throw new FileNotFoundException("Excel şablonu bulunamadı: " + templatePath, templatePath);
 
+            MemoryStream packageStream = null;
+            ExcelPackage excelPackage = null;
             try
             {
-                var packageStream = new MemoryStream();
-                using (var templateStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                packageStream = new MemoryStream();
+                using (var templateStream = new FileStream(templatePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     templateStream.CopyTo(packageStream);
                 }
 
                 packageStream.Position = 0;
-                ExcelPackage excelPackage = new ExcelPackage(packageStream);
+                excelPackage = new ExcelPackage(packageStream);
                 if (excelPackage.Workbook == null || excelPackage.Workbook.Worksheets.Count == 0)
                 {
                     excelPackage.Dispose();
@@ -1766,14 +1768,14 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
+                excelPackage?.Dispose();
+                packageStream?.Dispose();
                 throw new IOException("Excel şablonuna erişim izni yok: " + templatePath, ex);
-            }
-            catch (InvalidDataException)
-            {
-                throw;
             }
             catch (Exception ex)
             {
+                excelPackage?.Dispose();
+                packageStream?.Dispose();
                 throw new IOException("Excel şablonu okunamadı: " + templatePath, ex);
             }
         }
@@ -1805,7 +1807,7 @@ namespace CamSistemWebArayuz.Controllers
                 throw new ArgumentException("Çıktı dosya yolu boş olamaz.", nameof(outputPath));
 
             string outputDirectory = Path.GetDirectoryName(outputPath);
-            if (!string.IsNullOrWhiteSpace(outputDirectory) && !Directory.Exists(outputDirectory))
+            if (!string.IsNullOrWhiteSpace(outputDirectory))
                 Directory.CreateDirectory(outputDirectory);
 
             using (var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -2507,7 +2509,7 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("[excelStoktanKaydet] Hata SiparisId=" + siparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                System.Diagnostics.Debug.WriteLine($"[excelStoktanKaydet] Hata SiparisId={siparisId}: {ex.Message}\n{ex.StackTrace}");
                 throw new InvalidOperationException("Stoktan excel oluşturulurken hata oluştu.", ex);
             }
         }
@@ -2657,7 +2659,7 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("[excelKaydet] Hata SiparisId=" + siparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                System.Diagnostics.Debug.WriteLine($"[excelKaydet] Hata SiparisId={siparisId}: {ex.Message}\n{ex.StackTrace}");
                 throw new InvalidOperationException("Sipariş excel oluşturulurken hata oluştu.", ex);
             }
         }
