@@ -44,7 +44,6 @@ namespace CamSistemWebArayuz
             if (textBasedResponse)
             {
                 response.ContentEncoding = _utf8;
-                response.Charset = "utf-8";
                 if (contentType.IndexOf("charset=", StringComparison.OrdinalIgnoreCase) < 0)
                 {
                     response.ContentType = contentType + "; charset=utf-8";
@@ -56,7 +55,8 @@ namespace CamSistemWebArayuz
         {
             if (string.IsNullOrWhiteSpace(contentType)) return false;
 
-            string mimeType = contentType.Split(';')[0].Trim();
+            int separatorIndex = contentType.IndexOf(';');
+            string mimeType = (separatorIndex >= 0 ? contentType.Substring(0, separatorIndex) : contentType).Trim();
             if (mimeType.StartsWith("text/", StringComparison.OrdinalIgnoreCase)) return true;
 
             return mimeType.Equals("application/json", StringComparison.OrdinalIgnoreCase)
