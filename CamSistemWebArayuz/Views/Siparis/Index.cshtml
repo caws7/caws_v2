@@ -884,6 +884,8 @@
             if (!siparisDurumIds || siparisDurumIds.toString().indexOf('+') < 0) {
                 siparisId4Durum = null;
                 durumId = null;
+                e.preventDefault();
+                Swal.fire("Hata", "Durum güncelleme bilgisi eksik. Lütfen sayfayı yenileyip tekrar deneyin.", "error");
                 return;
             }
             var siparisSplit = siparisDurumIds.split('+');
