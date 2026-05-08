@@ -7,7 +7,7 @@
 }
 
 <script>
-    function YukleSiparisDetayUtf8(url, data) {
+    function SiparisDetayiYukleUtf8(url, data) {
         $.ajax({
             url: url,
             type: 'POST',
@@ -32,10 +32,10 @@
         $('#showDuzenleModal').modal('show');
         if (_siparisTur == 'Stoktan Gönderim') {
             var url = '@Url.Action("StoktanSiparisGoruntule", "Siparis")';
-            YukleSiparisDetayUtf8(url, { SiparisId: _siparisId });
+            SiparisDetayiYukleUtf8(url, { SiparisId: _siparisId });
         } else {
             var url = '@Url.Action("SiparisDetayGoruntule", "Siparis")';
-            YukleSiparisDetayUtf8(url, { SiparisId: _siparisId, raporMu: true });
+            SiparisDetayiYukleUtf8(url, { SiparisId: _siparisId, raporMu: true });
         }
     }
 </script>

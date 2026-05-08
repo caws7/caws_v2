@@ -854,7 +854,6 @@ namespace CamSistemWebArayuz.Controllers
         [HttpPost]
         public ActionResult SiparisDetayGoruntule(long SiparisId, bool raporMu)
         {
-            EnsureUtf8HtmlResponse();
             try
             {
                 return SiparisDetayGoruntuleInternal(SiparisId, raporMu);
