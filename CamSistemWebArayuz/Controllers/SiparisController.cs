@@ -501,6 +501,84 @@ namespace CamSistemWebArayuz.Controllers
             return hesaps;
         }
 
+        private static string BuildProfilOlcuPozKey(int profilId, int kesimOlcusu)
+        {
+            return profilId + "#" + kesimOlcusu;
+        }
+
+        private Tuple<Dictionary<string, Queue<string>>, Dictionary<int, string>> BuildPozLookupForSiparis(long siparisId)
+        {
+            var pozOlcuQueueMap = new Dictionary<string, Queue<string>>();
+            var profilDefaultPozMap = new Dictionary<int, string>();
+
+            try
+            {
+                var siparis = new SiparisRepo().FindBy(e => e.Id == siparisId).FirstOrDefault();
+                if (siparis == null)
+                {
+                    return Tuple.Create(pozOlcuQueueMap, profilDefaultPozMap);
+                }
+
+                var satirlar = new SiparisEnBoyAdetRepo()
+                    .FindBy(e => e.SiparisId == siparisId)
+                    .OrderBy(e => e.Id)
+                    .ToList();
+
+                int pozNo = 0;
+                foreach (var satir in satirlar)
+                {
+                    pozNo++;
+                    var pozLabel = "POZ" + pozNo;
+
+                    List<Profil> profilList;
+                    try
+                    {
+                        profilList = SiparisHesaplamalari.profilHesaplama(
+                            siparisId,
+                            satir.GirilenEn ?? 0,
+                            satir.GirilenSolEn ?? 0,
+                            satir.GirilenBoy ?? 0,
+                            satir.GirilenAdet ?? 0,
+                            satir.SistemId,
+                            satir.AltSistemId,
+                            satir.SistemTurId
+                        ) ?? new List<Profil>();
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[BuildPozLookupForSiparis] profilHesaplama hatası satirId=" + satir.Id + ": " + ex.Message);
+                        continue;
+                    }
+
+                    foreach (var profil in profilList)
+                    {
+                        if (!profilDefaultPozMap.ContainsKey(profil.Id))
+                        {
+                            profilDefaultPozMap[profil.Id] = pozLabel;
+                        }
+
+                        var key = BuildProfilOlcuPozKey(profil.Id, profil.KesimOlcusu);
+                        if (!pozOlcuQueueMap.ContainsKey(key))
+                        {
+                            pozOlcuQueueMap[key] = new Queue<string>();
+                        }
+
+                        var kesimAdet = profil.KesimAdet > 0 ? profil.KesimAdet : 1;
+                        for (int i = 0; i < kesimAdet; i++)
+                        {
+                            pozOlcuQueueMap[key].Enqueue(pozLabel);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[BuildPozLookupForSiparis] Hata SiparisId=" + siparisId + ": " + ex.Message);
+            }
+
+            return Tuple.Create(pozOlcuQueueMap, profilDefaultPozMap);
+        }
+
         [HttpPost]
         [AuthLog(Roles = "SİPARİS,GORUNTULEME,IMALAT,ONAYLAMA")]
         public ActionResult OptimizasyonHesapla(long SiparisId)
@@ -509,6 +587,9 @@ namespace CamSistemWebArayuz.Controllers
             {
                 var sabitRepo = new SabitRepo();
                 ViewBag.minimumFire = sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault()?.SabitDeger ?? 0;
+                var pozLookup = BuildPozLookupForSiparis(SiparisId);
+                ViewBag.PozOlcuQueueMap = pozLookup.Item1.ToDictionary(k => k.Key, v => v.Value.ToList());
+                ViewBag.ProfilDefaultPozMap = pozLookup.Item2;
 
                 var kayitlar = GetOrRunOptimizasyonHesaps(SiparisId)
                     .OrderByDescending(x => x.Id)

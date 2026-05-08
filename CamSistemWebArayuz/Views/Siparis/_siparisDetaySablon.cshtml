@@ -1,28 +1,66 @@
 @model IEnumerable<CamSistemDataLayer.Models.SiparisEnBoyAdet>
 @using CamSistemWebArayuz.Models;
+@using System.Collections.Generic;
 @using System.Linq;
 
 @functions {
-    string FormatKesimOlculer(string olcular, string pozLabel = "POZ1")
+    string BuildProfilOlcuPozKey(int profilId, string kesimOlcusu)
     {
-        if (string.IsNullOrEmpty(olcular)) return "";
-        var pozHtml = "<span style='color:green;font-weight:bold;'>[" + pozLabel + "]</span>";
-        var parts = olcular.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
-        var grouped = parts.GroupBy(x => x)
-                           .Select(g => pozHtml + g.Count() + "x" + g.Key);
+        if (string.IsNullOrWhiteSpace(kesimOlcusu)) return profilId + "#";
+        int parsed;
+        return int.TryParse(kesimOlcusu.Trim(), out parsed)
+            ? (profilId + "#" + parsed)
+            : (profilId + "#" + kesimOlcusu.Trim());
+    }
+
+    List<Tuple<string, string>> ResolveKesimPozlari(string olcular, int? profilId, Dictionary<string, Queue<string>> pozOlcuQueueMap, Dictionary<int, string> profilDefaultPozMap, string fallbackPozLabel = "POZ1")
+    {
+        var result = new List<Tuple<string, string>>();
+        if (string.IsNullOrEmpty(olcular)) return result;
+
+        var cuts = olcular.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
+        var defaultPoz = fallbackPozLabel;
+        if (profilId.HasValue && profilDefaultPozMap.ContainsKey(profilId.Value))
+        {
+            defaultPoz = profilDefaultPozMap[profilId.Value];
+        }
+
+        foreach (var cut in cuts)
+        {
+            var pozLabel = defaultPoz;
+            if (profilId.HasValue)
+            {
+                var key = BuildProfilOlcuPozKey(profilId.Value, cut);
+                Queue<string> queue;
+                if (pozOlcuQueueMap.TryGetValue(key, out queue) && queue.Count > 0)
+                {
+                    pozLabel = queue.Dequeue();
+                }
+            }
+            result.Add(Tuple.Create(cut, pozLabel));
+        }
+
+        return result;
+    }
+
+    string FormatKesimOlculerByPoz(List<Tuple<string, string>> kesimPozList)
+    {
+        if (kesimPozList == null || !kesimPozList.Any()) return "";
+        var grouped = kesimPozList
+            .GroupBy(x => x.Item2 + "|" + x.Item1)
+            .Select(g => "<span style='color:green;font-weight:bold;'>[" + g.First().Item2 + "]</span>" + g.Count() + "x" + g.First().Item1);
         return string.Join(", ", grouped);
     }
 
-    string FormatKesimPlani(string olcular, string pozLabel = "POZ1")
+    string FormatKesimPlaniByPoz(List<Tuple<string, string>> kesimPozList)
     {
-        if (string.IsNullOrEmpty(olcular)) return "";
-        var pozHtml = "<span style='color:green;font-weight:bold;'>[" + pozLabel + "]</span>";
-        var cuts = olcular.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
+        if (kesimPozList == null || !kesimPozList.Any()) return "";
         var sb = new System.Text.StringBuilder();
         sb.Append("<span style='color:red;font-weight:bold;'>(4)</span>");
-        foreach (var cut in cuts)
+        foreach (var cut in kesimPozList)
         {
-            sb.Append("," + pozHtml + cut + ",<span style='color:red;font-weight:bold;'>(4)</span>");
+            var pozHtml = "<span style='color:green;font-weight:bold;'>[" + cut.Item2 + "]</span>";
+            sb.Append("," + pozHtml + cut.Item1 + ",<span style='color:red;font-weight:bold;'>(4)</span>");
         }
         return sb.ToString();
     }
@@ -874,12 +912,22 @@
                         @{
                             var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0);
                             var orderItems = Model.ToArray();
-                            var profilPozMap = new System.Collections.Generic.Dictionary<int, int>();
+                            var pozOlcuQueueMap = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Queue<string>>();
+                            var profilDefaultPozMap = new System.Collections.Generic.Dictionary<int, string>();
                             for (int positionIndex = 0; positionIndex < orderItems.Length; positionIndex++) {
+                                var pozLabel = "POZ" + (positionIndex + 1);
                                 if (orderItems[positionIndex].profilList != null) {
                                     foreach (var pf in orderItems[positionIndex].profilList) {
-                                        if (!profilPozMap.ContainsKey(pf.Id)) {
-                                            profilPozMap[pf.Id] = positionIndex + 1;
+                                        if (!profilDefaultPozMap.ContainsKey(pf.Id)) {
+                                            profilDefaultPozMap[pf.Id] = pozLabel;
+                                        }
+                                        var key = pf.Id + "#" + pf.KesimOlcusu;
+                                        if (!pozOlcuQueueMap.ContainsKey(key)) {
+                                            pozOlcuQueueMap[key] = new System.Collections.Generic.Queue<string>();
+                                        }
+                                        var kesimAdet = pf.KesimAdet > 0 ? pf.KesimAdet : 1;
+                                        for (int i = 0; i < kesimAdet; i++) {
+                                            pozOlcuQueueMap[key].Enqueue(pozLabel);
                                         }
                                     }
                                 }
@@ -887,10 +935,7 @@
                         }
                         @foreach (var item2 in optiList)
                         {
-                            var pozLabel = "POZ1";
-                            if (item2.ProfilId.HasValue && profilPozMap.ContainsKey(item2.ProfilId.Value)) {
-                                pozLabel = "POZ" + profilPozMap[item2.ProfilId.Value];
-                            }
+                            var kesimPozList = ResolveKesimPozlari(item2.KesilecekOlculer, item2.ProfilId, pozOlcuQueueMap, profilDefaultPozMap);
                             <tr>
                                 <td style="text-align:center;vertical-align:middle;">
                                     @(item2.profil != null ? item2.profil.ProfilKodu : "")
@@ -910,10 +955,10 @@
                                     @(item2.KesimAdet + "x" + item2.ProfilBoy)
                                 </td>
                                 <td style="word-wrap:break-word;min-width:160px;max-width:220px;vertical-align:middle;">
-                                    @Html.Raw(FormatKesimPlani(item2.KesilecekOlculer, pozLabel))
+                                    @Html.Raw(FormatKesimPlaniByPoz(kesimPozList))
                                 </td>
                                 <td style="word-wrap: break-word;min-width: 140px;max-width: 180px;vertical-align:middle;">
-                                    @Html.Raw(FormatKesimOlculer(item2.KesilecekOlculer, pozLabel))
+                                    @Html.Raw(FormatKesimOlculerByPoz(kesimPozList))
                                 </td>
                                 @if ((item2.FireAtik ?? 0) > fireLimit)
                                 {
