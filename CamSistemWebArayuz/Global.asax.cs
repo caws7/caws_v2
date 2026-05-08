@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Text;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -8,11 +9,59 @@ namespace CamSistemWebArayuz
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        private static readonly Encoding Utf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             RunDatabaseMigrations();
+        }
+
+        protected void Application_BeginRequest()
+        {
+            if (Context?.Response != null)
+            {
+                Context.Response.ContentEncoding = Utf8NoBom;
+                Context.Response.Charset = "utf-8";
+            }
+
+            if (Context?.Request != null && ShouldForceUtf8(Context.Request.ContentType))
+            {
+                Context.Request.ContentEncoding = Utf8NoBom;
+            }
+        }
+
+        protected void Application_PreSendRequestHeaders()
+        {
+            var response = Context?.Response;
+            if (response == null || !ShouldForceUtf8(response.ContentType))
+                return;
+
+            response.ContentEncoding = Utf8NoBom;
+            response.Charset = "utf-8";
+
+            var contentType = response.ContentType ?? string.Empty;
+            if (!contentType.Contains("charset=", StringComparison.OrdinalIgnoreCase))
+            {
+                response.ContentType = string.IsNullOrWhiteSpace(contentType)
+                    ? "text/html; charset=utf-8"
+                    : contentType + "; charset=utf-8";
+            }
+        }
+
+        private static bool ShouldForceUtf8(string contentType)
+        {
+            if (string.IsNullOrWhiteSpace(contentType))
+                return false;
+
+            var value = contentType.ToLowerInvariant();
+            return value.StartsWith("text/")
+                   || value.Contains("application/json")
+                   || value.Contains("application/javascript")
+                   || value.Contains("application/xml")
+                   || value.Contains("application/xhtml+xml")
+                   || value.Contains("application/x-www-form-urlencoded");
         }
 
         private void RunDatabaseMigrations()

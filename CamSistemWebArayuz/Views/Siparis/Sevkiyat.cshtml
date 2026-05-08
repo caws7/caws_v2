@@ -8,7 +8,24 @@
     function SevkiyatDetayiGoruntule(_siparisId) {
         var url = '@Url.Action("SevkiyatDetayGoruntule", "Siparis")';
 
-        $('#searchResults').load(url, { Id: _siparisId });
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { Id: _siparisId },
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            dataType: 'html',
+            beforeSend: function (xhr) {
+                if (xhr && xhr.overrideMimeType) {
+                    xhr.overrideMimeType('text/html; charset=UTF-8');
+                }
+            },
+            success: function (response) {
+                $('#searchResults').html(response);
+            },
+            error: function () {
+                $('#searchResults').html('<div class="alert alert-danger" style="margin:20px;"><strong>Sevkiyat detayı yüklenemedi.</strong></div>');
+            }
+        });
         $('#showDuzenleModal').modal('show');
     }
     function SevkiyatSil(_siparisId) {

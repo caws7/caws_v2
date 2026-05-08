@@ -785,7 +785,24 @@
         } else if (_gonderimTur == "Aksesuar") {
             var url = '@Url.Action("SiparisAksesuarFiyatDuzenle", "Siparis")';
 
-            $('#searchAksesuarResults').load(url, { SiparisId: _Id });
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: { SiparisId: _Id },
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                dataType: 'html',
+                beforeSend: function (xhr) {
+                    if (xhr && xhr.overrideMimeType) {
+                        xhr.overrideMimeType('text/html; charset=UTF-8');
+                    }
+                },
+                success: function (response) {
+                    $('#searchAksesuarResults').html(response);
+                },
+                error: function () {
+                    $('#searchAksesuarResults').html('<div class="alert alert-danger" style="margin:20px;"><strong>Aksesuar detayı yüklenemedi.</strong></div>');
+                }
+            });
             $('#siparisAksesuarDuzenleModal').modal('show');
         }
     }

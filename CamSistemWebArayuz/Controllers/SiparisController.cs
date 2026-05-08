@@ -1976,6 +1976,7 @@ namespace CamSistemWebArayuz.Controllers
 
             sablon.SirketAdres = BuildAdresMetni(adres);
             ViewBag.AluKg = aluKgFiyat;
+            Response.ContentType = "text/html; charset=utf-8";
             Response.ContentEncoding = Encoding.UTF8;
             Response.Charset = "utf-8";
             return PartialView("_stoktanSiparisSablon4Pdf", sablon);
@@ -2109,6 +2110,7 @@ namespace CamSistemWebArayuz.Controllers
                 sablon.AksesuarToplamTutar = aksesuarList.Sum(e => e.ToplamTutar);
                 sablon.SirketAd = siparis.MusteriTamAdi;
 
+                Response.ContentType = "text/html; charset=utf-8";
                 Response.ContentEncoding = Encoding.UTF8;
                 Response.Charset = "utf-8";
                 return PartialView("_stoktanSiparisSablon4Pdf", sablon);
