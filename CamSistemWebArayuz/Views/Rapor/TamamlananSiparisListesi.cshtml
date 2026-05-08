@@ -7,17 +7,35 @@
 }
 
 <script>
+    function SiparisDetayiYukleUtf8(url, data) {
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            dataType: 'html',
+            beforeSend: function (xhr) {
+                if (xhr && xhr.overrideMimeType) {
+                    xhr.overrideMimeType('text/html; charset=UTF-8');
+                }
+            },
+            success: function (response) {
+                $('#searchResults').html(response);
+            },
+            error: function () {
+                $('#searchResults').html('<div class="alert alert-danger" style="margin:20px;"><strong>Sipariş detayı yüklenemedi.</strong></div>');
+            }
+        });
+    }
+
     function SiparisDetayiGoruntule(_siparisId, _siparisTur) {
+        $('#showDuzenleModal').modal('show');
         if (_siparisTur == 'Stoktan Gönderim') {
             var url = '@Url.Action("StoktanSiparisGoruntule", "Siparis")';
-
-            $('#searchResults').load(url, { SiparisId: _siparisId });
-            $('#showDuzenleModal').modal('show');
+            SiparisDetayiYukleUtf8(url, { SiparisId: _siparisId });
         } else {
             var url = '@Url.Action("SiparisDetayGoruntule", "Siparis")';
-
-            $('#searchResults').load(url, { SiparisId: _siparisId, raporMu: true });
-            $('#showDuzenleModal').modal('show');
+            SiparisDetayiYukleUtf8(url, { SiparisId: _siparisId, raporMu: true });
         }
     }
 </script>

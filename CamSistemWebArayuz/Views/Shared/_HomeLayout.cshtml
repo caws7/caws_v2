@@ -7,7 +7,7 @@
     <title>@ViewBag.Title</title>
     <link rel="icon" href="~/images/favicon.ico" type="image/x-icon">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,latin-ext,cyrillic-ext" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
     <!-- Bootstrap Core Css -->
     <link href="~/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -29,6 +29,10 @@
     <link href="~/css/themes/all-themes.css" rel="stylesheet" />
 
     <style>
+        body, .modal, .table, .toast, .swal2-popup {
+            font-family: "Roboto","Segoe UI",Tahoma,Arial,sans-serif;
+        }
+
         /* =========================================================
    USER INFO (Logo + isim/mail/rol) + SIDEBAR MENU SCROLL
    Footer (copyright) her zaman görünür, menu tekerlekle kayar
