@@ -2137,11 +2137,19 @@ namespace CamSistemWebArayuz.Controllers
                     siparisStokAksesuar.BirimFiyat = item.BirimFiyat.Value;
 
                 decimal teklifMiktar = siparisTeklifs
-                    .Where(e => string.Equals((e.Malzeme ?? string.Empty).Trim(), (aksesuar.AksesuarAdi ?? string.Empty).Trim(), StringComparison.CurrentCultureIgnoreCase))
+                    .Where(e => string.Equals((e.Malzeme ?? string.Empty).Trim(), (aksesuar.AksesuarAdi ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
                     .Sum(e => e.Miktar ?? 0);
                 decimal stokMiktar = siparisStokList
                     .Where(e => e.AksesuarId == item.AksesuarId)
                     .Sum(e => (decimal)(e.AksesuarAdet ?? 0));
+                if (teklifMiktar <= 0)
+                {
+                    if (stokMiktar > 0)
+                        System.Diagnostics.Debug.WriteLine("[BuildSiparisSablon] Aksesuar miktarı stoktan alındı. SiparisId=" + siparisId + ", AksesuarId=" + item.AksesuarId);
+                    else
+                        System.Diagnostics.Debug.WriteLine("[BuildSiparisSablon] Aksesuar miktarı 0. SiparisId=" + siparisId + ", AksesuarId=" + item.AksesuarId);
+                }
+
                 siparisStokAksesuar.Miktar = teklifMiktar > 0 ? teklifMiktar : stokMiktar;
                 siparisStokAksesuar.ToplamTutar = siparisStokAksesuar.Miktar * siparisStokAksesuar.BirimFiyat;
                 aksesuarList.Add(siparisStokAksesuar);
@@ -2150,7 +2158,10 @@ namespace CamSistemWebArayuz.Controllers
             sablon.aksesuarList = aksesuarList.OrderBy(e => e.Kodu ?? string.Empty).ThenBy(e => e.Adi ?? string.Empty).ToList();
             sablon.profilList = profilList.OrderBy(e => e.Kodu ?? string.Empty).ThenBy(e => e.Olcu).ToList();
             sablon.SiparisId = siparisId;
-            sablon.SiparisTarih = siparis.TahminiTeslim ?? siparis.KayitTarihi ?? DateTime.Now;
+            DateTime? siparisTarih = siparis.TahminiTeslim ?? siparis.KayitTarihi;
+            if (siparisTarih == null)
+                System.Diagnostics.Debug.WriteLine("[BuildSiparisSablon] Sipariş tarihi bulunamadı, DateTime.Now kullanılacak. SiparisId=" + siparisId);
+            sablon.SiparisTarih = siparisTarih ?? DateTime.Now;
 
             if (siparis.ToplamAluKg != null)
                 sablon.ProfilToplamKg = (double)siparis.ToplamAluKg / 1000;
