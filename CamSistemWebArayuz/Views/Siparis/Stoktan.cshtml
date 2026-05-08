@@ -263,15 +263,15 @@
             return;
         }
 
-        durumId = parseInt(durumId, 10);
-        if (isNaN(durumId)) {
+        var aktifDurumId = parseInt(durumId, 10);
+        if (isNaN(aktifDurumId)) {
             Swal.fire("Hata", "Durum bilgisi okunamadı. Lütfen sayfayı yenileyip tekrar deneyin.", "error");
             return;
         }
 
         var onaylandiMi = false;
         if (buttonId == 1) {
-            if (durumId == 7) {
+            if (aktifDurumId == 7) {
                 //------------------------//
                 onaylandiMi = true;
                 $('#modalDurumGuncelle').modal('toggle');
@@ -311,23 +311,23 @@
                 });
                 //------------------------//
             } else {
-                if (durumId == 2) {
-                    durumId = 6;
-                } else if (durumId == 6) {
-                    durumId = 7;
+                if (aktifDurumId == 2) {
+                    aktifDurumId = 6;
+                } else if (aktifDurumId == 6) {
+                    aktifDurumId = 7;
                 } else {
-                    durumId = 2;
+                    aktifDurumId = 2;
                 }
             }
         } else if (buttonId == 2) {
-            durumId = 3; //reddet butonuna basıldı reddedildiye setliyoruz.
+            aktifDurumId = 3; //reddet butonuna basıldı reddedildiye setliyoruz.
         };
         if (!onaylandiMi) {
             $.ajax({
             type: 'POST',
             url: '/Siparis/SiparisDurumGuncelle',
             dataType: 'json',
-            data: { SiparisId: siparisId4Durum, DurumId: durumId },
+            data: { SiparisId: siparisId4Durum, DurumId: aktifDurumId },
             success: function (result) {
                     if (result == 'OK') {
                         Swal.fire({
