@@ -877,7 +877,7 @@ namespace CamSistemWebArayuz.Controllers
                     System.Web.HttpUtility.HtmlEncode(hataTipi) + "</pre></details>" +
                     "<button class='btn btn-default' style='margin-top:8px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
                     "</div>",
-                    "text/html", Encoding.UTF8);
+                    "text/html; charset=utf-8", Encoding.UTF8);
             }
         }
 
@@ -897,7 +897,7 @@ namespace CamSistemWebArayuz.Controllers
 
             var siparis = siparisRepo.FindBy(e => e.Id == SiparisId).FirstOrDefault();
             if (siparis == null)
-                return Content("Sipariş bulunamadı!", "text/html", Encoding.UTF8);
+                return Content("Sipariş bulunamadı!", "text/html; charset=utf-8", Encoding.UTF8);
 
             ViewBag.SiparisDurumu = (siparis.DurumId == (int)Durumlar.Onaylandı || siparis.DurumId == (int)Durumlar.ImalataGonderildi || siparis.DurumId == (int)Durumlar.Sevkiyatta);
 
@@ -919,7 +919,7 @@ namespace CamSistemWebArayuz.Controllers
                     System.Web.HttpUtility.HtmlEncode(exSeba.GetType().Name + ": " + exSeba.Message + (exSeba.InnerException != null ? " --> " + exSeba.InnerException.Message : "")) + "</pre></details>" +
                     "<button class='btn btn-default' style='margin-top:10px;' onclick='$(\"#showDuzenleModal\").modal(\"hide\")'>Kapat</button>" +
                     "</div>",
-                    "text/html", Encoding.UTF8);
+                    "text/html; charset=utf-8", Encoding.UTF8);
             }
 
             List<SiparisEnBoyAdet> siparisTumDetay = new List<SiparisEnBoyAdet>();
@@ -1195,7 +1195,7 @@ namespace CamSistemWebArayuz.Controllers
             string viewName = isGiyotinSabit ? "_siparisGiyotinSablon" : "_siparisDetaySablon";
 
             string html = RenderPartialViewToString(viewName, siparisTumDetay);
-            return Content(html, "text/html", Encoding.UTF8);
+            return Content(html, "text/html; charset=utf-8", Encoding.UTF8);
         }
 
         private string RenderPartialViewToString(string viewName, object model)
