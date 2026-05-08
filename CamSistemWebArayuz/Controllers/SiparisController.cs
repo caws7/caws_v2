@@ -2381,9 +2381,10 @@ namespace CamSistemWebArayuz.Controllers
                 List<SiparisStokProfil> profilList = new List<SiparisStokProfil>();
                 List<SiparisStokAksesuar> aksesuarList = new List<SiparisStokAksesuar>();
 
-                List<OptimizasyonHesap> optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id);
+                List<OptimizasyonHesap> optimizasyonHesaps = GetOrRunOptimizasyonHesaps(siparis.Id) ?? new List<OptimizasyonHesap>();
 
                 List<int> profDist = optimizasyonHesaps
+                    .Where(e => e != null && e.ProfilId != null && e.ProfilBoy != null && e.KesimAdet != null)
                     .Select(e => (int)e.ProfilId)
                     .Distinct()
                     .ToList();
@@ -2392,7 +2393,7 @@ namespace CamSistemWebArayuz.Controllers
                 foreach (var item in profDist)
                 {
                     Dictionary<int, int> profilBoyDict = optimizasyonHesaps
-                        .Where(e => e.ProfilId == item)
+                        .Where(e => e != null && e.ProfilId == item && e.ProfilBoy != null && e.KesimAdet != null)
                         .GroupBy(e => (int)e.ProfilBoy)
                         .ToDictionary(d => d.Key, d => d.Sum(e => (int)e.KesimAdet));
 
