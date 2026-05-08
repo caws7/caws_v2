@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -25,11 +26,6 @@ namespace CamSistemWebArayuz
                 Context.Response.ContentEncoding = Utf8NoBom;
                 Context.Response.Charset = "utf-8";
             }
-
-            if (Context?.Request != null && ShouldForceUtf8(Context.Request.ContentType))
-            {
-                Context.Request.ContentEncoding = Utf8NoBom;
-            }
         }
 
         protected void Application_PreSendRequestHeaders()
@@ -41,21 +37,15 @@ namespace CamSistemWebArayuz
             response.ContentEncoding = Utf8NoBom;
             response.Charset = "utf-8";
 
-            var contentType = response.ContentType ?? string.Empty;
-            if (!HasCharsetParameter(contentType))
-            {
-                response.ContentType = string.IsNullOrWhiteSpace(contentType)
-                    ? "text/html; charset=utf-8"
-                    : contentType + "; charset=utf-8";
-            }
+            response.ContentType = EnsureUtf8CharsetParameter(response.ContentType);
         }
 
         private static bool ShouldForceUtf8(string contentType)
         {
-            if (string.IsNullOrWhiteSpace(contentType))
+            var mediaType = GetMediaType(contentType);
+            if (string.IsNullOrWhiteSpace(mediaType))
                 return false;
 
-            var mediaType = contentType.Split(';')[0].Trim();
             if (mediaType.StartsWith("text/", StringComparison.OrdinalIgnoreCase))
                 return true;
 
@@ -66,20 +56,47 @@ namespace CamSistemWebArayuz
                    || mediaType.Equals("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase);
         }
 
-        private static bool HasCharsetParameter(string contentType)
+        private static string EnsureUtf8CharsetParameter(string contentType)
         {
             if (string.IsNullOrWhiteSpace(contentType))
+                return "text/html; charset=utf-8";
+
+            var parts = contentType.Split(';')
+                .Select(p => p.Trim())
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .ToList();
+
+            if (!parts.Any())
+                return "text/html; charset=utf-8";
+
+            var mediaType = parts[0];
+            var parameters = parts.Skip(1).Where(p => !IsCharsetParameter(p)).ToList();
+            parameters.Add("charset=utf-8");
+
+            return mediaType + "; " + string.Join("; ", parameters);
+        }
+
+        private static bool IsCharsetParameter(string parameter)
+        {
+            var part = (parameter ?? string.Empty).Trim();
+            if (part.Length == 0)
                 return false;
 
-            var parts = contentType.Split(';');
-            for (int i = 1; i < parts.Length; i++)
-            {
-                var parameter = parts[i].Trim();
-                if (parameter.StartsWith("charset=", StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
+            var eqIndex = part.IndexOf('=');
+            if (eqIndex <= 0)
+                return false;
 
-            return false;
+            var key = part.Substring(0, eqIndex).Trim();
+            return key.Equals("charset", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string GetMediaType(string contentType)
+        {
+            if (string.IsNullOrWhiteSpace(contentType))
+                return string.Empty;
+
+            var part = contentType.Split(';')[0].Trim();
+            return part;
         }
 
         private void RunDatabaseMigrations()
