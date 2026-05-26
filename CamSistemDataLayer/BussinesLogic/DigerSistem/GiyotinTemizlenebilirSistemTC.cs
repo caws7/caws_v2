@@ -168,11 +168,11 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
 
         private static string ResolveProfilKodu(Profil item)
         {
-            string profilKodu = item?.ProfilKodu?.Trim() ?? "";
+            string profilKodu = item.ProfilKodu?.Trim() ?? "";
             if (!profilKodu.Equals(Kar4880, StringComparison.OrdinalIgnoreCase))
                 return profilKodu;
 
-            string profilAdi = item?.ProfilAdi?.Trim() ?? "";
+            string profilAdi = item.ProfilAdi?.Trim() ?? "";
             if (profilAdi.Equals(DikeySabitCamAdaptoru, StringComparison.OrdinalIgnoreCase))
                 return Kar4880DikeySabit;
 
