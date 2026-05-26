@@ -48,23 +48,42 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
                             (item.BirimAgirlik ?? 0));
                         break;
 
-                    case "SURME-PROFIL-1":
-                        item.KesimOlcusu = en;
-                        item.KesimAdet = toplamKanatAdedi;
+                    case "KAR-4324":
+                        item.KesimOlcusu = yukseklik - 94;
+                        item.KesimAdet = sistemAdedi * 2;
                         item.ToplamAgirlik = profilToplamAgirlikHesaplama(
                             item.KesimOlcusu,
                             item.KesimAdet,
                             (item.BirimAgirlik ?? 0));
                         break;
 
-                    case "SURME-PROFIL-2":
-                        item.KesimOlcusu = yukseklik;
-                        item.KesimAdet = toplamKanatAdedi;
+                    case "KAR-4323":
+                        item.KesimOlcusu = yukseklik - 80;
+                        item.KesimAdet = sistemAdedi * 2;
                         item.ToplamAgirlik = profilToplamAgirlikHesaplama(
                             item.KesimOlcusu,
                             item.KesimAdet,
                             (item.BirimAgirlik ?? 0));
                         break;
+
+                    case "KAR-4322":
+                        item.KesimOlcusu = yukseklik - 80;
+                        item.KesimAdet = sistemAdedi * (( kanatAdedi * 2) - 2 );
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(
+                            item.KesimOlcusu,
+                            item.KesimAdet,
+                            (item.BirimAgirlik ?? 0));
+                        break;
+
+                    case "KAR-4320":
+                        item.KesimOlcusu = ((en - 196) / kanatAdedi) + 2 ;
+                        item.KesimAdet = sistemAdedi * (kanatAdedi * 2);
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(
+                            item.KesimOlcusu,
+                            item.KesimAdet,
+                            (item.BirimAgirlik ?? 0));
+                        break;
+
 
                 }
 
@@ -89,12 +108,10 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
 
             // Cam hesap şablon alanı:
             // Nihai formüller profile göre burada düzenlenecek.
-            double camYukseklik = yukseklik;
-            int camGenislik = en;
+            double camYukseklik = yukseklik - 155;
+            int camGenislik = ((en - 196) / kanatAdedi);
 
-            camEntityList.Add(CreateCamBilgisi("KAYAR CAM", camGenislik, (int)camYukseklik, toplamKanatAdedi));
-            camEntityList.Add(CreateCamBilgisi("ORTA CAM", camGenislik, (int)camYukseklik, toplamKanatAdedi));
-            camEntityList.Add(CreateCamBilgisi("SABİT CAM", camGenislik, (int)camYukseklik, toplamKanatAdedi));
+            camEntityList.Add(CreateCamBilgisi("CAM", camGenislik, (int)camYukseklik, toplamKanatAdedi));
 
             return camEntityList;
         }
