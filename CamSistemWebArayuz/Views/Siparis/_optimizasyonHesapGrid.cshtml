@@ -86,6 +86,7 @@
 }
 else
 {
+    <table class="table table-bordered" style="margin-top:10px;">
     @{
         var first = Model[0];
         var minimumFireVal = Convert.ToInt32(ViewBag.minimumFire ?? 0);
@@ -108,8 +109,6 @@ else
             }
         }
     }
-
-    <table class="table table-bordered" style="margin-top:10px;">
         <thead>
             <tr>
                 <th style="text-align:center;vertical-align:middle;width:60px;">Profil Kodu</th>
