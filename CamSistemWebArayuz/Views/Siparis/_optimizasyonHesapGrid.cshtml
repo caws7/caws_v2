@@ -63,6 +63,20 @@
         }
         return sb.ToString();
     }
+
+    string BuildProfilIconUrl(CamSistemDataLayer.Models.Profil profil)
+    {
+        if (profil == null || string.IsNullOrWhiteSpace(profil.ProfilFoto)) return null;
+        try
+        {
+            var foto = profil.ProfilFoto.Trim().TrimStart('~', '/');
+            return Url.Content("~/images/profilicons/" + foto);
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }
 
 @if (Model == null || Model.Count == 0)
@@ -142,21 +156,23 @@ else
             {
                 var fireColor = (r.FireAtik ?? 0) > minimumFireVal ? "bg-light-green" : "bg-red";
                 var kesimPozList = ResolveKesimPozlari(r.KesilecekOlculer, r.ProfilId, pozOlcuQueueMap, profilDefaultPozMap);
+                var profil = r.profil;
+                var profilIconUrl = BuildProfilIconUrl(profil);
                 <tr>
                     <td style="text-align:center;vertical-align:middle;">
-                        @(r.profil != null ? r.profil.ProfilKodu : r.ProfilId.ToString())
+                        @(profil != null ? profil.ProfilKodu : r.ProfilId.ToString())
                     </td>
                     <td style="text-align:center;vertical-align:middle;">
-                        @if (r.profil != null && !string.IsNullOrEmpty(r.profil.ProfilFoto))
+                        @if (!string.IsNullOrEmpty(profilIconUrl))
                         {
-                            @Html.Raw("<img class='img-responsive img-thumbnailProf' src='" + Url.Content("~/images/profilicons/" + r.profil.ProfilFoto) + "' />")
+                            @Html.Raw("<img class='img-responsive img-thumbnailProf' src='" + profilIconUrl + "' />")
                         }
                     </td>
                     <td style="vertical-align:middle;">
-                        @(r.profil != null ? r.profil.ProfilAdi : "")
+                        @(profil != null ? profil.ProfilAdi : "")
                     </td>
                     <td style="text-align:center;vertical-align:middle;">
-                        @(r.profil != null && r.profil.BirimAgirlik != null ? r.profil.BirimAgirlik.Value.ToString() : "")
+                        @(profil != null && profil.BirimAgirlik != null ? profil.BirimAgirlik.Value.ToString() : "")
                     </td>
                     <td style="text-align:center;vertical-align:middle;">@(r.KesimAdet + "x" + r.ProfilBoy)</td>
                     <td style="word-wrap:break-word;min-width:160px;max-width:220px;vertical-align:middle;">
