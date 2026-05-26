@@ -380,6 +380,10 @@
                                             {
                                                 @Html.Raw("Sistem Açınım")
                                             }
+                                            else if (item.SistemId == 4)
+                                            {
+                                                @Html.Raw("Sistem Yükseklik")
+                                            }
                                             else
                                             {
                                                 if (item.GirilenSolEn > 0)
@@ -392,6 +396,10 @@
                                             @if (item.SistemId == 2)
                                             {
                                                 @Html.Raw("Oluk Altı Yükseklik")
+                                            }
+                                            else if (item.SistemId == 4)
+                                            {
+                                                @Html.Raw("Kanat adedi")
                                             }
                                             else
                                             {
@@ -414,12 +422,25 @@
                                     <tr>
                                         <th>@Html.DisplayFor(model => item.GirilenEn)</th>
                                         <th>
-                                            @if (item.GirilenSolEn > 0)
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.DisplayFor(model => item.GirilenBoy)
+                                            }
+                                            else if (item.GirilenSolEn > 0)
                                             {
                                                 @Html.DisplayFor(model => item.GirilenSolEn)
                                             }
                                         </th>
-                                        <th>@Html.DisplayFor(model => item.GirilenBoy)</th>
+                                        <th>
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.Raw(item.GirilenKanatAdet ?? item.GirilenAdet)
+                                            }
+                                            else
+                                            {
+                                                @Html.DisplayFor(model => item.GirilenBoy)
+                                            }
+                                        </th>
                                         <th>@Html.DisplayFor(model => item.GirilenAdet)</th>
                                         <th colspan=3>@Html.DisplayFor(model => item.siparisModel.RenkAdi)</th>
                                         @{
@@ -547,12 +568,25 @@
                                             }
                                         </th>
                                         <th>
-                                            @if (item.GirilenSolEn > 0)
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.Raw("Sistem Yükseklik")
+                                            }
+                                            else if (item.GirilenSolEn > 0)
                                             {
                                                 @Html.Raw("Sistem Sol Genişlik")
                                             }
                                         </th>
-                                        <th>Sistem Yükseklik</th>
+                                        <th>
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.Raw("Kanat adedi")
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("Sistem Yükseklik")
+                                            }
+                                        </th>
                                         <th>Sistem Adet</th>
                                         <th colspan=2>Sistem Renk</th>
                                         <th>Sistem m2</th>
@@ -560,12 +594,25 @@
                                     <tr>
                                         <th>@Html.DisplayFor(model => item.GirilenEn)</th>
                                         <th>
-                                            @if (item.GirilenSolEn > 0)
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.DisplayFor(model => item.GirilenBoy)
+                                            }
+                                            else if (item.GirilenSolEn > 0)
                                             {
                                                 @Html.DisplayFor(model => item.GirilenSolEn)
                                             }
                                         </th>
-                                        <th>@Html.DisplayFor(model => item.GirilenBoy)</th>
+                                        <th>
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.Raw(item.GirilenKanatAdet ?? item.GirilenAdet)
+                                            }
+                                            else
+                                            {
+                                                @Html.DisplayFor(model => item.GirilenBoy)
+                                            }
+                                        </th>
                                         <th>@Html.DisplayFor(model => item.GirilenAdet)</th>
                                         <th colspan=2>@Html.DisplayFor(model => item.siparisModel.RenkAdi)</th>
                                         @{
@@ -684,12 +731,25 @@
                                             }
                                         </th>
                                         <th>
-                                            @if (item.GirilenSolEn > 0)
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.Raw("Sistem Yükseklik")
+                                            }
+                                            else if (item.GirilenSolEn > 0)
                                             {
                                                 @Html.Raw("Sistem Sol Genişlik")
                                             }
                                         </th>
-                                        <th>Sistem Yükseklik</th>
+                                        <th>
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.Raw("Kanat adedi")
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("Sistem Yükseklik")
+                                            }
+                                        </th>
                                         <th>Sistem Adet</th>
                                         <th colspan=3>Sistem Renk</th>
                                         <th>Sistem m2</th>
@@ -697,12 +757,25 @@
                                     <tr>
                                         <th>@Html.DisplayFor(model => item.GirilenEn)</th>
                                         <th>
-                                            @if (item.GirilenSolEn > 0)
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.DisplayFor(model => item.GirilenBoy)
+                                            }
+                                            else if (item.GirilenSolEn > 0)
                                             {
                                                 @Html.DisplayFor(model => item.GirilenSolEn)
                                             }
                                         </th>
-                                        <th>@Html.DisplayFor(model => item.GirilenBoy)</th>
+                                        <th>
+                                            @if (item.SistemId == 4)
+                                            {
+                                                @Html.Raw(item.GirilenKanatAdet ?? item.GirilenAdet)
+                                            }
+                                            else
+                                            {
+                                                @Html.DisplayFor(model => item.GirilenBoy)
+                                            }
+                                        </th>
                                         <th>@Html.DisplayFor(model => item.GirilenAdet)</th>
                                         <th colspan=3>@Html.DisplayFor(model => item.siparisModel.RenkAdi)</th>
                                         @{
