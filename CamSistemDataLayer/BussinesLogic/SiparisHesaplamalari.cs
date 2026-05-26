@@ -13,7 +13,7 @@ namespace CamSistemDataLayer.BussinesLogic
         static AltSistemRepo asRepo;
         static SistemTurRepo tRepo;
 
-        public static List<CamBilgileri> CamYukseklikHesapla(int sistemId, int turId, int altSistemId, int boy, int en, int solEn, int adet)
+        public static List<CamBilgileri> CamYukseklikHesapla(int sistemId, int turId, int altSistemId, int boy, int en, int solEn, int adet, int kanatAdedi = 0)
         {
             if (sistemId <= 0) return new List<CamBilgileri>();
 
@@ -58,13 +58,14 @@ namespace CamSistemDataLayer.BussinesLogic
             }
             else if (sistem.Equals("Sürme Sistem"))
             {
-                camEntityList = SürmeSistemSabit.CamYukseklikHesapla(boy, en, adet);
+                int surmeKanatAdedi = kanatAdedi > 0 ? kanatAdedi : 1;
+                camEntityList = SürmeSistemSabit.CamYukseklikHesapla(boy, en, surmeKanatAdedi, adet);
             }
             return camEntityList;
         }
 
         public static List<Profil> profilHesaplama(long siparisId, int en, int solEn, int boy, int adet,
-            int? sistemIdOverride = null, int? altSistemIdOverride = null, int? sistemTurIdOverride = null)
+            int? sistemIdOverride = null, int? altSistemIdOverride = null, int? sistemTurIdOverride = null, int kanatAdedi = 0)
         {
             SiparisRepo sRepo = new SiparisRepo();
             SiparisEnBoyAdetRepo sebaRepo = new SiparisEnBoyAdetRepo();
@@ -200,7 +201,8 @@ namespace CamSistemDataLayer.BussinesLogic
                 }
                 else if (sistem.Equals("Sürme Sistem"))
                 {
-                    list = SürmeSistemSabit.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
+                    int surmeKanatAdedi = kanatAdedi > 0 ? kanatAdedi : 1;
+                    list = SürmeSistemSabit.profilKesimOlcusuHesaplama(en, boy, surmeKanatAdedi, adet, profilListesiTekilleme);
                 }
                 return list;
             }
