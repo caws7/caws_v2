@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\GitHub\\caws_v2\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{5673C7A0-31B4-4F07-9C3B-A40E1CF7E916}|CamSistemDataLayer\\CamSistemDataLayer.csproj|c:\\github\\caws_v2\\camsistemdatalayer\\bussineslogic\\digersistem\\giyotinsabitsistemtc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5673C7A0-31B4-4F07-9C3B-A40E1CF7E916}|CamSistemDataLayer\\CamSistemDataLayer.csproj|solutionrelative:camsistemdatalayer\\bussineslogic\\digersistem\\giyotinsabitsistemtc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{5673C7A0-31B4-4F07-9C3B-A40E1CF7E916}|CamSistemDataLayer\\CamSistemDataLayer.csproj|c:\\github\\caws_v2\\camsistemdatalayer\\bussineslogic\\siparishesaplamalari.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5673C7A0-31B4-4F07-9C3B-A40E1CF7E916}|CamSistemDataLayer\\CamSistemDataLayer.csproj|solutionrelative:camsistemdatalayer\\bussineslogic\\siparishesaplamalari.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{061268B2-0E84-4C80-8DEF-685D5A385672}|CamSistemWebArayuz\\CamSistemWebArayuz.csproj|C:\\GitHub\\caws_v2\\camsistemwebarayuz\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{061268B2-0E84-4C80-8DEF-685D5A385672}|CamSistemWebArayuz\\CamSistemWebArayuz.csproj|solutionrelative:camsistemwebarayuz\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+      "AbsoluteMoniker": "D:0:0:{061268B2-0E84-4C80-8DEF-685D5A385672}|CamSistemWebArayuz\\CamSistemWebArayuz.csproj|c:\\github\\caws_v2\\camsistemwebarayuz\\controllers\\sipariscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{061268B2-0E84-4C80-8DEF-685D5A385672}|CamSistemWebArayuz\\CamSistemWebArayuz.csproj|solutionrelative:camsistemwebarayuz\\controllers\\sipariscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,32 +22,49 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{c6f34f0d-7ae5-4f3a-be61-fe0c21ae9eb8}"
+            },
+            {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "SiparisHesaplamalari.cs",
               "DocumentMoniker": "C:\\GitHub\\caws_v2\\CamSistemDataLayer\\BussinesLogic\\SiparisHesaplamalari.cs",
               "RelativeDocumentMoniker": "CamSistemDataLayer\\BussinesLogic\\SiparisHesaplamalari.cs",
               "ToolTip": "C:\\GitHub\\caws_v2\\CamSistemDataLayer\\BussinesLogic\\SiparisHesaplamalari.cs",
               "RelativeToolTip": "CamSistemDataLayer\\BussinesLogic\\SiparisHesaplamalari.cs",
-              "ViewState": "AgIAAJsAAAAAAAAAAAAAAMIAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAHQAAAAAAAAAAAAAAHwAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-06T13:32:43.137Z",
+              "WhenOpened": "2026-05-26T15:55:03.473Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Web.config",
-              "DocumentMoniker": "C:\\GitHub\\caws_v2\\CamSistemWebArayuz\\Web.config",
-              "RelativeDocumentMoniker": "CamSistemWebArayuz\\Web.config",
-              "ToolTip": "C:\\GitHub\\caws_v2\\CamSistemWebArayuz\\Web.config",
-              "RelativeToolTip": "CamSistemWebArayuz\\Web.config",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAAFAAAAATAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2026-05-02T17:43:22.647Z",
+              "DocumentIndex": 0,
+              "Title": "GiyotinSabitSistemTC.cs",
+              "DocumentMoniker": "C:\\GitHub\\caws_v2\\CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinSabitSistemTC.cs",
+              "RelativeDocumentMoniker": "CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinSabitSistemTC.cs",
+              "ToolTip": "C:\\GitHub\\caws_v2\\CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinSabitSistemTC.cs",
+              "RelativeToolTip": "CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinSabitSistemTC.cs",
+              "ViewState": "AgIAAIsAAAAAAAAAAAAqwJUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T15:20:01.097Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SiparisController.cs",
+              "DocumentMoniker": "C:\\GitHub\\caws_v2\\CamSistemWebArayuz\\Controllers\\SiparisController.cs",
+              "RelativeDocumentMoniker": "CamSistemWebArayuz\\Controllers\\SiparisController.cs",
+              "ToolTip": "C:\\GitHub\\caws_v2\\CamSistemWebArayuz\\Controllers\\SiparisController.cs",
+              "RelativeToolTip": "CamSistemWebArayuz\\Controllers\\SiparisController.cs",
+              "ViewState": "AgIAAC0HAAAAAAAAAAAewDQHAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T15:18:10.789Z",
               "EditorCaption": ""
             }
           ]
