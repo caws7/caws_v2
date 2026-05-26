@@ -1,6 +1,7 @@
 ﻿using CamSistemDataLayer.BussinesLogic.DigerSistem;
 using CamSistemDataLayer.Models;
 using CamSistemDataLayer.Repos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -50,7 +51,7 @@ namespace CamSistemDataLayer.BussinesLogic
             }
             else if (sistem.Equals("Giyotin Sabit Sistem"))
             {
-                if (altsistem.Equals("Tek Camlı Sistem"))
+                if (IsTekCamliAltSistem(altsistem))
                     camEntityList = GiyotinSabitSistemTC.CamYukseklikHesapla(boy, en, adet);
                 else
                     camEntityList = GiyotinSabitSistem.CamYukseklikHesapla(boy, en, adet);
@@ -182,7 +183,7 @@ namespace CamSistemDataLayer.BussinesLogic
                 }
                 if (sistem.Equals("Giyotin Sabit Sistem"))
                 {
-                    if (altSistem.Equals("Tek Camlı Sistem"))
+                    if (IsTekCamliAltSistem(altSistem))
                         list = GiyotinSabitSistemTC.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                     else
                         list = GiyotinSabitSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
@@ -193,6 +194,22 @@ namespace CamSistemDataLayer.BussinesLogic
             return null;
         }
 
+        private static bool IsTekCamliAltSistem(string altSistemAdi)
+        {
+            if (string.IsNullOrWhiteSpace(altSistemAdi))
+                return false;
+
+            var normalized = new string(
+                altSistemAdi
+                    .Trim()
+                    .Replace("ı", "i")
+                    .Replace("İ", "I")
+                    .Where(char.IsLetterOrDigit)
+                    .ToArray())
+                .ToUpperInvariant();
+
+            return normalized.Contains("TEKCAMLI");
+        }
+
     }
 }
-
