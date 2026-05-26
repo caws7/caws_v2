@@ -202,13 +202,12 @@ namespace CamSistemDataLayer.BussinesLogic
             var normalized = new string(
                 altSistemAdi
                     .Trim()
-                    .Replace("ı", "i")
+                    .ToUpperInvariant()
                     .Replace("İ", "I")
                     .Where(char.IsLetterOrDigit)
-                    .ToArray())
-                .ToUpperInvariant();
+                    .ToArray());
 
-            return normalized.Contains("TEKCAMLI");
+            return normalized == "TEKCAMLI" || normalized == "TEKCAMLISISTEM";
         }
 
     }
