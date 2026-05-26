@@ -36,6 +36,7 @@ namespace CamSistemWebArayuz.Controllers
     {
         // Her kesimden önce ve sonra eklenen bıçak payı (mm)
         private const int BICHAK_PAYI = 4;
+        private const int SURME_SISTEM_ID = 4;
         private const string KAR_PAYI_MALZEME = "KAR PAYI";
         private const string ExcelMimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         private const string SacBoruProfilKodu = "SB-101";
@@ -469,7 +470,24 @@ namespace CamSistemWebArayuz.Controllers
         /// Belirtilen sipariş için OptimizasyonHesap kayıtlarını getirir.
         /// Kayıt yoksa optimizer'ı çalıştırıp kaydeder, sonra yeniden okur.
         /// </summary>
-        private List<OptimizasyonHesap> GetOrRunOptimizasyonHesaps(long siparisId)
+        private void DeleteOptimizasyonHesapsForSiparis(OptimizasyonHesapRepo repo, string siparisIdStr)
+        {
+            if (repo == null || string.IsNullOrWhiteSpace(siparisIdStr))
+                return;
+
+            var kayitlar = repo
+                .FindBy(e => e.SiparisIds != null && e.SiparisIds.Contains(siparisIdStr))
+                .ToList()
+                .Where(x => x.SiparisIds.Split(',').Select(s => s.Trim()).Any(id => id == siparisIdStr))
+                .ToList();
+
+            foreach (var kayit in kayitlar)
+            {
+                repo.DeleteAndSave(kayit);
+            }
+        }
+
+        private List<OptimizasyonHesap> GetOrRunOptimizasyonHesaps(long siparisId, bool forceRecalculate = false)
         {
             string siparisIdStr = siparisId.ToString();
             var optimizasyonHesapRepo = new OptimizasyonHesapRepo();
@@ -482,7 +500,17 @@ namespace CamSistemWebArayuz.Controllers
                     .ToList();
             }
 
-            var hesaps = GetFiltered();
+            List<OptimizasyonHesap> hesaps;
+            if (forceRecalculate)
+            {
+                DeleteOptimizasyonHesapsForSiparis(optimizasyonHesapRepo, siparisIdStr);
+                hesaps = new List<OptimizasyonHesap>();
+            }
+            else
+            {
+                hesaps = GetFiltered();
+            }
+
             if (!hesaps.Any())
             {
                 try
@@ -595,7 +623,7 @@ namespace CamSistemWebArayuz.Controllers
                 ViewBag.PozOlcuQueueMap = pozLookup.Item1.ToDictionary(k => k.Key, v => v.Value.ToList());
                 ViewBag.ProfilDefaultPozMap = pozLookup.Item2;
 
-                var kayitlar = GetOrRunOptimizasyonHesaps(SiparisId)
+                var kayitlar = GetOrRunOptimizasyonHesaps(SiparisId, forceRecalculate: true)
                     .OrderByDescending(x => x.Id)
                     .ToList();
                 return PartialView("_optimizasyonHesapGrid", kayitlar);
@@ -1162,15 +1190,13 @@ namespace CamSistemWebArayuz.Controllers
             }
 
             // Optimizasyon verilerini DB'den çekip modele ekle
-            var optimizasyonHesapRepo = new OptimizasyonHesapRepo();
-            string siparisIdStr = siparis.Id.ToString();
             List<OptimizasyonHesap> optimizasyonKayitlar = new List<OptimizasyonHesap>();
             try
             {
-                optimizasyonKayitlar = optimizasyonHesapRepo
-                    .FindBy(e => e.SiparisIds != null && e.SiparisIds.Contains(siparisIdStr))
-                    .ToList()
-                    .Where(x => x.SiparisIds.Split(',').Select(s => s.Trim()).Any(id => id == siparisIdStr))
+                bool isSurmeOrder = (siparis.SistemId ?? 0) == SURME_SISTEM_ID
+                    || siparisAdet.Any(e => (e.SistemId ?? 0) == SURME_SISTEM_ID);
+
+                optimizasyonKayitlar = GetOrRunOptimizasyonHesaps(siparis.Id, forceRecalculate: isSurmeOrder)
                     .OrderByDescending(x => x.Id)
                     .ToList();
             }
