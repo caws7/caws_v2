@@ -123,26 +123,32 @@ namespace CamSistemDataLayer.BussinesLogic
                 List<Profil> profilListesiTekilleme = new List<Profil>();
                 foreach (var item in profilListesi)
                 {
-                    if (item.ProfilKodu != null &&
-                       (item.ProfilKodu.Contains("AP-101") || item.ProfilKodu.Contains("BC-108") || item.ProfilKodu.Contains("BC-107") || item.ProfilKodu.Contains("BC-103") || item.ProfilKodu.Contains("BC-102")
-                        || item.ProfilKodu.Contains("RK-104") || item.ProfilKodu.Contains("G-106") || item.ProfilKodu.Contains("G-110") || item.ProfilKodu.Contains("G-111")
-                        || item.ProfilKodu.Contains("G-112") || item.ProfilKodu.Contains("G-115") || item.ProfilKodu.Contains("G-116") || item.ProfilKodu.Contains("G-121")
-                        || item.ProfilKodu.Contains("G-126") || item.ProfilKodu.Contains("G-127") || item.ProfilKodu.Contains("SS-134") || item.ProfilKodu.Contains("SS-133")
-                        || item.ProfilKodu.Contains("SS-132") || item.ProfilKodu.Contains("SS-130") || item.ProfilKodu.Contains("SS-128") || item.ProfilKodu.Contains("SS-126")
-                        || item.ProfilKodu.Contains("SS-124") || item.ProfilKodu.Contains("SS-121") || item.ProfilKodu.Contains("SS-118") || item.ProfilKodu.Contains("SS-117")
-                        || item.ProfilKodu.Contains("SS-135") || item.ProfilKodu.Contains("SS-136") || item.ProfilKodu.Contains("SS-120") || item.ProfilKodu.Contains("T-2456") 
-                        || item.ProfilKodu.Contains("T-2457") || item.ProfilKodu.Contains("T-2400") || item.ProfilKodu.Contains("KAR-4873") || item.ProfilKodu.Contains("KAR-4880") 
-                        || item.ProfilKodu.Contains("KAR-4862")))
+                    var profilKodu = ResolveKar4880ProfilKodu(item);
+                    if (!string.Equals(item.ProfilKodu, profilKodu, StringComparison.Ordinal))
                     {
-                        if (item.ProfilKodu.Split('-').Length > 2)
+                        item.ProfilKodu = profilKodu;
+                    }
+
+                    if (profilKodu != null &&
+                       (profilKodu.Contains("AP-101") || profilKodu.Contains("BC-108") || profilKodu.Contains("BC-107") || profilKodu.Contains("BC-103") || profilKodu.Contains("BC-102")
+                        || profilKodu.Contains("RK-104") || profilKodu.Contains("G-106") || profilKodu.Contains("G-110") || profilKodu.Contains("G-111")
+                        || profilKodu.Contains("G-112") || profilKodu.Contains("G-115") || profilKodu.Contains("G-116") || profilKodu.Contains("G-121")
+                        || profilKodu.Contains("G-126") || profilKodu.Contains("G-127") || profilKodu.Contains("SS-134") || profilKodu.Contains("SS-133")
+                        || profilKodu.Contains("SS-132") || profilKodu.Contains("SS-130") || profilKodu.Contains("SS-128") || profilKodu.Contains("SS-126")
+                        || profilKodu.Contains("SS-124") || profilKodu.Contains("SS-121") || profilKodu.Contains("SS-118") || profilKodu.Contains("SS-117")
+                        || profilKodu.Contains("SS-135") || profilKodu.Contains("SS-136") || profilKodu.Contains("SS-120") || profilKodu.Contains("T-2456")
+                        || profilKodu.Contains("T-2457") || profilKodu.Contains("T-2400") || profilKodu.Contains("KAR-4873") || profilKodu.Contains("KAR-4880")
+                        || profilKodu.Contains("KAR-4862")))
+                    {
+                        if (profilKodu.Split('-').Length > 2)
                         {
                             profilListesiTekilleme.Add(item);
                         }
-                        if (joinTablosuId == 16 && item.ProfilKodu.Equals("G-126"))
+                        if (joinTablosuId == 16 && profilKodu.Equals("G-126"))
                         {
                             profilListesiTekilleme.Add(item);
                         }
-                        if (joinTablosuId == 13 && (item.ProfilKodu.Equals("G-110") || item.ProfilKodu.Equals("G-106")))
+                        if (joinTablosuId == 13 && (profilKodu.Equals("G-110") || profilKodu.Equals("G-106")))
                         {
                             profilListesiTekilleme.Add(item);
                         }
@@ -234,6 +240,41 @@ namespace CamSistemDataLayer.BussinesLogic
                 return false;
 
             return IsTekCamliAltSistem(sistemTurAdi);
+        }
+
+        private static string ResolveKar4880ProfilKodu(Profil item)
+        {
+            var profilKodu = item?.ProfilKodu?.Trim();
+            if (!string.Equals(profilKodu, "KAR-4880", StringComparison.OrdinalIgnoreCase))
+                return profilKodu;
+
+            var normalizedProfilAdi = NormalizeText(item?.ProfilAdi);
+            if (normalizedProfilAdi.Contains("DIKEY") && normalizedProfilAdi.Contains("HAREKETLI") && normalizedProfilAdi.Contains("CAM") && normalizedProfilAdi.Contains("ADAPTOR"))
+                return "KAR-4880-1";
+
+            if (normalizedProfilAdi.Contains("DIKEY") && normalizedProfilAdi.Contains("SABIT") && normalizedProfilAdi.Contains("CAM") && normalizedProfilAdi.Contains("ADAPTOR"))
+                return "KAR-4880-2";
+
+            if (normalizedProfilAdi.Contains("YATAY") && normalizedProfilAdi.Contains("CAM") && normalizedProfilAdi.Contains("ADAPTOR"))
+                return "KAR-4880-3";
+
+            return profilKodu;
+        }
+
+        private static string NormalizeText(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            return value
+                .Trim()
+                .ToUpperInvariant()
+                .Replace('Ç', 'C')
+                .Replace('Ğ', 'G')
+                .Replace('İ', 'I')
+                .Replace('Ö', 'O')
+                .Replace('Ş', 'S')
+                .Replace('Ü', 'U');
         }
 
     }
