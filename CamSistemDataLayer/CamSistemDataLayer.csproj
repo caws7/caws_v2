@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BussinesLogic\DigerSistem\SürmeSistemSabit.cs" />
     <Compile Include="BussinesLogic\DigerSistem\GiyotinSabitSistemTC.cs" />
     <Compile Include="BussinesLogic\DigerSistem\GiyotinTemizlenebilirSistemTC.cs" />
     <Compile Include="BussinesLogic\DigerSistem\GiyotinTemizlenebilirSistem.cs" />
