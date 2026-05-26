@@ -1026,6 +1026,7 @@ namespace CamSistemWebArayuz.Controllers
                 ent.camModel = profilDetay;
                 ent.profilList = profilList;
                 ent.GirilenAdet = item.GirilenAdet;
+                ent.GirilenKanatAdet = item.GirilenKanatAdet;
                 ent.GirilenBoy = item.GirilenBoy;
                 ent.GirilenEn = item.GirilenEn;
                 ent.GirilenSolEn = item.GirilenSolEn;
