@@ -288,7 +288,7 @@ namespace CamSistemWebArayuz.Controllers
                         || item2.ProfilKodu.Contains("SS-132") || item2.ProfilKodu.Contains("SS-130") || item2.ProfilKodu.Contains("SS-128") || item2.ProfilKodu.Contains("SS-126")
                         || item2.ProfilKodu.Contains("SS-124") || item2.ProfilKodu.Contains("SS-121") || item2.ProfilKodu.Contains("SS-118") || item2.ProfilKodu.Contains("SS-117")
                         || item2.ProfilKodu.Contains("SS-135") || item2.ProfilKodu.Contains("SS-136") || item2.ProfilKodu.Contains("SS-120") || item2.ProfilKodu.Contains("T-2457") || item2.ProfilKodu.Contains("T-2456") || item2.ProfilKodu.Contains("T-2400")
-                        || item2.ProfilKodu.Contains("KAR-4873") || item2.ProfilKodu.Contains("KAR-4862"))
+                        || item2.ProfilKodu.Contains("KAR-4873") || item2.ProfilKodu.Contains("KAR-4862") || item2.ProfilKodu.Contains("KAR-4880"))
                     {
                         if (item2.ProfilKodu.Split('-').Length > 2)
                         {
