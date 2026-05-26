@@ -1,12 +1,54 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\GitHub\\caws_v2\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5673C7A0-31B4-4F07-9C3B-A40E1CF7E916}|CamSistemDataLayer\\CamSistemDataLayer.csproj|c:\\github\\caws_v2\\camsistemdatalayer\\bussineslogic\\digersistem\\giyotintemizlenebilirsistemtc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5673C7A0-31B4-4F07-9C3B-A40E1CF7E916}|CamSistemDataLayer\\CamSistemDataLayer.csproj|solutionrelative:camsistemdatalayer\\bussineslogic\\digersistem\\giyotintemizlenebilirsistemtc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5673C7A0-31B4-4F07-9C3B-A40E1CF7E916}|CamSistemDataLayer\\CamSistemDataLayer.csproj|c:\\github\\caws_v2\\camsistemdatalayer\\bussineslogic\\digersistem\\giyotintemizlenebilirsistem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5673C7A0-31B4-4F07-9C3B-A40E1CF7E916}|CamSistemDataLayer\\CamSistemDataLayer.csproj|solutionrelative:camsistemdatalayer\\bussineslogic\\digersistem\\giyotintemizlenebilirsistem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GiyotinTemizlenebilirSistem.cs",
+              "DocumentMoniker": "C:\\GitHub\\caws_v2\\CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinTemizlenebilirSistem.cs",
+              "RelativeDocumentMoniker": "CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinTemizlenebilirSistem.cs",
+              "ToolTip": "C:\\GitHub\\caws_v2\\CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinTemizlenebilirSistem.cs",
+              "RelativeToolTip": "CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinTemizlenebilirSistem.cs",
+              "ViewState": "AgIAAFgAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T18:39:32.805Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GiyotinTemizlenebilirSistemTC.cs",
+              "DocumentMoniker": "C:\\GitHub\\caws_v2\\CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinTemizlenebilirSistemTC.cs",
+              "RelativeDocumentMoniker": "CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinTemizlenebilirSistemTC.cs",
+              "ToolTip": "C:\\GitHub\\caws_v2\\CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinTemizlenebilirSistemTC.cs",
+              "RelativeToolTip": "CamSistemDataLayer\\BussinesLogic\\DigerSistem\\GiyotinTemizlenebilirSistemTC.cs",
+              "ViewState": "AgIAAJ8AAAAAAAAAAAAYwLEAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-26T18:32:40.333Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

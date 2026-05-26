@@ -127,6 +127,25 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
                         item.KesimAdet = adet;
                         item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
+
+                    case "KAR-4880-1":
+                        item.KesimOlcusu = (int)((((boy - 207 + 11) / 3.0) - 6) + 36);
+                        item.KesimAdet = adet * 4;
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
+                        break;
+
+                    case "KAR-4880-2":
+                        item.KesimOlcusu = (int)((((boy - 207 + 11) / 3.0) - 6) + 31.7);
+                        item.KesimAdet = adet * 2;
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
+                        break;
+
+                    case "KAR-4880-3":
+                        item.KesimOlcusu = en - 240;
+                        item.KesimAdet = adet * 6;
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
+                        break;
+
                 }
 
                 newProfilList.Add(item);
@@ -145,24 +164,24 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
 
             camModel.Adet = adet;
             camModel.CamAdi = "KAYAR CAM";
-            camModel.Genislik = en - 160;
-            camModel.Yukseklik = Convert.ToInt32(((double)(boy - 207 + 11) / 3 - 6));
+            camModel.Genislik = en - 170;
+            camModel.Yukseklik = Convert.ToInt32(((double)(boy - 207 + 11) / 3 - 16));
             camModel.Alanm2 = (double)camModel.Yukseklik * camModel.Adet * camModel.Genislik / 1000000;
             camEntityList.Add(camModel);
 
             camModel = new CamBilgileri();
             camModel.Adet = adet;
             camModel.CamAdi = "ORTA CAM";
-            camModel.Genislik = en - 160;
-            camModel.Yukseklik = Convert.ToInt32(((double)(boy - 207 + 11) / 3 - 6));
+            camModel.Genislik = en - 170;
+            camModel.Yukseklik = Convert.ToInt32(((double)(boy - 207 + 11) / 3 - 16));
             camModel.Alanm2 = (double)camModel.Yukseklik * camModel.Adet * camModel.Genislik / 1000000;
             camEntityList.Add(camModel);
 
             camModel = new CamBilgileri();
             camModel.Adet = adet;
             camModel.CamAdi = "SABİT CAM";
-            camModel.Genislik = en - 160;
-            camModel.Yukseklik = Convert.ToInt32(((double)(boy - 207 + 11) / 3 - 6));
+            camModel.Genislik = en - 170;
+            camModel.Yukseklik = Convert.ToInt32(((double)(boy - 207 + 11) / 3 - 16));
             camModel.Alanm2 = (double)camModel.Yukseklik * camModel.Adet * camModel.Genislik / 1000000;
             camEntityList.Add(camModel);
 

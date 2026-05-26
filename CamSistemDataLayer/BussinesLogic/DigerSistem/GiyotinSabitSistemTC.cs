@@ -174,7 +174,7 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
             List<CamBilgileri> camEntityList = new List<CamBilgileri>();
 
             double yukseklik = ((boy - 207) / 3.0) - 13;
-            int genislik = en - 156 - 6;
+            int genislik = en - 156 - 16;
 
             // KAYAR CAM
             CamBilgileri camModel = new CamBilgileri();
