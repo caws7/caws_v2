@@ -9,6 +9,7 @@ namespace CamSistemDataLayer.BussinesLogic
 {
     public class SiparisHesaplamalari
     {
+        private const int VarsayilanKanatAdedi = 1;
         static SistemRepo sistemRepo;
         static AltSistemRepo asRepo;
         static SistemTurRepo tRepo;
@@ -58,7 +59,7 @@ namespace CamSistemDataLayer.BussinesLogic
             }
             else if (sistem.Equals("Sürme Sistem"))
             {
-                int surmeKanatAdedi = kanatAdedi > 0 ? kanatAdedi : 1;
+                int surmeKanatAdedi = ResolveKanatAdedi(kanatAdedi);
                 camEntityList = SürmeSistemSabit.CamYukseklikHesapla(boy, en, surmeKanatAdedi, adet);
             }
             return camEntityList;
@@ -201,7 +202,7 @@ namespace CamSistemDataLayer.BussinesLogic
                 }
                 else if (sistem.Equals("Sürme Sistem"))
                 {
-                    int surmeKanatAdedi = kanatAdedi > 0 ? kanatAdedi : 1;
+                    int surmeKanatAdedi = ResolveKanatAdedi(kanatAdedi);
                     list = SürmeSistemSabit.profilKesimOlcusuHesaplama(en, boy, surmeKanatAdedi, adet, profilListesiTekilleme);
                 }
                 return list;
@@ -286,6 +287,9 @@ namespace CamSistemDataLayer.BussinesLogic
                 .Replace('Ş', 'S')
                 .Replace('Ü', 'U');
         }
+
+        private static int ResolveKanatAdedi(int kanatAdedi)
+            => kanatAdedi > 0 ? kanatAdedi : VarsayilanKanatAdedi;
 
     }
 }
