@@ -208,7 +208,7 @@ namespace CamSistemDataLayer.BussinesLogic
                     .Where(char.IsLetterOrDigit)
                     .ToArray());
 
-            return normalized.Contains("TEKCAM");
+            return normalized.StartsWith("TEKCAM");
         }
 
     }

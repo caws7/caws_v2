@@ -6,6 +6,15 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
 {
     public static class GiyotinSabitSistemTC
     {
+        private const string Kar4880 = "KAR-4880";
+        private const string Kar4880DikeySabit = "KAR-4880-2";
+        private const string Kar4880DikeyHareketli = "KAR-4880-1";
+        private const string Kar4880Yatay = "KAR-4880-3";
+
+        private const string DikeySabitCamAdaptoru = "Dikey Sabit Cam Adaptörü";
+        private const string DikeyHareketliCamAdaptoru = "Dikey Hareketli Cam Adaptörü";
+        private const string YatayCamAdaptoru = "Yatay Cam Adaptörü";
+
         public static List<Profil> profilKesimOlcusuHesaplama(int en, int boy, int adet, List<Profil> profilList)
         {
             List<Profil> newProfilList = new List<Profil>();
@@ -144,18 +153,18 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
         private static string ResolveProfilKodu(Profil item)
         {
             string profilKodu = item?.ProfilKodu?.Trim() ?? "";
-            if (!profilKodu.Equals("KAR-4880", StringComparison.OrdinalIgnoreCase))
+            if (!profilKodu.Equals(Kar4880, StringComparison.OrdinalIgnoreCase))
                 return profilKodu;
 
             string profilAdi = item?.ProfilAdi?.Trim() ?? "";
-            if (profilAdi.Equals("Dikey Sabit Cam Adaptörü", StringComparison.OrdinalIgnoreCase))
-                return "KAR-4880-2";
+            if (profilAdi.Equals(DikeySabitCamAdaptoru, StringComparison.OrdinalIgnoreCase))
+                return Kar4880DikeySabit;
 
-            if (profilAdi.Equals("Dikey Hareketli Cam Adaptörü", StringComparison.OrdinalIgnoreCase))
-                return "KAR-4880-1";
+            if (profilAdi.Equals(DikeyHareketliCamAdaptoru, StringComparison.OrdinalIgnoreCase))
+                return Kar4880DikeyHareketli;
 
-            if (profilAdi.Equals("Yatay Cam Adaptörü", StringComparison.OrdinalIgnoreCase))
-                return "KAR-4880-3";
+            if (profilAdi.Equals(YatayCamAdaptoru, StringComparison.OrdinalIgnoreCase))
+                return Kar4880Yatay;
 
             return profilKodu;
         }
