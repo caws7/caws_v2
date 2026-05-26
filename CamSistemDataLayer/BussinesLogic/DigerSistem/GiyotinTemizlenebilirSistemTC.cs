@@ -6,13 +6,22 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
 {
     public static class GiyotinTemizlenebilirSistemTC
     {
+        private const string Kar4880 = "KAR-4880";
+        private const string Kar4880DikeySabit = "KAR-4880-2";
+        private const string Kar4880DikeyHareketli = "KAR-4880-1";
+        private const string Kar4880Yatay = "KAR-4880-3";
+
+        private const string DikeySabitCamAdaptoru = "Dikey Sabit Cam Adaptörü";
+        private const string DikeyHareketliCamAdaptoru = "Dikey Hareketli Cam Adaptörü";
+        private const string YatayCamAdaptoru = "Yatay Cam Adaptörü";
+
         public static List<Profil> profilKesimOlcusuHesaplama(int en, int boy, int adet, List<Profil> profilList)
         {
             List<Profil> newProfilList = new List<Profil>();
 
             foreach (Profil item in profilList)
             {
-                switch (item.ProfilKodu)
+                switch (ResolveProfilKodu(item))
                 {
                     case "KAR-4871":
                         item.KesimOlcusu = en - 30;
@@ -156,6 +165,25 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
 
         private static double profilToplamAgirlikHesaplama(int olcu, int adet, int agirlik)
             => olcu * adet * ((double)agirlik / 1000) / 1000;
+
+        private static string ResolveProfilKodu(Profil item)
+        {
+            string profilKodu = item?.ProfilKodu?.Trim() ?? "";
+            if (!profilKodu.Equals(Kar4880, StringComparison.OrdinalIgnoreCase))
+                return profilKodu;
+
+            string profilAdi = item?.ProfilAdi?.Trim() ?? "";
+            if (profilAdi.Equals(DikeySabitCamAdaptoru, StringComparison.OrdinalIgnoreCase))
+                return Kar4880DikeySabit;
+
+            if (profilAdi.Equals(DikeyHareketliCamAdaptoru, StringComparison.OrdinalIgnoreCase))
+                return Kar4880DikeyHareketli;
+
+            if (profilAdi.Equals(YatayCamAdaptoru, StringComparison.OrdinalIgnoreCase))
+                return Kar4880Yatay;
+
+            return profilKodu;
+        }
 
         public static List<CamBilgileri> CamYukseklikHesapla(int boy, int en, int adet)
         {
