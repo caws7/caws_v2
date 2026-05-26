@@ -897,26 +897,169 @@
             </div>
         </div>
     </div>
-    <div role="tabpanel" class="tab-pane fade" id="optimizasyon">
-        <div class="modal-body">
-            @* Model.First() patlamasın *@
-            @{
-                var first = Model != null ? Model.FirstOrDefault() : null;
-                var optiList = (first != null) ? first.optimizasyonList : null;
-                bool optiDataVar = (optiList != null && optiList.Count > 0);
-                var optiSiparisId = first != null && first.siparisModel != null ? first.siparisModel.Id.ToString() : "";
-            }
-
-            @if (!optiDataVar)
-            {
-                <text>
+    @{
+        var surmeFirstItem = Model != null ? Model.FirstOrDefault() : null;
+        var optiSiparisId = surmeFirstItem != null && surmeFirstItem.siparisModel != null ? surmeFirstItem.siparisModel.Id.ToString() : "";
+    }
+    @if ((bool)(ViewBag.optiVarMi ?? false) && Model != null && Model.Any())
+    {
+        <div role="tabpanel" class="tab-pane fade" id="optimizasyon">
+            <div class="modal-body">
+                <div class="tab-content">
+                    <div id="optimizasyonyazdir">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan=2 style="text-align:center;vertical-align:middle;padding:4px;">
+                                        <img src="@Url.Content("~/images/logo.png")" style="max-width:100%;max-height:80px;object-fit:contain;display:block;margin:auto;" />
+                                    </th>
+                                    <th colspan=5>
+                                        <center>
+                                            <h2>
+                                                <b>OPTİMİZASYON</b>
+                                            </h2>
+                                        </center>
+                                    </th>
+                                    <th colspan=2 style="word-wrap: break-word;max-width: 250px;"></th>
+                                </tr>
+                                <tr>
+                                    <th>İmalat Ölçüleri</th>
+                                    <th colspan="4">@string.Join(" | ", Model.Select((m, i) => "POZ" + (i + 1) + "- " + m.GirilenEn + "x" + m.GirilenBoy + "/" + m.GirilenAdet + " Adet"))</th>
+                                    <th colspan="4">@Html.DisplayFor(model => Model.First().siparisModel.SistemTamami) @Html.DisplayFor(model => Model.First().siparisModel.MusteriTamAdi)</th>
+                                </tr>
+                                <tr>
+                                    <th>Sipariş Numarası</th>
+                                    <th>@Html.DisplayFor(model => Model.First().siparisModel.Id)</th>
+                                    <th>Sipariş Tarihi</th>
+                                    <th colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.First().siparisModel.KayitTarihi))</th>
+                                    <th></th>
+                                    <th>Teslim Tarihi</th>
+                                    <th colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.First().siparisModel.TahminiTeslim))</th>
+                                </tr>
+                                <tr>
+                                    <th style="text-align:center;vertical-align:middle;width:60px;">Profil Kodu</th>
+                                    <th style="text-align:center;vertical-align:middle;">Profil Kesit</th>
+                                    <th style="text-align:center;vertical-align:middle;">Profil Adı</th>
+                                    <th style="text-align:center;vertical-align:middle;">Birim Ağırlık (gr)</th>
+                                    <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy (mm)</th>
+                                    <th style="text-align:center;vertical-align:middle;">Kesim Planı</th>
+                                    <th style="text-align:center;vertical-align:middle;">Kesim Ölçüleri (mm)</th>
+                                    <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy Adedi</th>
+                                    <th style="text-align:center;vertical-align:middle;width:60px;">Fire / Atık</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th colspan=2>Toplam Atık</th>
+                                    <th colspan=2>Fire Stoğa Eklenen Toplam</th>
+                                    <th colspan=2>Asıl Stoktan Kullanılan Toplam</th>
+                                    <th colspan=3>Fire Stoktan Kullanılan Toplam</th>
+                                </tr>
+                                <tr>
+                                    <th>Uzunluk (Metre)</th>
+                                    <th>Ağırlık (Kg)</th>
+                                    <th>Uzunluk (Metre)</th>
+                                    <th>Ağırlık (Kg)</th>
+                                    <th>Uzunluk (Metre)</th>
+                                    <th>Ağırlık (Kg)</th>
+                                    <th>Uzunluk (Metre)</th>
+                                    <th colspan=2>Ağırlık (Kg)</th>
+                                </tr>
+                                <tr>
+                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().ToplamAtikUzunluk))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().ToplamAtikAgirlik))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FireyeEklenenToplamUzunluk))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FireyeEklenenToplamAgirlik))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().AsilStoktanKullanilanToplamUzunluk))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().AsilStoktanKullanilanToplamAgirlik))</th>
+                                    <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FiredenKullanilanToplamUzunluk))</th>
+                                    <th colspan=2>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FiredenKullanilanToplamAgirlik))</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                @{
+                                    var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0);
+                                    var orderItems = Model.ToArray();
+                                    var pozOlcuQueueMap = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Queue<string>>();
+                                    var profilDefaultPozMap = new System.Collections.Generic.Dictionary<int, string>();
+                                    for (int positionIndex = 0; positionIndex < orderItems.Length; positionIndex++) {
+                                        var pozLabel = "POZ" + (positionIndex + 1);
+                                        if (orderItems[positionIndex].profilList != null) {
+                                            foreach (var pf in orderItems[positionIndex].profilList) {
+                                                if (!profilDefaultPozMap.ContainsKey(pf.Id)) {
+                                                    profilDefaultPozMap[pf.Id] = pozLabel;
+                                                }
+                                                var key = pf.Id + "#" + pf.KesimOlcusu;
+                                                if (!pozOlcuQueueMap.ContainsKey(key)) {
+                                                    pozOlcuQueueMap[key] = new System.Collections.Generic.Queue<string>();
+                                                }
+                                                var kesimAdet = pf.KesimAdet > 0 ? pf.KesimAdet : 1;
+                                                for (int i = 0; i < kesimAdet; i++) {
+                                                    pozOlcuQueueMap[key].Enqueue(pozLabel);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                @foreach (var item2 in Model.First().optimizasyonList)
+                                {
+                                    var kesimPozList = ResolveKesimPozlari(item2.KesilecekOlculer, item2.ProfilId, pozOlcuQueueMap, profilDefaultPozMap);
+                    <tr>
+                        <td style="text-align:center;vertical-align:middle;">
+                            @(item2.profil != null ? item2.profil.ProfilKodu : "")
+                        </td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            @if (item2.profil != null) {
+                                @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item2.profil.ProfilFoto) + "' />")
+                            }
+                        </td>
+                        <td style="vertical-align:middle;">
+                            @(item2.profil != null ? item2.profil.ProfilAdi : "")
+                        </td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            @(item2.profil != null && item2.profil.BirimAgirlik != null ? item2.profil.BirimAgirlik.Value.ToString() : "")
+                        </td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            @Html.DisplayFor(modelItem => item2.ProfilBoy)
+                        </td>
+                        <td style="text-align:center;vertical-align:middle;"></td>
+                        <td style="word-wrap: break-word;min-width: 140px;max-width: 180px;vertical-align:middle;">
+                            @Html.Raw(FormatKesimOlculerByPoz(kesimPozList))
+                        </td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            @Html.DisplayFor(modelItem => item2.KesimAdet)
+                        </td>
+                        @if ((item2.FireAtik ?? 0) > fireLimit)
+                        {
+                            <th class="bg-light-green" style="text-align:center;vertical-align:middle;">@item2.FireAtik</th>
+                        }
+                        else
+                        {
+                            <th class="bg-red" style="text-align:center;vertical-align:middle;">@item2.FireAtik</th>
+                        }
+                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" onclick="PrintElem('optimizasyonyazdir')" class="btn bg-red waves-effect waves-light pull-right">
+                        <i class="material-icons">print</i>
+                        <span>YAZDIR</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div role="tabpanel" class="tab-pane fade" id="optimizasyon">
+            <div class="modal-body">
                 <div id="optimizasyonContent">
                     <div style="text-align:center;padding:30px;color:#666;">
                         <i class="material-icons" style="font-size:48px;vertical-align:middle;">sync</i><br />
                         <span>Optimizasyon yükleniyor...</span>
                     </div>
                 </div>
-
                 @if (!(ViewBag.raporMu ?? false))
                 {
                     <button type="button"
@@ -926,7 +1069,6 @@
                         OPTİMİZASYON YENİDEN HESAPLA
                     </button>
                 }
-
                 <script>
                     $(document).ready(function () {
                         $('a[href="#optimizasyon"]').one('shown.bs.tab', function () {
@@ -934,147 +1076,9 @@
                         });
                     });
                 </script>
-                </text>
-            }
-            else
-            {
-        <div class="tab-content">
-            <div id="optimizasyonyazdir">
-                @* SENİN MEVCUT OPTİMİZASYON TABLOSU BURADA AYNI KALABİLİR *@
-                <table class="table table-bordered">
-
-                    <thead>
-                        <tr>
-                            <th colspan=2 style="text-align:center;vertical-align:middle;padding:4px;"><img src="@Url.Content("~/images/logo.png")" style="max-width:100%;max-height:80px;object-fit:contain;display:block;margin:auto;" /></th>
-                            <th colspan=5><center><h2><b>OPTİMİZASYON</b></h2></center></th>
-                            <th colspan=2 style="word-wrap: break-word;max-width: 250px;"></th>
-                        </tr>
-                        <tr>
-                            <th>İmalat Ölçüleri</th>
-                            <th colspan="4">@string.Join(" | ", Model.Select((m, i) => "POZ" + (i + 1) + "- " + m.GirilenEn + "x" + m.GirilenBoy + "/" + m.GirilenAdet + " Adet"))</th>
-                            <th colspan="4">@Html.DisplayFor(model => first.siparisModel.SistemTamami) @Html.DisplayFor(model => first.siparisModel.MusteriTamAdi)</th>
-                        </tr>
-                        <tr>
-                            <th>Sipariş Numarası</th>
-                            <th>@Html.DisplayFor(model => Model.First().siparisModel.Id)</th>
-                            <th>Sipariş Tarihi</th>
-                            <th colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.First().siparisModel.KayitTarihi))</th>
-                            <th></th>
-                            <th>Teslim Tarihi</th>
-                            <th colspan="2">@Html.Raw(string.Format("{0:dd/MM/yyyy}", Model.First().siparisModel.TahminiTeslim))</th>
-                        </tr>
-                        <tr>
-                            <th style="text-align:center;vertical-align:middle;width:60px;">Profil Kodu</th>
-                            <th style="text-align:center;vertical-align:middle;">Profil Kesit</th>
-                            <th style="text-align:center;vertical-align:middle;">Profil Adı</th>
-                            <th style="text-align:center;vertical-align:middle;">Birim Ağırlık (gr)</th>
-                            <th style="text-align:center;vertical-align:middle;">Kesilecek Profil Boy (mm)</th>
-                            <th style="text-align:center;vertical-align:middle;">Kesim Planı</th>
-                            <th style="text-align:center;vertical-align:middle;">Kesim Ölçüleri (mm)</th>
-                            <th style="text-align:center;vertical-align:middle;width:60px;">Fire / Atık</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th colspan=2>Toplam Atık</th>
-                            <th colspan=2>Fire Stoğa Eklenen Toplam</th>
-                            <th colspan=2>Asıl Stoktan Kullanılan Toplam</th>
-                            <th colspan=2>Fire Stoktan Kullanılan Toplam</th>
-                        </tr>
-                        <tr>
-                            <th>Uzunluk (Metre)</th>
-                            <th>Ağırlık (Kg)</th>
-                            <th>Uzunluk (Metre)</th>
-                            <th>Ağırlık (Kg)</th>
-                            <th>Uzunluk (Metre)</th>
-                            <th>Ağırlık (Kg)</th>
-                            <th>Uzunluk (Metre)</th>
-                            <th>Ağırlık (Kg)</th>
-                        </tr>
-                        <tr>
-                            <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().ToplamAtikUzunluk))</th>
-                            <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().ToplamAtikAgirlik))</th>
-                            <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FireyeEklenenToplamUzunluk))</th>
-                            <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FireyeEklenenToplamAgirlik))</th>
-                            <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().AsilStoktanKullanilanToplamUzunluk))</th>
-                            <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().AsilStoktanKullanilanToplamAgirlik))</th>
-                            <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FiredenKullanilanToplamUzunluk))</th>
-                            <th>@Html.Raw(string.Format("{0:N2}", Model.First().optimizasyonList.First().FiredenKullanilanToplamAgirlik))</th>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-                        @{
-                            var fireLimit = Convert.ToInt32(ViewBag.minimumFire ?? 0);
-                            var orderItems = Model.ToArray();
-                            var pozOlcuQueueMap = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Queue<string>>();
-                            var profilDefaultPozMap = new System.Collections.Generic.Dictionary<int, string>();
-                            for (int positionIndex = 0; positionIndex < orderItems.Length; positionIndex++) {
-                                var pozLabel = "POZ" + (positionIndex + 1);
-                                if (orderItems[positionIndex].profilList != null) {
-                                    foreach (var pf in orderItems[positionIndex].profilList) {
-                                        if (!profilDefaultPozMap.ContainsKey(pf.Id)) {
-                                            profilDefaultPozMap[pf.Id] = pozLabel;
-                                        }
-                                        var key = pf.Id + "#" + pf.KesimOlcusu;
-                                        if (!pozOlcuQueueMap.ContainsKey(key)) {
-                                            pozOlcuQueueMap[key] = new System.Collections.Generic.Queue<string>();
-                                        }
-                                        var kesimAdet = pf.KesimAdet > 0 ? pf.KesimAdet : 1;
-                                        for (int i = 0; i < kesimAdet; i++) {
-                                            pozOlcuQueueMap[key].Enqueue(pozLabel);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        @foreach (var item2 in optiList)
-                        {
-                            var kesimPozList = ResolveKesimPozlari(item2.KesilecekOlculer, item2.ProfilId, pozOlcuQueueMap, profilDefaultPozMap);
-                            <tr>
-                                <td style="text-align:center;vertical-align:middle;">
-                                    @(item2.profil != null ? item2.profil.ProfilKodu : "")
-                                </td>
-                                <td style="text-align:center;vertical-align:middle;">
-                                    @if (item2.profil != null) {
-                                        @Html.Raw("<img class='img-responsive img-thumbnailProf' src = '" + Url.Content("~/images/profilicons/" + item2.profil.ProfilFoto) + "' />")
-                                    }
-                                </td>
-                                <td style="vertical-align:middle;">
-                                    @(item2.profil != null ? item2.profil.ProfilAdi : "")
-                                </td>
-                                <td style="text-align:center;vertical-align:middle;">
-                                    @(item2.profil != null && item2.profil.BirimAgirlik != null ? item2.profil.BirimAgirlik.Value.ToString() : "")
-                                </td>
-                                <td style="text-align:center;vertical-align:middle;">
-                                    @(item2.KesimAdet + "x" + item2.ProfilBoy)
-                                </td>
-                                <td style="word-wrap:break-word;min-width:160px;max-width:220px;vertical-align:middle;">
-                                    @Html.Raw(FormatKesimPlaniByPoz(kesimPozList))
-                                </td>
-                                <td style="word-wrap: break-word;min-width: 140px;max-width: 180px;vertical-align:middle;">
-                                    @Html.Raw(FormatKesimOlculerByPoz(kesimPozList))
-                                </td>
-                                @if ((item2.FireAtik ?? 0) > fireLimit)
-                                {
-                                    <th class="bg-light-green" style="text-align:center;vertical-align:middle;">@item2.FireAtik</th>
-                                }
-                                else
-                                {
-                                    <th class="bg-red" style="text-align:center;vertical-align:middle;">@item2.FireAtik</th>
-                                }
-                            </tr>
-                        }
-                    </tbody>
-                </table>
             </div>
-            <button type="button" onclick="PrintElem('optimizasyonyazdir')" class="btn bg-red waves-effect waves-light pull-right">
-                <i class="material-icons">print</i>
-                <span>YAZDIR</span>
-            </button>
         </div>
-            }
-        </div>
-    </div>
+    }
 </div>
 <div class="modal-footer">
     <button type="button" class="btn bg-black waves-effect waves-light" data-dismiss="modal">KAPAT</button>
