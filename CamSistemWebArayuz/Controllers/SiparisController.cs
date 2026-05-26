@@ -500,11 +500,16 @@ namespace CamSistemWebArayuz.Controllers
                     .ToList();
             }
 
+            List<OptimizasyonHesap> hesaps;
             if (forceRecalculate)
             {
                 DeleteOptimizasyonHesapsForSiparis(optimizasyonHesapRepo, siparisIdStr);
+                hesaps = new List<OptimizasyonHesap>();
             }
-            var hesaps = forceRecalculate ? new List<OptimizasyonHesap>() : GetFiltered();
+            else
+            {
+                hesaps = GetFiltered();
+            }
 
             if (!hesaps.Any())
             {
@@ -1188,10 +1193,10 @@ namespace CamSistemWebArayuz.Controllers
             List<OptimizasyonHesap> optimizasyonKayitlar = new List<OptimizasyonHesap>();
             try
             {
-                bool surmeSiparisi = (siparis.SistemId ?? 0) == SURME_SISTEM_ID
+                bool isSurmeOrder = (siparis.SistemId ?? 0) == SURME_SISTEM_ID
                     || siparisAdet.Any(e => (e.SistemId ?? 0) == SURME_SISTEM_ID);
 
-                optimizasyonKayitlar = GetOrRunOptimizasyonHesaps(siparis.Id, forceRecalculate: surmeSiparisi)
+                optimizasyonKayitlar = GetOrRunOptimizasyonHesaps(siparis.Id, forceRecalculate: isSurmeOrder)
                     .OrderByDescending(x => x.Id)
                     .ToList();
             }
