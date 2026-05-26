@@ -111,6 +111,24 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
                         item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
                         break;
 
+                    case "KAR-4880-2":
+                        item.KesimOlcusu = (int)((((boy - 207) / 3.0) - 3) + 43);
+                        item.KesimAdet = adet * 2;
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
+                        break;
+
+                    case "KAR-4880-1":
+                        item.KesimOlcusu = (int)((((boy - 207) / 3.0) - 3) + 36);
+                        item.KesimAdet = adet * 4;
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
+                        break;
+
+                    case "KAR-4880-3":
+                        item.KesimOlcusu = en - 240;
+                        item.KesimAdet = adet;
+                        item.ToplamAgirlik = profilToplamAgirlikHesaplama(item.KesimOlcusu, item.KesimAdet, (item.BirimAgirlik ?? 0));
+                        break;
+
                 }
 
                 // Böylece hangi case olursa olsun unutma olmaz:
