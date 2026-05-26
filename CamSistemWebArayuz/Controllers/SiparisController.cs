@@ -204,14 +204,14 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     profil.Profil_Kod = (int)item.ProfilId;
                     int profilId = Convert.ToInt32(item.ProfilId);
-                    profil.Gram = Convert.ToInt32(pRepo.FindBy(e => e.Id == profilId).FirstOrDefault().BirimAgirlik);
+                    profil.Gram = Convert.ToInt32(pRepo.FindBy(e => e.Id == profilId).FirstOrDefault()?.BirimAgirlik ?? 0);
                     profil.Boy = (int)pbRepo.FindBy(e => e.Id == item.ProfilBoyId).FirstOrDefault().ProfilBoyu;
                     profil.Adet = (int)item.StokAdet;
                 }
                 else
                 {
                     int profilId = Convert.ToInt32(item.ProfilId);
-                    profil.Gram = Convert.ToInt32(pRepo.FindBy(e => e.Id == profilId).FirstOrDefault().BirimAgirlik);
+                    profil.Gram = Convert.ToInt32(pRepo.FindBy(e => e.Id == profilId).FirstOrDefault()?.BirimAgirlik ?? 0);
                     profil.Profil_Kod = (int)item.ProfilId;
                     profil.Boy = (int)item.OzelOlcu;
                     profil.Adet = (int)item.StokAdet;
@@ -225,7 +225,7 @@ namespace CamSistemWebArayuz.Controllers
             foreach (var item in profilIds)
             {
                 Dictionary<int, int> dic = new Dictionary<int, int>();
-                dicProfilBirimAgirlik[item.Id] = (int)item.BirimAgirlik;
+                dicProfilBirimAgirlik[item.Id] = item.BirimAgirlik ?? 0;
 
                 List<Optimizasyon.Profil> profilList = profiller.Where(e => e.Profil_Kod == item.Id).ToList();
 
