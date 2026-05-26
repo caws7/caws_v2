@@ -56,7 +56,7 @@ namespace CamSistemDataLayer.BussinesLogic
                 else
                     camEntityList = GiyotinSabitSistem.CamYukseklikHesapla(boy, en, adet);
             }
-            else if (sistem.Equals("Sürme Sistem"))
+            else if (sistem.Equals("Sürme Sistem") || sistem.Equals("Sürme Sistemi"))
             {
                 camEntityList = SürmeSistemSabit.CamYukseklikHesapla(en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet);
             }
@@ -97,7 +97,11 @@ namespace CamSistemDataLayer.BussinesLogic
                 }
                 else if (effectiveSistemId != null && effectiveAltSistemId != null && effectiveAltSistemId != -1 && (effectiveSistemTurId == -1 || effectiveSistemTurId == null))
                 {
-                    var join = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && e.AltSistemId == effectiveAltSistemId && e.SistemTurId == null).FirstOrDefault();
+                    var join = sjRepo.FindBy(e =>
+                        e.SistemId == effectiveSistemId
+                        && e.AltSistemId == effectiveAltSistemId
+                        && (e.SistemTurId == null || e.SistemTurId == -1)
+                    ).FirstOrDefault();
                     if (join != null) joinTablosuId = join.Id;
                 }
                 else if (effectiveSistemId != null
@@ -199,7 +203,7 @@ namespace CamSistemDataLayer.BussinesLogic
                     else
                         list = GiyotinSabitSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                 }
-                else if (sistem.Equals("Sürme Sistem"))
+                else if (sistem.Equals("Sürme Sistem") || sistem.Equals("Sürme Sistemi"))
                 {
                     list = SürmeSistemSabit.profilKesimOlcusuHesaplama(en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet, profilListesiTekilleme);
                 }
