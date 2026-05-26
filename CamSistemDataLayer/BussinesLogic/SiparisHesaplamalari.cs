@@ -196,9 +196,6 @@ namespace CamSistemDataLayer.BussinesLogic
 
         private static bool IsTekCamliAltSistem(string altSistemAdi)
         {
-            const string TekCamli = "TEKCAMLI";
-            const string TekCamliSistem = "TEKCAMLISISTEM";
-
             if (string.IsNullOrWhiteSpace(altSistemAdi))
                 return false;
 
@@ -211,7 +208,7 @@ namespace CamSistemDataLayer.BussinesLogic
                     .Where(char.IsLetterOrDigit)
                     .ToArray());
 
-            return normalized == TekCamli || normalized == TekCamliSistem;
+            return normalized.Contains("TEKCAM");
         }
 
     }

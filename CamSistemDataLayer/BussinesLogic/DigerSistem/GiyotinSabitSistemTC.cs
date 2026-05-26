@@ -12,7 +12,7 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
 
             foreach (Profil item in profilList)
             {
-                switch (item.ProfilKodu)
+                switch (ResolveProfilKodu(item))
                 {
                     case "KAR-4871":
                         item.KesimOlcusu = en - 30;
@@ -140,6 +140,25 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
 
         private static double profilToplamAgirlikHesaplama(int olcu, int adet, int agirlik)
             => olcu * adet * ((double)agirlik / 1000) / 1000;
+
+        private static string ResolveProfilKodu(Profil item)
+        {
+            string profilKodu = item?.ProfilKodu?.Trim() ?? "";
+            if (!profilKodu.Equals("KAR-4880", StringComparison.OrdinalIgnoreCase))
+                return profilKodu;
+
+            string profilAdi = item?.ProfilAdi?.Trim() ?? "";
+            if (profilAdi.Equals("Dikey Sabit Cam Adaptörü", StringComparison.OrdinalIgnoreCase))
+                return "KAR-4880-2";
+
+            if (profilAdi.Equals("Dikey Hareketli Cam Adaptörü", StringComparison.OrdinalIgnoreCase))
+                return "KAR-4880-1";
+
+            if (profilAdi.Equals("Yatay Cam Adaptörü", StringComparison.OrdinalIgnoreCase))
+                return "KAR-4880-3";
+
+            return profilKodu;
+        }
 
         public static List<CamBilgileri> CamYukseklikHesapla(int boy, int en, int adet)
         {
