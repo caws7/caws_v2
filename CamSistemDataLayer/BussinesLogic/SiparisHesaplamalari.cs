@@ -196,18 +196,22 @@ namespace CamSistemDataLayer.BussinesLogic
 
         private static bool IsTekCamliAltSistem(string altSistemAdi)
         {
+            const string TekCamli = "TEKCAMLI";
+            const string TekCamliSistem = "TEKCAMLISISTEM";
+
             if (string.IsNullOrWhiteSpace(altSistemAdi))
                 return false;
 
             var normalized = new string(
                 altSistemAdi
                     .Trim()
+                    .Replace("ı", "i")
                     .ToUpperInvariant()
                     .Replace("İ", "I")
                     .Where(char.IsLetterOrDigit)
                     .ToArray());
 
-            return normalized == "TEKCAMLI" || normalized == "TEKCAMLISISTEM";
+            return normalized == TekCamli || normalized == TekCamliSistem;
         }
 
     }
