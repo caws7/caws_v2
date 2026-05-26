@@ -51,7 +51,7 @@ namespace CamSistemDataLayer.BussinesLogic
             }
             else if (sistem.Equals("Giyotin Sabit Sistem"))
             {
-                if (IsTekCamliAltSistem(altsistem))
+                if (IsTekCamSecimi(altsistem, tur))
                     camEntityList = GiyotinSabitSistemTC.CamYukseklikHesapla(boy, en, adet);
                 else
                     camEntityList = GiyotinSabitSistem.CamYukseklikHesapla(boy, en, adet);
@@ -183,7 +183,7 @@ namespace CamSistemDataLayer.BussinesLogic
                 }
                 if (sistem.Equals("Giyotin Sabit Sistem"))
                 {
-                    if (IsTekCamliAltSistem(altSistem))
+                    if (IsTekCamSecimi(altSistem, tur))
                         list = GiyotinSabitSistemTC.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                     else
                         list = GiyotinSabitSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
@@ -223,6 +223,14 @@ namespace CamSistemDataLayer.BussinesLogic
             }
 
             return false;
+        }
+
+        private static bool IsTekCamSecimi(string altSistemAdi, string sistemTurAdi)
+        {
+            if (IsTekCamliAltSistem(altSistemAdi))
+                return true;
+
+            return string.IsNullOrWhiteSpace(altSistemAdi) && IsTekCamliAltSistem(sistemTurAdi);
         }
 
     }
