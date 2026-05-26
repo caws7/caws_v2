@@ -36,6 +36,7 @@ namespace CamSistemWebArayuz.Controllers
     {
         // Her kesimden önce ve sonra eklenen bıçak payı (mm)
         private const int BICHAK_PAYI = 4;
+        private const int SURME_SISTEM_ID = 4;
         private const string KAR_PAYI_MALZEME = "KAR PAYI";
         private const string ExcelMimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         private const string SacBoruProfilKodu = "SB-101";
@@ -499,12 +500,11 @@ namespace CamSistemWebArayuz.Controllers
                     .ToList();
             }
 
-            var hesaps = GetFiltered();
             if (forceRecalculate)
             {
                 DeleteOptimizasyonHesapsForSiparis(optimizasyonHesapRepo, siparisIdStr);
-                hesaps = new List<OptimizasyonHesap>();
             }
+            var hesaps = forceRecalculate ? new List<OptimizasyonHesap>() : GetFiltered();
 
             if (!hesaps.Any())
             {
@@ -1188,8 +1188,8 @@ namespace CamSistemWebArayuz.Controllers
             List<OptimizasyonHesap> optimizasyonKayitlar = new List<OptimizasyonHesap>();
             try
             {
-                bool surmeSiparisi = (siparis.SistemId ?? 0) == 4
-                    || siparisAdet.Any(e => (e.SistemId ?? 0) == 4);
+                bool surmeSiparisi = (siparis.SistemId ?? 0) == SURME_SISTEM_ID
+                    || siparisAdet.Any(e => (e.SistemId ?? 0) == SURME_SISTEM_ID);
 
                 optimizasyonKayitlar = GetOrRunOptimizasyonHesaps(siparis.Id, forceRecalculate: surmeSiparisi)
                     .OrderByDescending(x => x.Id)
