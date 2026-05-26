@@ -225,7 +225,7 @@ namespace CamSistemWebArayuz.Controllers
             foreach (var item in profilIds)
             {
                 Dictionary<int, int> dic = new Dictionary<int, int>();
-                dicProfilBirimAgirlik[item.Id] = item.BirimAgirlik ?? 0;
+                dicProfilBirimAgirlik[item.Id] = Convert.ToInt32(item.BirimAgirlik ?? 0);
 
                 List<Optimizasyon.Profil> profilList = profiller.Where(e => e.Profil_Kod == item.Id).ToList();
 
