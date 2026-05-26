@@ -44,7 +44,7 @@ namespace CamSistemDataLayer.BussinesLogic
 
             if (sistem.Equals("Giyotin Temizlenebilir Sistem"))
             {
-                if (altsistem.Equals("Tek Camlı Sistem"))
+                if (IsTekCamSecimi(altsistem, tur))
                     camEntityList = GiyotinTemizlenebilirSistemTC.CamYukseklikHesapla(boy, en, adet);
                 else
                     camEntityList = GiyotinTemizlenebilirSistem.CamYukseklikHesapla(boy, en, adet);
@@ -182,7 +182,7 @@ namespace CamSistemDataLayer.BussinesLogic
 
                 if (sistem.Equals("Giyotin Temizlenebilir Sistem"))
                 {
-                    if (altSistem.Equals("Tek Camlı Sistem"))
+                    if (IsTekCamSecimi(altSistem, tur))
                         list = GiyotinTemizlenebilirSistemTC.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                     else
                         list = GiyotinTemizlenebilirSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
