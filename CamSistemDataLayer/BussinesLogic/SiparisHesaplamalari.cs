@@ -12,6 +12,13 @@ namespace CamSistemDataLayer.BussinesLogic
         static SistemRepo sistemRepo;
         static AltSistemRepo asRepo;
         static SistemTurRepo tRepo;
+        private static readonly HashSet<string> TekCamliAltSistemAdlari = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Tek Camlı Sistem",
+            "Tekcamlı Sistem",
+            "Tek Camli Sistem",
+            "Tekcamli Sistem"
+        };
 
         private static bool IsSystemName(string actual, string expected)
         {
@@ -21,10 +28,7 @@ namespace CamSistemDataLayer.BussinesLogic
         private static bool IsTekCamliAltSistem(string altSistemAdi)
         {
             string normalized = (altSistemAdi ?? string.Empty).Trim();
-            return normalized.Equals("Tek Camlı Sistem", StringComparison.OrdinalIgnoreCase)
-                   || normalized.Equals("Tekcamlı Sistem", StringComparison.OrdinalIgnoreCase)
-                   || normalized.Equals("Tek Camli Sistem", StringComparison.OrdinalIgnoreCase)
-                   || normalized.Equals("Tekcamli Sistem", StringComparison.OrdinalIgnoreCase);
+            return TekCamliAltSistemAdlari.Contains(normalized);
         }
 
         public static List<CamBilgileri> CamYukseklikHesapla(int sistemId, int turId, int altSistemId, int boy, int en, int solEn, int adet)
