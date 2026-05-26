@@ -49,46 +49,30 @@ namespace CamSistemDataLayer.BussinesLogic.DigerSistem
             double yukseklik = boy;
             int genislik = en;
 
-            CamBilgileri camModel = new CamBilgileri();
-            camModel.Adet = adet;
-            camModel.CamAdi = "KAYAR CAM";
-            camModel.Genislik = genislik;
-            camModel.Yukseklik = (int)yukseklik;
-            camModel.Alanm2 = (double)camModel.Yukseklik * camModel.Adet * camModel.Genislik / 1000000;
-            camEntityList.Add(camModel);
-
-            camModel = new CamBilgileri();
-            camModel.Adet = adet;
-            camModel.CamAdi = "ORTA CAM";
-            camModel.Genislik = genislik;
-            camModel.Yukseklik = (int)yukseklik;
-            camModel.Alanm2 = (double)camModel.Yukseklik * camModel.Adet * camModel.Genislik / 1000000;
-            camEntityList.Add(camModel);
-
-            camModel = new CamBilgileri();
-            camModel.Adet = adet;
-            camModel.CamAdi = "SABİT CAM";
-            camModel.Genislik = genislik;
-            camModel.Yukseklik = (int)yukseklik;
-            camModel.Alanm2 = (double)camModel.Yukseklik * camModel.Adet * camModel.Genislik / 1000000;
-            camEntityList.Add(camModel);
+            camEntityList.Add(CreateCamBilgisi("KAYAR CAM", genislik, (int)yukseklik, adet));
+            camEntityList.Add(CreateCamBilgisi("ORTA CAM", genislik, (int)yukseklik, adet));
+            camEntityList.Add(CreateCamBilgisi("SABİT CAM", genislik, (int)yukseklik, adet));
 
             return camEntityList;
         }
 
         public static List<Profil> DigerMalzemeHesaplama(int en, int boy, int adet, List<Profil> profilList)
         {
-            List<Profil> digerMalzemeList = new List<Profil>();
-            if (profilList == null) return digerMalzemeList;
-
             // Aksesuar / diğer malzeme şablon alanı:
             // Gerekirse profilList içinden ilgili kodlara göre ayrı hesaplar burada yapılabilir.
-            foreach (Profil item in profilList)
-            {
-                digerMalzemeList.Add(item);
-            }
+            return profilList ?? new List<Profil>();
+        }
 
-            return digerMalzemeList;
+        private static CamBilgileri CreateCamBilgisi(string camAdi, int genislik, int yukseklik, int adet)
+        {
+            return new CamBilgileri
+            {
+                Adet = adet,
+                CamAdi = camAdi,
+                Genislik = genislik,
+                Yukseklik = yukseklik,
+                Alanm2 = (double)yukseklik * adet * genislik / 1000000
+            };
         }
     }
 }
