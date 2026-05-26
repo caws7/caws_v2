@@ -262,7 +262,8 @@ namespace CamSistemWebArayuz.Controllers
                         (int)item2.GirilenEn,
                         (int)item2.GirilenSolEn,
                         (int)item2.GirilenBoy,
-                        (int)item2.GirilenAdet
+                        (int)item2.GirilenAdet,
+                        kanatAdedi: item2.GirilenKanatAdet ?? 1
                     );
                     System.Diagnostics.Debug.WriteLine($"Siparis={item} - Profil Listesi Adedi: {hesaplananProfiller.Count}");
                     if (hesaplananProfiller.Count == 0)

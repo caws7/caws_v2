@@ -13,7 +13,7 @@ namespace CamSistemDataLayer.BussinesLogic
         static AltSistemRepo asRepo;
         static SistemTurRepo tRepo;
 
-        public static List<CamBilgileri> CamYukseklikHesapla(int sistemId, int turId, int altSistemId, int boy, int en, int solEn, int adet)
+        public static List<CamBilgileri> CamYukseklikHesapla(int sistemId, int turId, int altSistemId, int boy, int en, int solEn, int adet, int kanatAdedi = 0)
         {
             if (sistemId <= 0) return new List<CamBilgileri>();
 
@@ -58,13 +58,14 @@ namespace CamSistemDataLayer.BussinesLogic
             }
             else if (sistem.Equals("Sürme Sistem"))
             {
-                camEntityList = SürmeSistemSabit.CamYukseklikHesapla(boy, en, adet);
+                camEntityList = SürmeSistemSabit.CamYukseklikHesapla(en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet);
             }
             return camEntityList;
         }
 
         public static List<Profil> profilHesaplama(long siparisId, int en, int solEn, int boy, int adet,
-            int? sistemIdOverride = null, int? altSistemIdOverride = null, int? sistemTurIdOverride = null)
+            int? sistemIdOverride = null, int? altSistemIdOverride = null, int? sistemTurIdOverride = null,
+            int kanatAdedi = 0)
         {
             SiparisRepo sRepo = new SiparisRepo();
             SiparisEnBoyAdetRepo sebaRepo = new SiparisEnBoyAdetRepo();
@@ -191,7 +192,7 @@ namespace CamSistemDataLayer.BussinesLogic
                     else
                         list = GiyotinTemizlenebilirSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                 }
-                if (sistem.Equals("Giyotin Sabit Sistem"))
+                else if (sistem.Equals("Giyotin Sabit Sistem"))
                 {
                     if (IsTekCamSecimi(altSistem, tur))
                         list = GiyotinSabitSistemTC.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
@@ -200,7 +201,7 @@ namespace CamSistemDataLayer.BussinesLogic
                 }
                 else if (sistem.Equals("Sürme Sistem"))
                 {
-                    list = SürmeSistemSabit.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
+                    list = SürmeSistemSabit.profilKesimOlcusuHesaplama(en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet, profilListesiTekilleme);
                 }
                 return list;
             }

@@ -290,7 +290,8 @@ namespace CamSistemWebArayuz.Controllers
                         (int)(item2.GirilenAdet ?? 0),
                         item2.SistemId,
                         item2.AltSistemId,
-                        item2.SistemTurId
+                        item2.SistemTurId,
+                        kanatAdedi: item2.GirilenKanatAdet ?? 1
                     );
 
                     // Not: Bu yapı aynı sipariş için birden çok en/boy girilince aynı key tekrar ederse exception üretebilir.
@@ -541,7 +542,8 @@ namespace CamSistemWebArayuz.Controllers
                             satir.GirilenAdet ?? 0,
                             satir.SistemId,
                             satir.AltSistemId,
-                            satir.SistemTurId
+                            satir.SistemTurId,
+                            kanatAdedi: satir.GirilenKanatAdet ?? 1
                         ) ?? new List<Profil>();
                     }
                     catch (Exception ex)
@@ -956,6 +958,7 @@ namespace CamSistemWebArayuz.Controllers
                 int girilenSolEn = item.GirilenSolEn ?? 0;
                 int girilenBoy = item.GirilenBoy ?? 0;
                 int girilenAdet = item.GirilenAdet ?? 0;
+                int girilenKanatAdet = item.GirilenKanatAdet ?? 1;
 
                 // Use per-row system data when available, fall back to order-level system
                 int effectiveSistemId = (item.SistemId.HasValue && item.SistemId.Value > 0) ? item.SistemId.Value : (int)(siparis.SistemId ?? 0);
@@ -967,7 +970,8 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     profilList = SiparisHesaplamalari.profilHesaplama(
                         siparis.Id, girilenEn, girilenSolEn, girilenBoy, girilenAdet,
-                        item.SistemId, item.AltSistemId, item.SistemTurId) ?? new List<Profil>();
+                        item.SistemId, item.AltSistemId, item.SistemTurId,
+                        kanatAdedi: girilenKanatAdet) ?? new List<Profil>();
                 }
                 catch (Exception ex)
                 {
@@ -984,7 +988,8 @@ namespace CamSistemWebArayuz.Controllers
                         girilenBoy,
                         girilenEn,
                         girilenSolEn,
-                        girilenAdet
+                        girilenAdet,
+                        girilenKanatAdet
                     ) ?? new List<CamBilgileri>();
                 }
                 catch (Exception ex)
