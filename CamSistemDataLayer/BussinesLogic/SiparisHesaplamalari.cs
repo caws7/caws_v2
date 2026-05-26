@@ -230,7 +230,10 @@ namespace CamSistemDataLayer.BussinesLogic
             if (IsTekCamliAltSistem(altSistemAdi))
                 return true;
 
-            return string.IsNullOrWhiteSpace(altSistemAdi) && IsTekCamliAltSistem(sistemTurAdi);
+            if (!string.IsNullOrWhiteSpace(altSistemAdi) || string.IsNullOrWhiteSpace(sistemTurAdi))
+                return false;
+
+            return IsTekCamliAltSistem(sistemTurAdi);
         }
 
     }
