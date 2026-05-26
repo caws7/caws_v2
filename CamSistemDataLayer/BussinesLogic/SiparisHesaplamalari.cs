@@ -56,6 +56,10 @@ namespace CamSistemDataLayer.BussinesLogic
                 else
                     camEntityList = GiyotinSabitSistem.CamYukseklikHesapla(boy, en, adet);
             }
+            else if (sistem.Equals("Sürme Sistem"))
+            {
+                camEntityList = SürmeSistemSabit.CamYukseklikHesapla(boy, en, adet);
+            }
             return camEntityList;
         }
 
@@ -193,6 +197,10 @@ namespace CamSistemDataLayer.BussinesLogic
                         list = GiyotinSabitSistemTC.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                     else
                         list = GiyotinSabitSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
+                }
+                if (sistem.Equals("Sürme Sistem"))
+                {
+                    list = SürmeSistemSabit.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                 }
                 return list;
             }
