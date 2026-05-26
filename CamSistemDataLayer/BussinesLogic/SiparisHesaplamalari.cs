@@ -203,12 +203,26 @@ namespace CamSistemDataLayer.BussinesLogic
                 altSistemAdi
                     .Trim()
                     .Replace("ı", "i")
-                    .ToUpperInvariant()
                     .Replace("İ", "I")
-                    .Where(char.IsLetterOrDigit)
+                    .ToUpperInvariant()
+                    .Select(c => char.IsLetterOrDigit(c) ? c : ' ')
                     .ToArray());
 
-            return normalized.Contains("TEKCAM");
+            var tokens = normalized
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                if (tokens[i].StartsWith("TEKCAM"))
+                    return true;
+
+                if (tokens[i].Equals("TEK") &&
+                    i + 1 < tokens.Length &&
+                    tokens[i + 1].StartsWith("CAM"))
+                    return true;
+            }
+
+            return false;
         }
 
     }
