@@ -56,7 +56,7 @@ namespace CamSistemDataLayer.BussinesLogic
                 else
                     camEntityList = GiyotinSabitSistem.CamYukseklikHesapla(boy, en, adet);
             }
-            else if (sistem.Equals("Sürme Sistem"))
+            else if (IsSurmeSistem(sistem))
             {
                 camEntityList = SürmeSistemSabit.CamYukseklikHesapla(en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet);
             }
@@ -90,34 +90,50 @@ namespace CamSistemDataLayer.BussinesLogic
                 if (effectiveSistemTurId.HasValue && effectiveSistemTurId.Value == 0) effectiveSistemTurId = null;
 
                 int joinTablosuId = 0;
-                if (effectiveSistemId != null && effectiveAltSistemId != null && effectiveAltSistemId != -1 && effectiveSistemTurId != null && effectiveSistemTurId != -1)
+                if (effectiveSistemId != null)
                 {
-                    var join = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && e.AltSistemId == effectiveAltSistemId && e.SistemTurId == effectiveSistemTurId).FirstOrDefault();
-                    if (join != null) joinTablosuId = join.Id;
-                }
-                else if (effectiveSistemId != null && effectiveAltSistemId != null && effectiveAltSistemId != -1 && (effectiveSistemTurId == -1 || effectiveSistemTurId == null))
-                {
-                    var join = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && e.AltSistemId == effectiveAltSistemId && e.SistemTurId == null).FirstOrDefault();
-                    if (join != null) joinTablosuId = join.Id;
-                }
-                else if (effectiveSistemId != null
-                    && (effectiveAltSistemId == -1 || effectiveAltSistemId == null)
-                    && effectiveSistemTurId != null && effectiveSistemTurId != -1)
-                {
-                    var join = sjRepo.FindBy(e =>
-                        e.SistemId == effectiveSistemId
-                        && (e.AltSistemId == null || e.AltSistemId == -1)
-                        && e.SistemTurId == effectiveSistemTurId
-                    ).FirstOrDefault();
+                    SistemAltSistemJoin join = null;
+                    bool hasAltSistem = effectiveAltSistemId != null && effectiveAltSistemId != -1;
+                    bool hasSistemTur = effectiveSistemTurId != null && effectiveSistemTurId != -1;
+
+                    if (hasAltSistem && hasSistemTur)
+                    {
+                        join = sjRepo.FindBy(e =>
+                            e.SistemId == effectiveSistemId
+                            && e.AltSistemId == effectiveAltSistemId
+                            && e.SistemTurId == effectiveSistemTurId
+                        ).FirstOrDefault();
+                    }
+
+                    if (join == null && hasAltSistem)
+                    {
+                        join = sjRepo.FindBy(e =>
+                            e.SistemId == effectiveSistemId
+                            && e.AltSistemId == effectiveAltSistemId
+                            && (e.SistemTurId == null || e.SistemTurId == -1)
+                        ).FirstOrDefault();
+                    }
+
+                    if (join == null && hasSistemTur)
+                    {
+                        join = sjRepo.FindBy(e =>
+                            e.SistemId == effectiveSistemId
+                            && (e.AltSistemId == null || e.AltSistemId == -1)
+                            && e.SistemTurId == effectiveSistemTurId
+                        ).FirstOrDefault();
+                    }
+
+                    if (join == null)
+                    {
+                        join = sjRepo.FindBy(e =>
+                            e.SistemId == effectiveSistemId
+                            && (e.AltSistemId == null || e.AltSistemId == -1)
+                            && (e.SistemTurId == null || e.SistemTurId == -1)
+                        ).FirstOrDefault();
+                    }
 
                     if (join != null)
                         joinTablosuId = join.Id;
-                }
-
-                else if (effectiveSistemId != null && (effectiveAltSistemId == -1 || effectiveAltSistemId == null) && (effectiveSistemTurId == -1 || effectiveSistemTurId == null))
-                {
-                    var join = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && (e.AltSistemId == null || e.AltSistemId == -1) && (e.SistemTurId == null || e.SistemTurId == -1)).FirstOrDefault();
-                    if (join != null) joinTablosuId = join.Id;
                 }
 
                 //join tablosından gelen id ile sistemprofildeki joinidsiyle eşleştirip listeyi çekeceğiz ve profil tablosundaki karşılıklarını alacağız.
@@ -199,9 +215,12 @@ namespace CamSistemDataLayer.BussinesLogic
                     else
                         list = GiyotinSabitSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                 }
-                else if (sistem.Equals("Sürme Sistem"))
+                else if (IsSurmeSistem(sistem))
                 {
-                    list = SürmeSistemSabit.profilKesimOlcusuHesaplama(en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet, profilListesiTekilleme);
+                    var surmeProfilList = SürmeSistemSabit.profilKesimOlcusuHesaplama(
+                        en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet, profilListesiTekilleme);
+                    list = SürmeSistemSabit.DigerMalzemeHesaplama(
+                        en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet, surmeProfilList);
                 }
                 return list;
             }
@@ -249,6 +268,11 @@ namespace CamSistemDataLayer.BussinesLogic
                 return false;
 
             return IsTekCamliAltSistem(sistemTurAdi);
+        }
+
+        private static bool IsSurmeSistem(string sistemAdi)
+        {
+            return string.Equals(NormalizeText(sistemAdi), "SURME SISTEM", StringComparison.Ordinal);
         }
 
         private static string ResolveKar4880ProfilKodu(Profil item)
