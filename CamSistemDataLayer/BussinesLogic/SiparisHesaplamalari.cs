@@ -1,6 +1,7 @@
 ﻿using CamSistemDataLayer.BussinesLogic.DigerSistem;
 using CamSistemDataLayer.Models;
 using CamSistemDataLayer.Repos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,6 +12,24 @@ namespace CamSistemDataLayer.BussinesLogic
         static SistemRepo sistemRepo;
         static AltSistemRepo asRepo;
         static SistemTurRepo tRepo;
+        private static readonly HashSet<string> TekCamliAltSistemAdlari = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Tek Camlı Sistem",
+            "Tekcamlı Sistem",
+            "Tek Camli Sistem",
+            "Tekcamli Sistem"
+        };
+
+        private static bool IsSystemName(string actual, string expected)
+        {
+            return string.Equals((actual ?? string.Empty).Trim(), expected, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsTekCamliAltSistem(string altSistemAdi)
+        {
+            string normalized = (altSistemAdi ?? string.Empty).Trim();
+            return TekCamliAltSistemAdlari.Contains(normalized);
+        }
 
         public static List<CamBilgileri> CamYukseklikHesapla(int sistemId, int turId, int altSistemId, int boy, int en, int solEn, int adet)
         {
@@ -41,16 +60,16 @@ namespace CamSistemDataLayer.BussinesLogic
             List<CamBilgileri> camEntityList = new List<CamBilgileri>();
             CamBilgileri camModel = new CamBilgileri();
 
-            if (sistem.Equals("Giyotin Temizlenebilir Sistem"))
+            if (IsSystemName(sistem, "Giyotin Temizlenebilir Sistem"))
             {
-                if (altsistem.Equals("Tek Camlı Sistem"))
+                if (IsTekCamliAltSistem(altsistem))
                     camEntityList = GiyotinTemizlenebilirSistemTC.CamYukseklikHesapla(boy, en, adet);
                 else
                     camEntityList = GiyotinTemizlenebilirSistem.CamYukseklikHesapla(boy, en, adet);
             }
-            else if (sistem.Equals("Giyotin Sabit Sistem"))
+            else if (IsSystemName(sistem, "Giyotin Sabit Sistem"))
             {
-                if (altsistem.Equals("Tek Camlı Sistem"))
+                if (IsTekCamliAltSistem(altsistem))
                     camEntityList = GiyotinSabitSistemTC.CamYukseklikHesapla(boy, en, adet);
                 else
                     camEntityList = GiyotinSabitSistem.CamYukseklikHesapla(boy, en, adet);
@@ -173,16 +192,16 @@ namespace CamSistemDataLayer.BussinesLogic
                 //buraya yeni yapılan classlar çağırılcak.
                 List<Profil> list = new List<Profil>();
 
-                if (sistem.Equals("Giyotin Temizlenebilir Sistem"))
+                if (IsSystemName(sistem, "Giyotin Temizlenebilir Sistem"))
                 {
-                    if (altSistem.Equals("Tek Camlı Sistem"))
+                    if (IsTekCamliAltSistem(altSistem))
                         list = GiyotinTemizlenebilirSistemTC.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                     else
                         list = GiyotinTemizlenebilirSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                 }
-                if (sistem.Equals("Giyotin Sabit Sistem"))
+                if (IsSystemName(sistem, "Giyotin Sabit Sistem"))
                 {
-                    if (altSistem.Equals("Tek Camlı Sistem"))
+                    if (IsTekCamliAltSistem(altSistem))
                         list = GiyotinSabitSistemTC.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                     else
                         list = GiyotinSabitSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
@@ -195,4 +214,3 @@ namespace CamSistemDataLayer.BussinesLogic
 
     }
 }
-
