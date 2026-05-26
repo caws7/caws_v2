@@ -72,8 +72,9 @@
             var foto = profil.ProfilFoto.Trim().TrimStart('~', '/');
             return Url.Content("~/images/profilicons/" + foto);
         }
-        catch
+        catch (System.Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine("[_optimizasyonHesapGrid] Profil icon url hatası: " + ex.Message);
             return null;
         }
     }
