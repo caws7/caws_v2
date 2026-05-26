@@ -28,6 +28,7 @@
     }
     .siparis-row select.row-sistem,
     .siparis-row select.row-altsistem,
+    .siparis-row select.row-kasa,
     .siparis-row select.row-sistemtur {
         min-width: 180px;
         max-width: 33%;
@@ -126,6 +127,12 @@
             // Alt Sistem (hidden by default)
             + '<select class="form-control row-altsistem" data-row="' + idx + '" style="min-width:170px;display:none;vertical-align:top;margin-right:6px;">'
             + '<option value="">Alt Sistem Seçiniz...</option>'
+            + '</select>'
+            // Kasa (hidden by default)
+            + '<select class="form-control row-kasa" data-row="' + idx + '" style="min-width:160px;display:none;vertical-align:top;margin-right:6px;">'
+            + '<option value="">Kasa Seçiniz...</option>'
+            + '<option value="3 lü kasa">3 lü kasa</option>'
+            + '<option value="5 li kasa">5 li kasa</option>'
             + '</select>'
             // Sistem Tür (hidden by default)
             + '<select class="form-control row-sistemtur" data-row="' + idx + '" style="min-width:160px;display:none;vertical-align:top;margin-right:6px;">'
@@ -234,6 +241,7 @@
 
         // Reset alt/tur dropdowns
         $(rowSel + ' .row-altsistem').hide().val('');
+        $(rowSel + ' .row-kasa').hide().val('');
         $(rowSel + ' .row-sistemtur').hide().val('');
 
         if (!sistemId || sistemId === '') {
@@ -303,10 +311,12 @@
     function rowAltSistemChanged(idx, altSistemId) {
         var rowSel = '#row_' + idx;
         if (!altSistemId || altSistemId === '') {
+            $(rowSel + ' .row-kasa').hide().val('');
             $(rowSel + ' .row-olcu-wrapper').hide();
             return;
         }
 
+        $(rowSel + ' .row-kasa').hide().val('');
         $(rowSel + ' .row-olcu-wrapper').show();
         // Reset all extra fields
         $(rowSel + ' .row-soLen-grp').hide();
@@ -318,12 +328,15 @@
         $(rowSel + ' .row-adet-grp label').text('Sistem Adet');
 
         if (SURME_STANDART_IDS.includes(String(altSistemId))) {
+            $(rowSel + ' .row-kasa').show();
             $(rowSel + ' .row-kanat-grp').show();
         } else if (SURME_TEK_KOSE_IDS.includes(String(altSistemId))) {
+            $(rowSel + ' .row-kasa').show();
             $(rowSel + ' .row-soLen-grp').show();
             $(rowSel + ' .row-soLen-label').text('En-2 (mm)');
             $(rowSel + ' .row-kanat-grp').show();
         } else if (SURME_CIFT_KOSE_IDS.includes(String(altSistemId))) {
+            $(rowSel + ' .row-kasa').show();
             $(rowSel + ' .row-soLen-grp').show();
             $(rowSel + ' .row-soLen-label').text('En-2 (mm)');
             $(rowSel + ' .row-en3-grp').show();
@@ -337,6 +350,7 @@
         $(rowSel + ' .row-soLen-grp').hide();
         $(rowSel + ' .row-en3-grp').hide();
         $(rowSel + ' .row-kanat-grp').hide();
+        $(rowSel + ' .row-kasa').hide().val('');
         $(rowSel + ' .row-en-grp label').text('En (mm)');
         $(rowSel + ' .row-boy-label').text('Yükseklik (mm)');
         $(rowSel + ' .row-adet-grp label').text('Sistem Adet');
@@ -381,6 +395,7 @@
             var idx = row.data('row-index');
             var sistemId = row.find('.row-sistem').val();
             var altSistemId = row.find('.row-altsistem').is(':visible') ? row.find('.row-altsistem').val() : null;
+            var kasaTipi = row.find('.row-kasa').is(':visible') ? row.find('.row-kasa').val() : null;
             var sistemTurId = row.find('.row-sistemtur').is(':visible') ? row.find('.row-sistemtur').val() : null;
 
             var en = row.find('.row-en').val();
@@ -405,6 +420,11 @@
                 hasError = true;
                 return false;
             }
+            if (isSurmeAltSistem(altSistemId) && !kasaTipi) {
+                alert((idx + 1) + '. satırda Kasa seçiniz!');
+                hasError = true;
+                return false;
+            }
 
             items.push({
                 GirilenEn: parseInt(en) || 0,
@@ -415,7 +435,8 @@
                 GirilenAdet: parseInt(adet) || 0,
                 SistemId: parseInt(sistemId) || 0,
                 AltSistemId: parseInt(altSistemId) || 0,
-                SistemTurId: parseInt(sistemTurId) || 0
+                SistemTurId: parseInt(sistemTurId) || 0,
+                KasaTipi: kasaTipi || null
             });
         });
 

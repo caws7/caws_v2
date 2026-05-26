@@ -322,6 +322,7 @@
           <Property Name="SistemId" Type="int" />
           <Property Name="AltSistemId" Type="int" />
           <Property Name="SistemTurId" Type="int" />
+          <Property Name="KasaTipi" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="SiparisSevkiyatAksesuar">
           <Key>
@@ -904,6 +905,7 @@
           <Property Name="SistemId" Type="Int32" />
           <Property Name="AltSistemId" Type="Int32" />
           <Property Name="SistemTurId" Type="Int32" />
+          <Property Name="KasaTipi" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="SiparisSevkiyatAksesuar">
           <Key>
@@ -1508,6 +1510,7 @@
                 <ScalarProperty Name="SistemId" ColumnName="SistemId" />
                 <ScalarProperty Name="AltSistemId" ColumnName="AltSistemId" />
                 <ScalarProperty Name="SistemTurId" ColumnName="SistemTurId" />
+                <ScalarProperty Name="KasaTipi" ColumnName="KasaTipi" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

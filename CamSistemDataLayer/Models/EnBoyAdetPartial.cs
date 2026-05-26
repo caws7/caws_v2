@@ -61,6 +61,10 @@ namespace CamSistemDataLayer.Models
                     var altSistem = asRepo.FindBy(e => e.Id == rowAltSistemId).FirstOrDefault();
                     if (altSistem != null) retVal = retVal + " / " + altSistem.AltSistemAdi;
                 }
+                if (!string.IsNullOrWhiteSpace(KasaTipi))
+                {
+                    retVal = retVal + " / " + KasaTipi;
+                }
                 return TurkishTextNormalizer.NormalizeDisplayText(retVal);
                 }
                 catch (Exception ex) { System.Diagnostics.Debug.WriteLine("[SistemTamamiRow] Hata: " + ex.Message); return ""; }

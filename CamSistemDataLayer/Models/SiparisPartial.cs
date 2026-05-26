@@ -124,6 +124,10 @@ namespace CamSistemDataLayer.Models
                                 var altSistem = asRepo.FindBy(e => e.Id == rowAltSistemId).FirstOrDefault();
                                 if (altSistem != null) rowRetVal = rowRetVal + " / " + altSistem.AltSistemAdi;
                             }
+                            if (!string.IsNullOrWhiteSpace(row.KasaTipi))
+                            {
+                                rowRetVal = rowRetVal + " / " + row.KasaTipi;
+                            }
                             rowRetVal = TurkishTextNormalizer.NormalizeDisplayText(rowRetVal);
                             if (!string.IsNullOrWhiteSpace(rowRetVal) && !sistemler.Contains(rowRetVal))
                                 sistemler.Add(rowRetVal);

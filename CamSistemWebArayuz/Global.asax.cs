@@ -33,6 +33,7 @@ namespace CamSistemWebArayuz
                     "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'SiparisEnBoyAdet' AND COLUMN_NAME = 'SistemTurId') ALTER TABLE dbo.SiparisEnBoyAdet ADD SistemTurId int NULL",
                     "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'SiparisEnBoyAdet' AND COLUMN_NAME = 'GirilenKanatAdet') ALTER TABLE dbo.SiparisEnBoyAdet ADD GirilenKanatAdet int NULL",
                     "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'SiparisEnBoyAdet' AND COLUMN_NAME = 'GirilenEn3') ALTER TABLE dbo.SiparisEnBoyAdet ADD GirilenEn3 int NULL",
+                    "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'SiparisEnBoyAdet' AND COLUMN_NAME = 'KasaTipi') ALTER TABLE dbo.SiparisEnBoyAdet ADD KasaTipi nvarchar(50) NULL",
 
                     // SiparisCam – glass combination columns
                     "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'SiparisCam' AND COLUMN_NAME = 'OnCam') ALTER TABLE dbo.SiparisCam ADD OnCam nvarchar(50) NULL",

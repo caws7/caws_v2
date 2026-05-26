@@ -829,6 +829,7 @@ namespace CamSistemWebArayuz.Controllers
                         SistemId = item.SistemId,
                         AltSistemId = item.AltSistemId,
                         SistemTurId = item.SistemTurId,
+                        KasaTipi = item.KasaTipi,
                         SiparisId = siparisEntity.Id
                     };
 
@@ -1030,6 +1031,7 @@ namespace CamSistemWebArayuz.Controllers
                 ent.SistemId = item.SistemId;
                 ent.AltSistemId = item.AltSistemId;
                 ent.SistemTurId = item.SistemTurId;
+                ent.KasaTipi = item.KasaTipi;
                 ent.siparisModel = siparis;
                 ent.siparisCam = siparisCam;
 
