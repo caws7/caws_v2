@@ -399,7 +399,7 @@
                                             }
                                             else if (item.SistemId == 4)
                                             {
-                                                @Html.Raw("Kanat adedi")
+                                                @Html.Raw("Kanat Adedi")
                                             }
                                             else
                                             {
@@ -434,7 +434,14 @@
                                         <th>
                                             @if (item.SistemId == 4)
                                             {
-                                                @Html.Raw(item.GirilenKanatAdet ?? item.GirilenAdet)
+                                                if (item.GirilenKanatAdet.HasValue)
+                                                {
+                                                    @Html.DisplayFor(model => item.GirilenKanatAdet)
+                                                }
+                                                else
+                                                {
+                                                    @Html.DisplayFor(model => item.GirilenAdet)
+                                                }
                                             }
                                             else
                                             {
@@ -580,7 +587,7 @@
                                         <th>
                                             @if (item.SistemId == 4)
                                             {
-                                                @Html.Raw("Kanat adedi")
+                                                @Html.Raw("Kanat Adedi")
                                             }
                                             else
                                             {
@@ -606,7 +613,14 @@
                                         <th>
                                             @if (item.SistemId == 4)
                                             {
-                                                @Html.Raw(item.GirilenKanatAdet ?? item.GirilenAdet)
+                                                if (item.GirilenKanatAdet.HasValue)
+                                                {
+                                                    @Html.DisplayFor(model => item.GirilenKanatAdet)
+                                                }
+                                                else
+                                                {
+                                                    @Html.DisplayFor(model => item.GirilenAdet)
+                                                }
                                             }
                                             else
                                             {
@@ -743,7 +757,7 @@
                                         <th>
                                             @if (item.SistemId == 4)
                                             {
-                                                @Html.Raw("Kanat adedi")
+                                                @Html.Raw("Kanat Adedi")
                                             }
                                             else
                                             {
@@ -769,7 +783,14 @@
                                         <th>
                                             @if (item.SistemId == 4)
                                             {
-                                                @Html.Raw(item.GirilenKanatAdet ?? item.GirilenAdet)
+                                                if (item.GirilenKanatAdet.HasValue)
+                                                {
+                                                    @Html.DisplayFor(model => item.GirilenKanatAdet)
+                                                }
+                                                else
+                                                {
+                                                    @Html.DisplayFor(model => item.GirilenAdet)
+                                                }
                                             }
                                             else
                                             {
