@@ -291,7 +291,8 @@ namespace CamSistemWebArayuz.Controllers
                         item2.SistemId,
                         item2.AltSistemId,
                         item2.SistemTurId,
-                        kanatAdedi: item2.GirilenKanatAdet ?? 1
+                        kanatAdedi: item2.GirilenKanatAdet ?? 1,
+                        kasaTipiOverride: item2.KasaTipi
                     );
 
                     // Not: Bu yapı aynı sipariş için birden çok en/boy girilince aynı key tekrar ederse exception üretebilir.
@@ -543,7 +544,8 @@ namespace CamSistemWebArayuz.Controllers
                             satir.SistemId,
                             satir.AltSistemId,
                             satir.SistemTurId,
-                            kanatAdedi: satir.GirilenKanatAdet ?? 1
+                            kanatAdedi: satir.GirilenKanatAdet ?? 1,
+                            kasaTipiOverride: satir.KasaTipi
                         ) ?? new List<Profil>();
                     }
                     catch (Exception ex)
@@ -972,7 +974,8 @@ namespace CamSistemWebArayuz.Controllers
                     profilList = SiparisHesaplamalari.profilHesaplama(
                         siparis.Id, girilenEn, girilenSolEn, girilenBoy, girilenAdet,
                         item.SistemId, item.AltSistemId, item.SistemTurId,
-                        kanatAdedi: girilenKanatAdet) ?? new List<Profil>();
+                        kanatAdedi: girilenKanatAdet,
+                        kasaTipiOverride: item.KasaTipi) ?? new List<Profil>();
                 }
                 catch (Exception ex)
                 {

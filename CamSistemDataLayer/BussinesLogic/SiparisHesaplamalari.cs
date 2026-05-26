@@ -65,7 +65,7 @@ namespace CamSistemDataLayer.BussinesLogic
 
         public static List<Profil> profilHesaplama(long siparisId, int en, int solEn, int boy, int adet,
             int? sistemIdOverride = null, int? altSistemIdOverride = null, int? sistemTurIdOverride = null,
-            int kanatAdedi = 0)
+            int kanatAdedi = 0, string kasaTipiOverride = null)
         {
             SiparisRepo sRepo = new SiparisRepo();
             SiparisEnBoyAdetRepo sebaRepo = new SiparisEnBoyAdetRepo();
@@ -205,7 +205,13 @@ namespace CamSistemDataLayer.BussinesLogic
                 }
                 else if (sistem.Equals("Sürme Sistem") || sistem.Equals("Sürme Sistemi"))
                 {
-                    list = SürmeSistemSabit.profilKesimOlcusuHesaplama(en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet, profilListesiTekilleme);
+                    list = SürmeSistemSabit.profilKesimOlcusuHesaplama(
+                        en,
+                        boy,
+                        kanatAdedi > 0 ? kanatAdedi : 1,
+                        adet,
+                        profilListesiTekilleme,
+                        kasaTipiOverride);
                 }
                 return list;
             }

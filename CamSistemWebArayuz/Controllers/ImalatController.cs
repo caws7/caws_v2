@@ -263,7 +263,11 @@ namespace CamSistemWebArayuz.Controllers
                         (int)item2.GirilenSolEn,
                         (int)item2.GirilenBoy,
                         (int)item2.GirilenAdet,
-                        kanatAdedi: item2.GirilenKanatAdet ?? 1
+                        item2.SistemId,
+                        item2.AltSistemId,
+                        item2.SistemTurId,
+                        kanatAdedi: item2.GirilenKanatAdet ?? 1,
+                        kasaTipiOverride: item2.KasaTipi
                     );
                     System.Diagnostics.Debug.WriteLine($"Siparis={item} - Profil Listesi Adedi: {hesaplananProfiller.Count}");
                     if (hesaplananProfiller.Count == 0)
