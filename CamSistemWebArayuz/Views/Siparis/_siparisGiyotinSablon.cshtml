@@ -71,26 +71,32 @@
 <script>
     var KAR_PAYI_METNI = 'KAR PAYI';
 
-    function OptimizasyonHesapla(siparisId, _retryCount) {
+    function OptimizasyonHesapla(siparisId, forceRecalculate, _retryCount) {
         if (!siparisId) {
             Swal.fire("Hata", "Sipariş ID bulunamadı.", "error");
             return;
         }
 
+        if (typeof forceRecalculate === "number") {
+            _retryCount = forceRecalculate;
+            forceRecalculate = false;
+        }
+
+        var shouldForceRecalculate = forceRecalculate === true;
         var retryCount = _retryCount || 0;
         $("#optimizasyonContent").html('<div style="text-align:center;padding:20px;color:#666;"><i class="material-icons" style="font-size:36px;vertical-align:middle;">sync</i> Hesaplanıyor...</div>');
 
         $.ajax({
             type: "POST",
             url: '@Url.Action("OptimizasyonHesapla", "Siparis")',
-            data: { SiparisId: siparisId },
+            data: { SiparisId: siparisId, forceRecalculate: shouldForceRecalculate },
             timeout: 300000 // 5-minute timeout to allow for longer optimization computations
         }).done(function (html) {
             $("#optimizasyonContent").html(html);
         }).fail(function (xhr) {
             if (xhr.status === 500 && retryCount < 1) {
                 // Optimizer may have completed on server side; retry to fetch the saved result
-                setTimeout(function () { OptimizasyonHesapla(siparisId, 1); }, 2000);
+                setTimeout(function () { OptimizasyonHesapla(siparisId, shouldForceRecalculate, 1); }, 2000);
             } else {
                 $("#optimizasyonContent").html('<div class="alert alert-danger">Optimizasyon hesaplanamadı. Lütfen yeniden deneyin.</div>');
             }
@@ -968,14 +974,14 @@
                     <button type="button"
                             class="btn bg-blue waves-effect"
                             style="margin-top:10px;"
-                            onclick="OptimizasyonHesapla('@optiSiparisId')">
+                            onclick="OptimizasyonHesapla('@optiSiparisId', true)">
                         OPTİMİZASYON YENİDEN HESAPLA
                     </button>
                 }
                 <script>
                     $(document).ready(function () {
                         $('a[href="#optimizasyon"]').one('shown.bs.tab', function () {
-                            OptimizasyonHesapla('@optiSiparisId');
+                            OptimizasyonHesapla('@optiSiparisId', false);
                         });
                     });
                 </script>

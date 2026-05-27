@@ -391,7 +391,7 @@ namespace CamSistemWebArayuz.Controllers
         /// Belirtilen sipariş için OptimizasyonHesap kayıtlarını getirir.
         /// Kayıt yoksa optimizer'ı çalıştırıp kaydeder, sonra yeniden okur.
         /// </summary>
-        private List<OptimizasyonHesap> GetOrRunOptimizasyonHesaps(long siparisId)
+        private List<OptimizasyonHesap> GetOrRunOptimizasyonHesaps(long siparisId, bool forceRecalculate = false)
         {
             string siparisIdStr = siparisId.ToString();
             var optimizasyonHesapRepo = new OptimizasyonHesapRepo();
@@ -405,7 +405,16 @@ namespace CamSistemWebArayuz.Controllers
             }
 
             var hesaps = GetFiltered();
-            if (!hesaps.Any())
+            if (forceRecalculate && hesaps.Any())
+            {
+                foreach (var hesap in hesaps)
+                {
+                    optimizasyonHesapRepo.DeleteAndSave(hesap);
+                }
+                hesaps = new List<OptimizasyonHesap>();
+            }
+
+            if (forceRecalculate || !hesaps.Any())
             {
                 try
                 {
@@ -507,7 +516,7 @@ namespace CamSistemWebArayuz.Controllers
 
         [HttpPost]
         [AuthLog(Roles = "SİPARİS,GORUNTULEME,IMALAT,ONAYLAMA")]
-        public ActionResult OptimizasyonHesapla(long SiparisId)
+        public ActionResult OptimizasyonHesapla(long SiparisId, bool forceRecalculate = false)
         {
             try
             {
@@ -517,7 +526,7 @@ namespace CamSistemWebArayuz.Controllers
                 ViewBag.PozOlcuQueueMap = pozLookup.Item1.ToDictionary(k => k.Key, v => v.Value.ToList());
                 ViewBag.ProfilDefaultPozMap = pozLookup.Item2;
 
-                var kayitlar = GetOrRunOptimizasyonHesaps(SiparisId)
+                var kayitlar = GetOrRunOptimizasyonHesaps(SiparisId, forceRecalculate)
                     .OrderByDescending(x => x.Id)
                     .ToList();
                 string html = RenderPartialViewToString("_optimizasyonHesapGrid", kayitlar);
