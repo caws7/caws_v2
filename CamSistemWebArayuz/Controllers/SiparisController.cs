@@ -257,7 +257,7 @@ namespace CamSistemWebArayuz.Controllers
 
             // Sipariş -> profiller
             List<Optimizasyon.Siparis> siparisler = new List<Optimizasyon.Siparis>();
-            Dictionary<List<CamSistemDataLayer.Models.Profil>, long> spList = new Dictionary<List<CamSistemDataLayer.Models.Profil>, long>();
+            var spList = new List<KeyValuePair<List<CamSistemDataLayer.Models.Profil>, long>>();
 
             foreach (var item in siparisIds)
             {
@@ -277,9 +277,10 @@ namespace CamSistemWebArayuz.Controllers
                         kasaTipiOverride: item2.KasaTipi
                     );
 
-                    // Not: Bu yapı aynı sipariş için birden çok en/boy girilince aynı key tekrar ederse exception üretebilir.
-                    // "Bozmadan" ilerlediğimiz için şimdilik dokunmuyoruz.
-                    spList.Add(hesaplananProfiller, item);
+                    if (hesaplananProfiller != null && hesaplananProfiller.Any())
+                    {
+                        spList.Add(new KeyValuePair<List<CamSistemDataLayer.Models.Profil>, long>(hesaplananProfiller, item));
+                    }
                 }
             }
 
@@ -295,21 +296,22 @@ namespace CamSistemWebArayuz.Controllers
                     profil.Boy = item2.KesimOlcusu;
 
                     // ImalatController’daki profil kod mapping (aynı)
-                    if (item2.ProfilKodu.Contains("AP-101") || item2.ProfilKodu.Contains("BC-108") || item2.ProfilKodu.Contains("BC-107") || item2.ProfilKodu.Contains("BC-103") || item2.ProfilKodu.Contains("BC-102")
-                        || item2.ProfilKodu.Contains("RK-104") || item2.ProfilKodu.Contains("G-106") || item2.ProfilKodu.Contains("G-110") || item2.ProfilKodu.Contains("G-111")
-                        || item2.ProfilKodu.Contains("G-112") || item2.ProfilKodu.Contains("G-115") || item2.ProfilKodu.Contains("G-116") || item2.ProfilKodu.Contains("G-121")
-                        || item2.ProfilKodu.Contains("G-126") || item2.ProfilKodu.Contains("G-127") || item2.ProfilKodu.Contains("SS-134") || item2.ProfilKodu.Contains("SS-133")
-                        || item2.ProfilKodu.Contains("SS-132") || item2.ProfilKodu.Contains("SS-130") || item2.ProfilKodu.Contains("SS-128") || item2.ProfilKodu.Contains("SS-126")
-                        || item2.ProfilKodu.Contains("SS-124") || item2.ProfilKodu.Contains("SS-121") || item2.ProfilKodu.Contains("SS-118") || item2.ProfilKodu.Contains("SS-117")
-                        || item2.ProfilKodu.Contains("SS-135") || item2.ProfilKodu.Contains("SS-136") || item2.ProfilKodu.Contains("SS-120") || item2.ProfilKodu.Contains("T-2457") || item2.ProfilKodu.Contains("T-2456") || item2.ProfilKodu.Contains("T-2400")
-                        || item2.ProfilKodu.Contains("KAR-4873") || item2.ProfilKodu.Contains("KAR-4862") || item2.ProfilKodu.Contains("KAR-4880"))
+                    var profilKodu = item2.ProfilKodu ?? string.Empty;
+                    if (profilKodu.Contains("AP-101") || profilKodu.Contains("BC-108") || profilKodu.Contains("BC-107") || profilKodu.Contains("BC-103") || profilKodu.Contains("BC-102")
+                        || profilKodu.Contains("RK-104") || profilKodu.Contains("G-106") || profilKodu.Contains("G-110") || profilKodu.Contains("G-111")
+                        || profilKodu.Contains("G-112") || profilKodu.Contains("G-115") || profilKodu.Contains("G-116") || profilKodu.Contains("G-121")
+                        || profilKodu.Contains("G-126") || profilKodu.Contains("G-127") || profilKodu.Contains("SS-134") || profilKodu.Contains("SS-133")
+                        || profilKodu.Contains("SS-132") || profilKodu.Contains("SS-130") || profilKodu.Contains("SS-128") || profilKodu.Contains("SS-126")
+                        || profilKodu.Contains("SS-124") || profilKodu.Contains("SS-121") || profilKodu.Contains("SS-118") || profilKodu.Contains("SS-117")
+                        || profilKodu.Contains("SS-135") || profilKodu.Contains("SS-136") || profilKodu.Contains("SS-120") || profilKodu.Contains("T-2457") || profilKodu.Contains("T-2456") || profilKodu.Contains("T-2400")
+                        || profilKodu.Contains("KAR-4873") || profilKodu.Contains("KAR-4862") || profilKodu.Contains("KAR-4880"))
                     {
-                        if (item2.ProfilKodu.Split('-').Length > 2)
+                        if (profilKodu.Split('-').Length > 2)
                         {
-                            string[] split = item2.ProfilKodu.Split('-');
+                            string[] split = profilKodu.Split('-');
                             string merge = split[0] + "-" + split[1];
-                            CamSistemDataLayer.Models.Profil pro = pRepo.FindBy(e => e.ProfilKodu.Equals(merge)).First();
-                            profil.Profil_Kod = pro.Id;
+                            CamSistemDataLayer.Models.Profil pro = pRepo.FindBy(e => e.ProfilKodu.Equals(merge)).FirstOrDefault();
+                            profil.Profil_Kod = pro != null ? pro.Id : item2.Id;
                         }
                         else
                         {
