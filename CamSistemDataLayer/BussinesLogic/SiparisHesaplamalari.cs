@@ -123,6 +123,51 @@ namespace CamSistemDataLayer.BussinesLogic
                     var join = sjRepo.FindBy(e => e.SistemId == effectiveSistemId && (e.AltSistemId == null || e.AltSistemId == -1) && (e.SistemTurId == null || e.SistemTurId == -1)).FirstOrDefault();
                     if (join != null) joinTablosuId = join.Id;
                 }
+                
+                // Satırdaki kombinasyon birebir eşleşmezse, sistem bazında kademeli fallback uygula.
+                // Özellikle satırdaki AltSistem/SistemTur eksik/hatalı olduğunda profil listesi tamamen boş kalmasın.
+                if (joinTablosuId == 0 && effectiveSistemId != null)
+                {
+                    var siparisSistemId = siparis.SistemId.HasValue && siparis.SistemId.Value > 0 ? siparis.SistemId : null;
+                    var siparisAltSistemId = siparis.AltSistemId.HasValue && siparis.AltSistemId.Value > 0 ? siparis.AltSistemId : null;
+                    var siparisSistemTurId = siparis.SistemTurId.HasValue && siparis.SistemTurId.Value > 0 ? siparis.SistemTurId : null;
+
+                    var sistemAdaylari = new List<int?> { effectiveSistemId };
+                    if (siparisSistemId.HasValue && siparisSistemId != effectiveSistemId)
+                        sistemAdaylari.Add(siparisSistemId);
+
+                    foreach (var sistemAday in sistemAdaylari)
+                    {
+                        if (!sistemAday.HasValue) continue;
+
+                        var altAdaylari = new List<int?> { effectiveAltSistemId, siparisAltSistemId, null, -1 };
+                        var turAdaylari = new List<int?> { effectiveSistemTurId, siparisSistemTurId, null, -1 };
+
+                        foreach (var altAday in altAdaylari)
+                        {
+                            foreach (var turAday in turAdaylari)
+                            {
+                                var join = sjRepo.FindBy(e =>
+                                    e.SistemId == sistemAday &&
+                                    ((altAday == null || altAday == -1) ? (e.AltSistemId == null || e.AltSistemId == -1) : e.AltSistemId == altAday) &&
+                                    ((turAday == null || turAday == -1) ? (e.SistemTurId == null || e.SistemTurId == -1) : e.SistemTurId == turAday)
+                                ).FirstOrDefault();
+
+                                if (join != null)
+                                {
+                                    joinTablosuId = join.Id;
+                                    break;
+                                }
+                            }
+
+                            if (joinTablosuId > 0)
+                                break;
+                        }
+
+                        if (joinTablosuId > 0)
+                            break;
+                    }
+                }
 
                 //join tablosından gelen id ile sistemprofildeki joinidsiyle eşleştirip listeyi çekeceğiz ve profil tablosundaki karşılıklarını alacağız.
                 List<SistemProfilJoin> joinListesi = spjRepo.FindBy(e => e.SistemAltSistemJoinId == joinTablosuId).OrderBy(e => e.Id).ToList();
@@ -232,7 +277,9 @@ namespace CamSistemDataLayer.BussinesLogic
                 .Replace("Ü", "U")
                 .ToLowerInvariant();
 
-            return normalized == "surme sistem" || normalized == "surme sistemi";
+            return normalized == "surme sistem"
+                || normalized == "surme sistemi"
+                || normalized.Contains("surme");
         }
 
         private static bool IsTekCamliAltSistem(string altSistemAdi)
