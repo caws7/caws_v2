@@ -131,14 +131,25 @@ namespace CamSistemWebArayuz.Controllers
         #region Optimizasyon (Yeni sistem)
         private OptimizasyonHesap ParseKesimBicimiToHesap(string kesimBicimi, string kullanilanAlan, long siparisId, OptOutput output, int kullaniciId)
         {
+            if (string.IsNullOrWhiteSpace(kesimBicimi)) return null;
+
             string[] parts = kesimBicimi.Split('#');
-            if (parts.Length < 5) return null;
-            int profilId, profilBoy, fireAtik, kesimAdet;
-            if (!int.TryParse(parts[0].Trim(), out profilId) ||
-                !int.TryParse(parts[1].Trim(), out profilBoy) ||
-                !int.TryParse(parts[3].Trim(), out fireAtik) ||
-                !int.TryParse(parts[4].Trim(), out kesimAdet))
+            if (parts.Length < 3) return null;
+
+            int profilId, profilBoy;
+            if (!int.TryParse((parts[0] ?? "").Trim(), out profilId) ||
+                !int.TryParse((parts[1] ?? "").Trim(), out profilBoy))
                 return null;
+
+            int fireAtik = 0;
+            int kesimAdet = 1;
+            if (parts.Length > 3)
+                int.TryParse((parts[3] ?? "").Trim(), out fireAtik);
+            if (parts.Length > 4)
+                int.TryParse((parts[4] ?? "").Trim(), out kesimAdet);
+            if (kesimAdet <= 0)
+                kesimAdet = 1;
+
             return new OptimizasyonHesap
             {
                 SiparisIds = siparisId.ToString(),
@@ -344,9 +355,10 @@ namespace CamSistemWebArayuz.Controllers
         /// Optimizasyon sonuçlarını (kesimBicimiStok/kesimBicimiFireStok) veritabanına kaydeder.
         /// Tam veri içerir: KesilecekOlculer, FireAtik, KesimAdet ve tüm toplam alanları.
         /// </summary>
-        private void SaveOptimizasyonHesaplar(OptOutput output, string siparisIdStr, int kullaniciId)
+        private List<OptimizasyonHesap> SaveOptimizasyonHesaplar(OptOutput output, string siparisIdStr, int kullaniciId)
         {
-            if (output == null) return;
+            var parsedKayitlar = new List<OptimizasyonHesap>();
+            if (output == null) return parsedKayitlar;
             var repo = new OptimizasyonHesapRepo();
             long siparisId;
             if (!long.TryParse(siparisIdStr, out siparisId))
@@ -362,7 +374,10 @@ namespace CamSistemWebArayuz.Controllers
                     {
                         var hesap = ParseKesimBicimiToHesap(item, "Asıl Stok", siparisId, output, kullaniciId);
                         if (hesap != null)
+                        {
+                            parsedKayitlar.Add(hesap);
                             repo.AddAndSave(hesap);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -379,7 +394,10 @@ namespace CamSistemWebArayuz.Controllers
                     {
                         var hesap = ParseKesimBicimiToHesap(item, "Fire Stok", siparisId, output, kullaniciId);
                         if (hesap != null)
+                        {
+                            parsedKayitlar.Add(hesap);
                             repo.AddAndSave(hesap);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -387,6 +405,8 @@ namespace CamSistemWebArayuz.Controllers
                     }
                 }
             }
+
+            return parsedKayitlar;
         }
 
         /// <summary>
@@ -424,8 +444,10 @@ namespace CamSistemWebArayuz.Controllers
                     var output = RunOptimizerForSiparis(new List<long> { siparisId }, fireKullanilsinMi: false);
                     if (output != null)
                     {
-                        SaveOptimizasyonHesaplar(output, siparisIdStr, currentUser?.Id ?? 0);
+                        var parsedKayitlar = SaveOptimizasyonHesaplar(output, siparisIdStr, currentUser?.Id ?? 0);
                         hesaps = GetFiltered();
+                        if (!hesaps.Any() && parsedKayitlar.Any())
+                            hesaps = parsedKayitlar;
                     }
                 }
                 catch (Exception ex)
