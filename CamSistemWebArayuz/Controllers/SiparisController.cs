@@ -134,6 +134,16 @@ namespace CamSistemWebArayuz.Controllers
             return (kanatAdedi.HasValue && kanatAdedi.Value > 0) ? kanatAdedi.Value : 1;
         }
 
+        private static Tuple<int, int?, int?> ResolveSiparisSatirSistemBilgileri(Siparis siparis, SiparisEnBoyAdet satir)
+        {
+            if (satir != null && satir.SistemId.HasValue && satir.SistemId.Value > 0)
+            {
+                return Tuple.Create(satir.SistemId.Value, satir.AltSistemId, satir.SistemTurId);
+            }
+
+            return Tuple.Create((int)(siparis?.SistemId ?? 0), siparis?.AltSistemId, siparis?.SistemTurId);
+        }
+
         private OptimizasyonHesap ParseKesimBicimiToHesap(string kesimBicimi, string kullanilanAlan, long siparisId, OptOutput output, int kullaniciId)
         {
             if (string.IsNullOrWhiteSpace(kesimBicimi)) return null;
@@ -282,9 +292,10 @@ namespace CamSistemWebArayuz.Controllers
                 List<SiparisEnBoyAdet> siparisAdet = sebaRepo.FindBy(e => e.SiparisId == item).ToList();
                 foreach (var item2 in siparisAdet)
                 {
-                    int effectiveSistemId = (item2.SistemId.HasValue && item2.SistemId.Value > 0) ? item2.SistemId.Value : (int)(siparisEntity?.SistemId ?? 0);
-                    int effectiveAltSistemId = (item2.AltSistemId.HasValue && item2.AltSistemId.Value > 0) ? item2.AltSistemId.Value : (int)(siparisEntity?.AltSistemId ?? 0);
-                    int effectiveSistemTurId = (item2.SistemTurId.HasValue && item2.SistemTurId.Value > 0) ? item2.SistemTurId.Value : (int)(siparisEntity?.SistemTurId ?? 0);
+                    var sistemBilgileri = ResolveSiparisSatirSistemBilgileri(siparisEntity, item2);
+                    int effectiveSistemId = sistemBilgileri.Item1;
+                    int? effectiveAltSistemId = sistemBilgileri.Item2;
+                    int? effectiveSistemTurId = sistemBilgileri.Item3;
                     List<CamSistemDataLayer.Models.Profil> hesaplananProfiller;
                     try
                     {
@@ -521,9 +532,10 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     pozNo++;
                     var pozLabel = "POZ" + pozNo;
-                    int effectiveSistemId = (satir.SistemId.HasValue && satir.SistemId.Value > 0) ? satir.SistemId.Value : (int)(siparis.SistemId ?? 0);
-                    int effectiveAltSistemId = (satir.AltSistemId.HasValue && satir.AltSistemId.Value > 0) ? satir.AltSistemId.Value : (int)(siparis.AltSistemId ?? 0);
-                    int effectiveSistemTurId = (satir.SistemTurId.HasValue && satir.SistemTurId.Value > 0) ? satir.SistemTurId.Value : (int)(siparis.SistemTurId ?? 0);
+                    var sistemBilgileri = ResolveSiparisSatirSistemBilgileri(siparis, satir);
+                    int effectiveSistemId = sistemBilgileri.Item1;
+                    int? effectiveAltSistemId = sistemBilgileri.Item2;
+                    int? effectiveSistemTurId = sistemBilgileri.Item3;
 
                     List<Profil> profilList;
                     try
@@ -958,10 +970,12 @@ namespace CamSistemWebArayuz.Controllers
                 int girilenAdet = item.GirilenAdet ?? 0;
                 int girilenKanatAdet = item.GirilenKanatAdet ?? 1;
 
-                // Use per-row system data when available, fall back to order-level system
-                int effectiveSistemId = (item.SistemId.HasValue && item.SistemId.Value > 0) ? item.SistemId.Value : (int)(siparis.SistemId ?? 0);
-                int effectiveAltSistemId = (item.AltSistemId.HasValue && item.AltSistemId.Value > 0) ? item.AltSistemId.Value : (int)(siparis.AltSistemId ?? 0);
-                int effectiveSistemTurId = (item.SistemTurId.HasValue && item.SistemTurId.Value > 0) ? item.SistemTurId.Value : (int)(siparis.SistemTurId ?? 0);
+                // Use row metadata as-is when the row carries its own system.
+                // This preserves explicit 0/null AltSistem/SistemTur values for mixed orders.
+                var sistemBilgileri = ResolveSiparisSatirSistemBilgileri(siparis, item);
+                int effectiveSistemId = sistemBilgileri.Item1;
+                int? effectiveAltSistemId = sistemBilgileri.Item2;
+                int? effectiveSistemTurId = sistemBilgileri.Item3;
 
                 List<Profil> profilList = new List<Profil>();
                 try
@@ -982,8 +996,8 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     camBilgileriList = SiparisHesaplamalari.CamYukseklikHesapla(
                         effectiveSistemId,
-                        effectiveSistemTurId,
-                        effectiveAltSistemId,
+                        effectiveSistemTurId ?? 0,
+                        effectiveAltSistemId ?? 0,
                         girilenBoy,
                         girilenEn,
                         girilenSolEn,

@@ -38,12 +38,10 @@ namespace CamSistemDataLayer.Models
                 SistemTurRepo stRepo = new SistemTurRepo();
                 AltSistemRepo asRepo = new AltSistemRepo();
 
-                int rowSistemId = (SistemId.HasValue && SistemId.Value > 0) ? SistemId.Value
-                    : (siparisModel?.SistemId ?? 0);
-                int rowSistemTurId = (SistemTurId.HasValue && SistemTurId.Value > 0) ? SistemTurId.Value
-                    : (siparisModel?.SistemTurId ?? 0);
-                int rowAltSistemId = (AltSistemId.HasValue && AltSistemId.Value > 0) ? AltSistemId.Value
-                    : (siparisModel?.AltSistemId ?? 0);
+                bool satirBazliSistemVar = SistemId.HasValue && SistemId.Value > 0;
+                int rowSistemId = satirBazliSistemVar ? SistemId.Value : (siparisModel?.SistemId ?? 0);
+                int? rowSistemTurId = satirBazliSistemVar ? SistemTurId : siparisModel?.SistemTurId;
+                int? rowAltSistemId = satirBazliSistemVar ? AltSistemId : siparisModel?.AltSistemId;
 
                 string retVal = "";
                 if (rowSistemId > 0)
@@ -51,14 +49,14 @@ namespace CamSistemDataLayer.Models
                     var sistem = sRepo.FindBy(e => e.Id == rowSistemId).FirstOrDefault();
                     if (sistem != null) retVal = sistem.SistemAdi;
                 }
-                if (rowSistemTurId > 0 && rowSistemTurId != -1)
+                if (rowSistemTurId.HasValue && rowSistemTurId.Value > 0 && rowSistemTurId.Value != -1)
                 {
-                    var sistemTur = stRepo.FindBy(e => e.Id == rowSistemTurId).FirstOrDefault();
+                    var sistemTur = stRepo.FindBy(e => e.Id == rowSistemTurId.Value).FirstOrDefault();
                     if (sistemTur != null) retVal = retVal + " / " + sistemTur.TurAdi;
                 }
-                if (rowAltSistemId > 0 && rowAltSistemId != -1)
+                if (rowAltSistemId.HasValue && rowAltSistemId.Value > 0 && rowAltSistemId.Value != -1)
                 {
-                    var altSistem = asRepo.FindBy(e => e.Id == rowAltSistemId).FirstOrDefault();
+                    var altSistem = asRepo.FindBy(e => e.Id == rowAltSistemId.Value).FirstOrDefault();
                     if (altSistem != null) retVal = retVal + " / " + altSistem.AltSistemAdi;
                 }
                 if (!string.IsNullOrWhiteSpace(KasaTipi))
