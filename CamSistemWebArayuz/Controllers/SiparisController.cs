@@ -515,6 +515,7 @@ namespace CamSistemWebArayuz.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [AuthLog(Roles = "SİPARİS,GORUNTULEME,IMALAT,ONAYLAMA")]
         public ActionResult OptimizasyonHesapla(long SiparisId, bool forceRecalculate = false)
         {

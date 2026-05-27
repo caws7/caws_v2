@@ -84,12 +84,13 @@
 
         var shouldForceRecalculate = forceRecalculate === true;
         var retryCount = _retryCount || 0;
+        var antiForgeryToken = $('#siparisTeklifAntiForgeryToken input[name="__RequestVerificationToken"]').val();
         $("#optimizasyonContent").html('<div style="text-align:center;padding:20px;color:#666;"><i class="material-icons" style="font-size:36px;vertical-align:middle;">sync</i> Hesaplanıyor...</div>');
 
         $.ajax({
             type: "POST",
             url: '@Url.Action("OptimizasyonHesapla", "Siparis")',
-            data: { SiparisId: siparisId, forceRecalculate: shouldForceRecalculate },
+            data: { SiparisId: siparisId, forceRecalculate: shouldForceRecalculate, __RequestVerificationToken: antiForgeryToken },
             timeout: 300000 // 5-minute timeout to allow for longer optimization computations
         }).done(function (html) {
             $("#optimizasyonContent").html(html);
