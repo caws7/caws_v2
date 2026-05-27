@@ -129,6 +129,11 @@ namespace CamSistemWebArayuz.Controllers
         #endregion
 
         #region Optimizasyon (Yeni sistem)
+        private static int NormalizeKanatAdedi(int? kanatAdedi)
+        {
+            return (kanatAdedi.HasValue && kanatAdedi.Value > 0) ? kanatAdedi.Value : 1;
+        }
+
         private OptimizasyonHesap ParseKesimBicimiToHesap(string kesimBicimi, string kullanilanAlan, long siparisId, OptOutput output, int kullaniciId)
         {
             if (string.IsNullOrWhiteSpace(kesimBicimi)) return null;
@@ -275,23 +280,30 @@ namespace CamSistemWebArayuz.Controllers
                 List<SiparisEnBoyAdet> siparisAdet = sebaRepo.FindBy(e => e.SiparisId == item).ToList();
                 foreach (var item2 in siparisAdet)
                 {
-                    var hesaplananProfiller = SiparisHesaplamalari.profilHesaplama(
-                        item,
-                        (int)(item2.GirilenEn ?? 0),
-                        (int)(item2.GirilenSolEn ?? 0),
-                        (int)(item2.GirilenBoy ?? 0),
-                        (int)(item2.GirilenAdet ?? 0),
-                        item2.SistemId,
-                        item2.AltSistemId,
-                        item2.SistemTurId,
-                        kanatAdedi: item2.GirilenKanatAdet ?? 1,
-                        kasaTipiOverride: item2.KasaTipi
-                    );
-
-                    if (hesaplananProfiller != null && hesaplananProfiller.Any())
+                    List<CamSistemDataLayer.Models.Profil> hesaplananProfiller;
+                    try
                     {
-                        spList.Add(new KeyValuePair<List<CamSistemDataLayer.Models.Profil>, long>(hesaplananProfiller, item));
+                        hesaplananProfiller = SiparisHesaplamalari.profilHesaplama(
+                            item,
+                            (int)(item2.GirilenEn ?? 0),
+                            (int)(item2.GirilenSolEn ?? 0),
+                            (int)(item2.GirilenBoy ?? 0),
+                            (int)(item2.GirilenAdet ?? 0),
+                            item2.SistemId,
+                            item2.AltSistemId,
+                            item2.SistemTurId,
+                            kanatAdedi: NormalizeKanatAdedi(item2.GirilenKanatAdet),
+                            kasaTipiOverride: item2.KasaTipi
+                        ) ?? new List<CamSistemDataLayer.Models.Profil>();
                     }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("[RunOptimizerForSiparis] profilHesaplama hatası SiparisId=" + item + ", SatirId=" + item2.Id + ": " + ex.Message);
+                        hesaplananProfiller = new List<CamSistemDataLayer.Models.Profil>();
+                    }
+
+                    // Imalat akışıyla aynı şekilde her satırı optimizer input'una dahil et.
+                    spList.Add(new KeyValuePair<List<CamSistemDataLayer.Models.Profil>, long>(hesaplananProfiller, item));
                 }
             }
 
@@ -451,6 +463,15 @@ namespace CamSistemWebArayuz.Controllers
                     {
                         var parsedKayitlar = SaveOptimizasyonHesaplar(output, siparisIdStr, currentUser?.Id ?? 0);
                         hesaps = GetFiltered();
+                        if (!hesaps.Any() && !parsedKayitlar.Any())
+                        {
+                            var outputFire = RunOptimizerForSiparis(new List<long> { siparisId }, fireKullanilsinMi: true);
+                            if (outputFire != null)
+                            {
+                                parsedKayitlar = SaveOptimizasyonHesaplar(outputFire, siparisIdStr, currentUser?.Id ?? 0);
+                                hesaps = GetFiltered();
+                            }
+                        }
                         if (!hesaps.Any() && parsedKayitlar.Any())
                         {
                             System.Diagnostics.Debug.WriteLine("[GetOrRunOptimizasyonHesaps] DB kayıtları okunamadı, parse edilen sonuçlar fallback olarak döndürülüyor. SiparisId=" + siparisId);
@@ -507,7 +528,7 @@ namespace CamSistemWebArayuz.Controllers
                             satir.SistemId,
                             satir.AltSistemId,
                             satir.SistemTurId,
-                            kanatAdedi: satir.GirilenKanatAdet ?? 1,
+                            kanatAdedi: NormalizeKanatAdedi(satir.GirilenKanatAdet),
                             kasaTipiOverride: satir.KasaTipi
                         ) ?? new List<Profil>();
                     }
