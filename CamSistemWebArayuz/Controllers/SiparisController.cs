@@ -274,12 +274,17 @@ namespace CamSistemWebArayuz.Controllers
             // Sipariş -> profiller
             List<Optimizasyon.Siparis> siparisler = new List<Optimizasyon.Siparis>();
             var spList = new List<KeyValuePair<List<CamSistemDataLayer.Models.Profil>, long>>();
+            var siparisRepo = new SiparisRepo();
 
             foreach (var item in siparisIds)
             {
+                var siparisEntity = siparisRepo.FindBy(e => e.Id == item).FirstOrDefault();
                 List<SiparisEnBoyAdet> siparisAdet = sebaRepo.FindBy(e => e.SiparisId == item).ToList();
                 foreach (var item2 in siparisAdet)
                 {
+                    int effectiveSistemId = (item2.SistemId.HasValue && item2.SistemId.Value > 0) ? item2.SistemId.Value : (int)(siparisEntity?.SistemId ?? 0);
+                    int effectiveAltSistemId = (item2.AltSistemId.HasValue && item2.AltSistemId.Value > 0) ? item2.AltSistemId.Value : (int)(siparisEntity?.AltSistemId ?? 0);
+                    int effectiveSistemTurId = (item2.SistemTurId.HasValue && item2.SistemTurId.Value > 0) ? item2.SistemTurId.Value : (int)(siparisEntity?.SistemTurId ?? 0);
                     List<CamSistemDataLayer.Models.Profil> hesaplananProfiller;
                     try
                     {
@@ -289,9 +294,9 @@ namespace CamSistemWebArayuz.Controllers
                             (int)(item2.GirilenSolEn ?? 0),
                             (int)(item2.GirilenBoy ?? 0),
                             (int)(item2.GirilenAdet ?? 0),
-                            item2.SistemId,
-                            item2.AltSistemId,
-                            item2.SistemTurId,
+                            effectiveSistemId,
+                            effectiveAltSistemId,
+                            effectiveSistemTurId,
                             kanatAdedi: NormalizeKanatAdedi(item2.GirilenKanatAdet),
                             kasaTipiOverride: item2.KasaTipi
                         ) ?? new List<CamSistemDataLayer.Models.Profil>();
@@ -516,6 +521,9 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     pozNo++;
                     var pozLabel = "POZ" + pozNo;
+                    int effectiveSistemId = (satir.SistemId.HasValue && satir.SistemId.Value > 0) ? satir.SistemId.Value : (int)(siparis.SistemId ?? 0);
+                    int effectiveAltSistemId = (satir.AltSistemId.HasValue && satir.AltSistemId.Value > 0) ? satir.AltSistemId.Value : (int)(siparis.AltSistemId ?? 0);
+                    int effectiveSistemTurId = (satir.SistemTurId.HasValue && satir.SistemTurId.Value > 0) ? satir.SistemTurId.Value : (int)(siparis.SistemTurId ?? 0);
 
                     List<Profil> profilList;
                     try
@@ -526,9 +534,9 @@ namespace CamSistemWebArayuz.Controllers
                             satir.GirilenSolEn ?? 0,
                             satir.GirilenBoy ?? 0,
                             satir.GirilenAdet ?? 0,
-                            satir.SistemId,
-                            satir.AltSistemId,
-                            satir.SistemTurId,
+                            effectiveSistemId,
+                            effectiveAltSistemId,
+                            effectiveSistemTurId,
                             kanatAdedi: NormalizeKanatAdedi(satir.GirilenKanatAdet),
                             kasaTipiOverride: satir.KasaTipi
                         ) ?? new List<Profil>();
@@ -960,7 +968,7 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     profilList = SiparisHesaplamalari.profilHesaplama(
                         siparis.Id, girilenEn, girilenSolEn, girilenBoy, girilenAdet,
-                        item.SistemId, item.AltSistemId, item.SistemTurId,
+                        effectiveSistemId, effectiveAltSistemId, effectiveSistemTurId,
                         kanatAdedi: girilenKanatAdet,
                         kasaTipiOverride: item.KasaTipi) ?? new List<Profil>();
                 }
@@ -1019,9 +1027,9 @@ namespace CamSistemWebArayuz.Controllers
                 ent.GirilenSolEn = item.GirilenSolEn;
                 ent.SiparisId = item.SiparisId;
                 ent.Id = item.Id;
-                ent.SistemId = item.SistemId;
-                ent.AltSistemId = item.AltSistemId;
-                ent.SistemTurId = item.SistemTurId;
+                ent.SistemId = effectiveSistemId;
+                ent.AltSistemId = effectiveAltSistemId;
+                ent.SistemTurId = effectiveSistemTurId;
                 ent.KasaTipi = item.KasaTipi;
                 ent.siparisModel = siparis;
                 ent.siparisCam = siparisCam;
@@ -1186,10 +1194,16 @@ namespace CamSistemWebArayuz.Controllers
                 ViewBag.minimumFire = 0;
             }
 
-            // Select view: check order-level SistemId AND per-row SistemIds for Giyotin Sabit Sistem
+            // Select view: use giyotin template only for pure-giyotin orders.
+            // If there is no detail row, keep backward-compatible fallback to order-level system.
             var giyotinIds = new[] { 5, 2006, 2010 };
-            bool isGiyotinSabit = (siparis.SistemId.HasValue && giyotinIds.Contains(siparis.SistemId.Value))
-                || siparisTumDetay.Any(e => e.SistemId.HasValue && giyotinIds.Contains(e.SistemId.Value));
+            bool hasDetaySatiri = siparisTumDetay.Any();
+            bool orderLevelGiyotin = siparis.SistemId.HasValue && giyotinIds.Contains(siparis.SistemId.Value);
+            bool hasAnyGiyotinRow = siparisTumDetay.Any(e => e.SistemId.HasValue && giyotinIds.Contains(e.SistemId.Value));
+            bool hasAnyNonGiyotinRow = siparisTumDetay.Any(e => e.SistemId.HasValue && !giyotinIds.Contains(e.SistemId.Value));
+            bool isGiyotinSabit = hasDetaySatiri
+                ? (hasAnyGiyotinRow && !hasAnyNonGiyotinRow)
+                : orderLevelGiyotin;
             string viewName = isGiyotinSabit ? "_siparisGiyotinSablon" : "_siparisDetaySablon";
 
             string html = RenderPartialViewToString(viewName, siparisTumDetay);
