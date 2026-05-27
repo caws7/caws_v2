@@ -56,7 +56,7 @@ namespace CamSistemDataLayer.BussinesLogic
                 else
                     camEntityList = GiyotinSabitSistem.CamYukseklikHesapla(boy, en, adet);
             }
-            else if (sistem.Equals("Sürme Sistem") || sistem.Equals("Sürme Sistemi"))
+            else if (IsSurmeSistem(sistem))
             {
                 camEntityList = SürmeSistemSabit.CamYukseklikHesapla(en, boy, kanatAdedi > 0 ? kanatAdedi : 1, adet);
             }
@@ -203,7 +203,7 @@ namespace CamSistemDataLayer.BussinesLogic
                     else
                         list = GiyotinSabitSistem.profilKesimOlcusuHesaplama(en, boy, adet, profilListesiTekilleme);
                 }
-                else if (sistem.Equals("Sürme Sistem") || sistem.Equals("Sürme Sistemi"))
+                else if (IsSurmeSistem(sistem))
                 {
                     list = SürmeSistemSabit.profilKesimOlcusuHesaplama(
                         en,
@@ -248,6 +248,22 @@ namespace CamSistemDataLayer.BussinesLogic
             }
 
             return false;
+        }
+
+        private static bool IsSurmeSistem(string sistemAdi)
+        {
+            if (string.IsNullOrWhiteSpace(sistemAdi))
+                return false;
+
+            var normalized = sistemAdi
+                .Trim()
+                .Replace("ü", "u")
+                .Replace("Ü", "U")
+                .Replace("ı", "i")
+                .Replace("İ", "I");
+
+            return normalized.Equals("Surme Sistem", StringComparison.OrdinalIgnoreCase)
+                || normalized.Equals("Surme Sistemi", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsTekCamSecimi(string altSistemAdi, string sistemTurAdi)
