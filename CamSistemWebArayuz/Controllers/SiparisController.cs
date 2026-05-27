@@ -528,7 +528,7 @@ namespace CamSistemWebArayuz.Controllers
                         ? "Optimizasyon için profil/kesim verisi hazırlanamadı. Sipariş satır sistem bilgilerini kontrol edin."
                         : "Optimizasyon çalıştı ancak kayıt bulunamadı. Kayıt yazımı veya SiparisIds anahtarı eşleşmesi kontrol edilmeli.";
                     ViewBag.OptimizasyonEmptyReason = bosNeden;
-                    System.Diagnostics.Debug.WriteLine("[OptimizasyonHesapla] Boş sonuç SiparisId=" + SiparisId + ", HazirlananKesim=" + hazirlananKesimSayisi + ", Neden=" + bosNeden);
+                    System.Diagnostics.Debug.WriteLine($"[OptimizasyonHesapla] Boş sonuç SiparisId={SiparisId}, HazirlananKesim={hazirlananKesimSayisi}, Neden={bosNeden}");
                 }
 
                 string html = RenderPartialViewToString("_optimizasyonHesapGrid", kayitlar);
@@ -537,7 +537,7 @@ namespace CamSistemWebArayuz.Controllers
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("[OptimizasyonHesapla] Hata SiparisId=" + SiparisId + ": " + ex.Message);
-                ViewBag.OptimizasyonEmptyReason = "Optimizasyon ekranı render edilirken bir hata oluştu: " + ex.GetType().Name;
+                ViewBag.OptimizasyonEmptyReason = $"Optimizasyon ekranı render edilirken bir hata oluştu: {ex.GetType().Name} - {ex.Message}";
                 return PartialView("_optimizasyonHesapGrid", new List<OptimizasyonHesap>());
             }
         }

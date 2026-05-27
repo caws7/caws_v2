@@ -83,7 +83,7 @@
 @if (Model == null || Model.Count == 0)
 {
     <div class="alert alert-warning">Optimizasyon kaydı bulunamadı.</div>
-    if (!string.IsNullOrWhiteSpace(ViewBag.OptimizasyonEmptyReason as string))
+    @if (!string.IsNullOrWhiteSpace(ViewBag.OptimizasyonEmptyReason as string))
     {
         <div class="alert alert-info" style="margin-top:10px;">
             @ViewBag.OptimizasyonEmptyReason
