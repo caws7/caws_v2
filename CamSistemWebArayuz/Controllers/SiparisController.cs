@@ -346,6 +346,11 @@ namespace CamSistemWebArayuz.Controllers
         {
             if (output == null) return;
             var repo = new OptimizasyonHesapRepo();
+            long siparisId;
+            if (!long.TryParse(siparisIdStr, out siparisId))
+            {
+                siparisId = 0;
+            }
 
             if (output.kesimBicimiStok != null)
             {
@@ -353,31 +358,9 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     try
                     {
-                        // Format: profil_id#barSize#cuts#waste#count#missing
-                        string[] split = item.Split('#');
-                        if (split.Length < 6) continue;
-                        string kesilecekOlculer = split[2];
-                        int profilBoy = int.Parse(split[1].Trim());
-                        repo.AddAndSave(new OptimizasyonHesap
-                        {
-                            SiparisIds = siparisIdStr,
-                            ProfilId = int.Parse(split[0].Trim()),
-                            ProfilBoy = profilBoy,
-                            KesilecekOlculer = kesilecekOlculer,
-                            FireAtik = int.TryParse(split[3].Trim(), out int fa) ? fa : 0,
-                            KesimAdet = int.TryParse(split[4].Trim(), out int ka) ? ka : 0,
-                            KullanilanAlan = "Asıl Stok",
-                            ToplamAtikUzunluk = (decimal)output.toplamAtikUzunluk,
-                            ToplamAtikAgirlik = (decimal)output.toplamAtikAgirlik,
-                            AsilStoktanKullanilanToplamUzunluk = (decimal)output.kullanilanToplamUzunlukAsil,
-                            AsilStoktanKullanilanToplamAgirlik = (decimal)output.kullanilanToplamAgirlikAsil,
-                            FiredenKullanilanToplamUzunluk = (decimal)output.kullanilanToplamUzunlukFire,
-                            FiredenKullanilanToplamAgirlik = (decimal)output.kullanilanToplamAgirlikFire,
-                            FireyeEklenenToplamUzunluk = (decimal)output.fireStogaEklenenToplamUzunluk,
-                            FireyeEklenenToplamAgirlik = (decimal)output.fireStogaEklenenToplamAgirlik,
-                            KayitTarih = DateTime.Now,
-                            KullaniciId = kullaniciId
-                        });
+                        var hesap = ParseKesimBicimiToHesap(item, "Asıl Stok", siparisId, output, kullaniciId);
+                        if (hesap != null)
+                            repo.AddAndSave(hesap);
                     }
                     catch (Exception ex)
                     {
@@ -392,31 +375,9 @@ namespace CamSistemWebArayuz.Controllers
                 {
                     try
                     {
-                        // Format: profil_id#barSize#cuts#waste#count#missing
-                        string[] split = item.Split('#');
-                        if (split.Length < 6) continue;
-                        string kesilecekOlculer = split[2];
-                        int profilBoy = int.Parse(split[1].Trim());
-                        repo.AddAndSave(new OptimizasyonHesap
-                        {
-                            SiparisIds = siparisIdStr,
-                            ProfilId = int.Parse(split[0].Trim()),
-                            ProfilBoy = profilBoy,
-                            KesilecekOlculer = kesilecekOlculer,
-                            FireAtik = int.TryParse(split[3].Trim(), out int fa) ? fa : 0,
-                            KesimAdet = int.TryParse(split[4].Trim(), out int ka) ? ka : 0,
-                            KullanilanAlan = "Fire Stok",
-                            ToplamAtikUzunluk = (decimal)output.toplamAtikUzunluk,
-                            ToplamAtikAgirlik = (decimal)output.toplamAtikAgirlik,
-                            AsilStoktanKullanilanToplamUzunluk = (decimal)output.kullanilanToplamUzunlukAsil,
-                            AsilStoktanKullanilanToplamAgirlik = (decimal)output.kullanilanToplamAgirlikAsil,
-                            FiredenKullanilanToplamUzunluk = (decimal)output.kullanilanToplamUzunlukFire,
-                            FiredenKullanilanToplamAgirlik = (decimal)output.kullanilanToplamAgirlikFire,
-                            FireyeEklenenToplamUzunluk = (decimal)output.fireStogaEklenenToplamUzunluk,
-                            FireyeEklenenToplamAgirlik = (decimal)output.fireStogaEklenenToplamAgirlik,
-                            KayitTarih = DateTime.Now,
-                            KullaniciId = kullaniciId
-                        });
+                        var hesap = ParseKesimBicimiToHesap(item, "Fire Stok", siparisId, output, kullaniciId);
+                        if (hesap != null)
+                            repo.AddAndSave(hesap);
                     }
                     catch (Exception ex)
                     {
