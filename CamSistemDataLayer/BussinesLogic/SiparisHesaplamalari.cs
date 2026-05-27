@@ -135,23 +135,27 @@ namespace CamSistemDataLayer.BussinesLogic
                     var sistemAdaylari = new List<int?> { effectiveSistemId };
                     if (siparisSistemId.HasValue && siparisSistemId != effectiveSistemId)
                         sistemAdaylari.Add(siparisSistemId);
+                    sistemAdaylari = sistemAdaylari.Distinct().ToList();
 
                     foreach (var sistemAday in sistemAdaylari)
                     {
                         if (!sistemAday.HasValue) continue;
+                        var sistemJoinleri = sjRepo.FindBy(e => e.SistemId == sistemAday).ToList();
+                        if (!sistemJoinleri.Any()) continue;
 
+                        // Öncelik: satır değeri -> sipariş değeri -> sistem-genel(null/-1).
                         var altAdaylari = new List<int?> { effectiveAltSistemId, siparisAltSistemId, null, -1 };
                         var turAdaylari = new List<int?> { effectiveSistemTurId, siparisSistemTurId, null, -1 };
+                        altAdaylari = altAdaylari.Distinct().ToList();
+                        turAdaylari = turAdaylari.Distinct().ToList();
 
                         foreach (var altAday in altAdaylari)
                         {
                             foreach (var turAday in turAdaylari)
                             {
-                                var join = sjRepo.FindBy(e =>
-                                    e.SistemId == sistemAday &&
+                                var join = sistemJoinleri.FirstOrDefault(e =>
                                     ((altAday == null || altAday == -1) ? (e.AltSistemId == null || e.AltSistemId == -1) : e.AltSistemId == altAday) &&
-                                    ((turAday == null || turAday == -1) ? (e.SistemTurId == null || e.SistemTurId == -1) : e.SistemTurId == turAday)
-                                ).FirstOrDefault();
+                                    ((turAday == null || turAday == -1) ? (e.SistemTurId == null || e.SistemTurId == -1) : e.SistemTurId == turAday));
 
                                 if (join != null)
                                 {
@@ -279,7 +283,8 @@ namespace CamSistemDataLayer.BussinesLogic
 
             return normalized == "surme sistem"
                 || normalized == "surme sistemi"
-                || normalized.Contains("surme");
+                || normalized.StartsWith("surme sistem ")
+                || normalized.StartsWith("surme sistemi ");
         }
 
         private static bool IsTekCamliAltSistem(string altSistemAdi)
