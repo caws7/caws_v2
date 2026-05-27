@@ -358,12 +358,17 @@ namespace CamSistemWebArayuz.Controllers
         private List<OptimizasyonHesap> SaveOptimizasyonHesaplar(OptOutput output, string siparisIdStr, int kullaniciId)
         {
             var parsedKayitlar = new List<OptimizasyonHesap>();
-            if (output == null) return parsedKayitlar;
+            if (output == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[SaveOptimizasyonHesaplar] output null, kayıt oluşturulamadı.");
+                return parsedKayitlar;
+            }
             var repo = new OptimizasyonHesapRepo();
             long siparisId;
             if (!long.TryParse(siparisIdStr, out siparisId))
             {
-                siparisId = 0;
+                System.Diagnostics.Debug.WriteLine("[SaveOptimizasyonHesaplar] Geçersiz SiparisId: " + siparisIdStr);
+                return parsedKayitlar;
             }
 
             if (output.kesimBicimiStok != null)
@@ -447,7 +452,10 @@ namespace CamSistemWebArayuz.Controllers
                         var parsedKayitlar = SaveOptimizasyonHesaplar(output, siparisIdStr, currentUser?.Id ?? 0);
                         hesaps = GetFiltered();
                         if (!hesaps.Any() && parsedKayitlar.Any())
+                        {
+                            System.Diagnostics.Debug.WriteLine("[GetOrRunOptimizasyonHesaps] DB kayıtları okunamadı, parse edilen sonuçlar fallback olarak döndürülüyor. SiparisId=" + siparisId);
                             hesaps = parsedKayitlar;
+                        }
                     }
                 }
                 catch (Exception ex)
