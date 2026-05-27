@@ -298,7 +298,7 @@ namespace CamSistemWebArayuz.Controllers
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[RunOptimizerForSiparis] profilHesaplama hatası SiparisId={item}, SatirId={item2.Id}: {ex}");
+                        System.Diagnostics.Debug.WriteLine("[RunOptimizerForSiparis] profilHesaplama hatası SiparisId=" + item + ", SatirId=" + item2.Id + ": " + ex.GetType().Name + ": " + ex.Message);
                         hesaplananProfiller = new List<CamSistemDataLayer.Models.Profil>();
                     }
 
@@ -465,6 +465,7 @@ namespace CamSistemWebArayuz.Controllers
                         hesaps = GetFiltered();
                         if (!hesaps.Any() && !parsedKayitlar.Any())
                         {
+                            System.Diagnostics.Debug.WriteLine("[GetOrRunOptimizasyonHesaps] İlk koşuda kayıt yok, fire stok fallback çalıştırılıyor. SiparisId=" + siparisId);
                             var outputFire = RunOptimizerForSiparis(new List<long> { siparisId }, fireKullanilsinMi: true);
                             if (outputFire != null)
                             {
