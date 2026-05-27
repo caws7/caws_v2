@@ -298,7 +298,7 @@ namespace CamSistemWebArayuz.Controllers
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine("[RunOptimizerForSiparis] profilHesaplama hatası SiparisId=" + item + ", SatirId=" + item2.Id + ": " + ex.Message);
+                        System.Diagnostics.Debug.WriteLine($"[RunOptimizerForSiparis] profilHesaplama hatası SiparisId={item}, SatirId={item2.Id}: {ex}");
                         hesaplananProfiller = new List<CamSistemDataLayer.Models.Profil>();
                     }
 
