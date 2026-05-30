@@ -1056,7 +1056,7 @@ namespace CamSistemWebArayuz.Controllers
                 ent.GirilenSolEn = item.GirilenSolEn;
                 ent.SiparisId = item.SiparisId;
                 ent.Id = item.Id;
-                ent.SistemId = effectiveSistemId;
+                ent.SistemId = effectiveSistemId > 0 ? (int?)effectiveSistemId : null;
                 ent.AltSistemId = effectiveAltSistemId;
                 ent.SistemTurId = effectiveSistemTurId;
                 ent.KasaTipi = item.KasaTipi;
@@ -1227,9 +1227,9 @@ namespace CamSistemWebArayuz.Controllers
             // If there is no detail row, keep backward-compatible fallback to order-level system.
             var giyotinIds = new[] { 5, 2006, 2010 };
             bool hasDetaySatiri = siparisTumDetay.Any();
-            bool orderLevelGiyotin = siparis.SistemId.HasValue && giyotinIds.Contains(siparis.SistemId.Value);
-            bool hasAnyGiyotinRow = siparisTumDetay.Any(e => e.SistemId.HasValue && giyotinIds.Contains(e.SistemId.Value));
-            bool hasAnyNonGiyotinRow = siparisTumDetay.Any(e => e.SistemId.HasValue && !giyotinIds.Contains(e.SistemId.Value));
+            bool orderLevelGiyotin = HasValidId(siparis.SistemId) && giyotinIds.Contains(siparis.SistemId.Value);
+            bool hasAnyGiyotinRow = siparisTumDetay.Any(e => HasValidId(e.SistemId) && giyotinIds.Contains(e.SistemId.Value));
+            bool hasAnyNonGiyotinRow = siparisTumDetay.Any(e => HasValidId(e.SistemId) && !giyotinIds.Contains(e.SistemId.Value));
             bool isGiyotinSabit = hasDetaySatiri
                 ? (hasAnyGiyotinRow && !hasAnyNonGiyotinRow)
                 : orderLevelGiyotin;
