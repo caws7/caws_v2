@@ -1838,7 +1838,7 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch (Exception ex)
             {
-                throw new IOException("Excel şablonu okunamadı: " + path, ex);
+                throw new IOException("Excel şablonu okunamadı (izin/kilit/yol kontrolü): " + path + " | " + ex.Message, ex);
             }
         }
 
@@ -1867,9 +1867,7 @@ namespace CamSistemWebArayuz.Controllers
                     ? excel.Workbook.Worksheets.FirstOrDefault()
                     : excel.Workbook.Worksheets.FirstOrDefault(ws => string.Equals(ws.Name, worksheetName, StringComparison.OrdinalIgnoreCase));
 
-                if (!string.IsNullOrWhiteSpace(worksheetName)
-                    && targetWorksheet == null
-                    && !string.Equals(excel.Workbook.Worksheets.First().Name, worksheetName, StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrWhiteSpace(worksheetName) && targetWorksheet == null)
                 {
                     System.Diagnostics.Trace.WriteLine("[CreateExcelPackage] Beklenen sayfa bulunamadı. Beklenen=" + worksheetName + ", İlkSayfa=" + excel.Workbook.Worksheets.First().Name + ", Yol=" + templatePath);
                 }
