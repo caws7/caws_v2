@@ -1863,21 +1863,45 @@ namespace CamSistemWebArayuz.Controllers
                     throw new InvalidDataException("Excel şablonunda çalışma sayfası bulunamadı: " + templatePath);
                 }
 
-                ExcelWorksheet targetWorksheet = string.IsNullOrWhiteSpace(worksheetName)
-                    ? excel.Workbook.Worksheets.FirstOrDefault()
-                    : excel.Workbook.Worksheets.FirstOrDefault(ws => string.Equals(ws.Name, worksheetName, StringComparison.OrdinalIgnoreCase));
-
-                if (!string.IsNullOrWhiteSpace(worksheetName) && targetWorksheet == null)
-                {
-                    System.Diagnostics.Trace.WriteLine("[CreateExcelPackage] Beklenen sayfa bulunamadı. Beklenen=" + worksheetName + ", İlkSayfa=" + excel.Workbook.Worksheets.First().Name + ", Yol=" + templatePath);
-                }
-
                 return excel;
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException("Excel şablonu açılırken hata oluştu: " + templatePath, ex);
             }
+        }
+
+        ExcelWorksheet ResolveWorksheet(ExcelPackage excel, string worksheetName, string templatePath)
+        {
+            if (excel == null)
+                throw new ArgumentNullException(nameof(excel));
+
+            if (excel.Workbook.Worksheets.Count < 1)
+                throw new InvalidDataException("Excel şablonunda çalışma sayfası bulunamadı: " + templatePath);
+
+            if (string.IsNullOrWhiteSpace(worksheetName))
+                return excel.Workbook.Worksheets.First();
+
+            ExcelWorksheet targetWorksheet = excel.Workbook.Worksheets.FirstOrDefault(ws => string.Equals(ws.Name, worksheetName, StringComparison.OrdinalIgnoreCase));
+            if (targetWorksheet != null)
+                return targetWorksheet;
+
+            ExcelWorksheet fallbackWorksheet = excel.Workbook.Worksheets.First();
+            System.Diagnostics.Trace.WriteLine("[ResolveWorksheet] Beklenen sayfa bulunamadı. Beklenen=" + worksheetName + ", İlkSayfa=" + fallbackWorksheet.Name + ", Yol=" + templatePath);
+
+            if (!string.Equals(fallbackWorksheet.Name, worksheetName, StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    fallbackWorksheet.Name = worksheetName;
+                }
+                catch (Exception renameEx)
+                {
+                    System.Diagnostics.Trace.WriteLine("[ResolveWorksheet] Sayfa adı güncellenemedi. Beklenen=" + worksheetName + ", Mevcut=" + fallbackWorksheet.Name + ", Yol=" + templatePath + " | " + renameEx.Message);
+                }
+            }
+
+            return fallbackWorksheet;
         }
 
         bool TryCreateFallbackExcel(string fullPath, long siparisId, Exception ex)
@@ -1985,11 +2009,21 @@ namespace CamSistemWebArayuz.Controllers
 
                 using (Image img = Image.FromFile(imagePath))
                 {
-                    int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
-                    int iColumnHeight = (int)(xlWorkSheet.Row(rowIndex).Height * 1.333);
-                    int xOffset = Math.Max(0, iColumnWidth / 2 - img.Width / 2);
-                    int yOffset = Math.Max(0, iColumnHeight / 2 - img.Height / 2);
-                    xlWorkSheet.Drawings.AddPicture(pictureName, img).SetPosition(rowIndex - 1, yOffset, 2, xOffset);
+                    using (Bitmap safeImage = new Bitmap(img.Width, img.Height))
+                    {
+                        safeImage.SetResolution(96, 96);
+                        using (Graphics graphics = Graphics.FromImage(safeImage))
+                        {
+                            graphics.Clear(Color.Transparent);
+                            graphics.DrawImage(img, 0, 0, img.Width, img.Height);
+                        }
+
+                        int iColumnWidth = (int)((xlWorkSheet.Column(3).Width - 1) * 7) + 12;
+                        int iColumnHeight = (int)(xlWorkSheet.Row(rowIndex).Height * 1.333);
+                        int xOffset = Math.Max(0, iColumnWidth / 2 - safeImage.Width / 2);
+                        int yOffset = Math.Max(0, iColumnHeight / 2 - safeImage.Height / 2);
+                        xlWorkSheet.Drawings.AddPicture(pictureName, safeImage).SetPosition(rowIndex - 1, yOffset, 2, xOffset);
+                    }
                 }
             }
             catch
@@ -2437,7 +2471,7 @@ namespace CamSistemWebArayuz.Controllers
             {
                 using (ExcelPackage excel = CreateExcelPackage(path, "Siparis"))
                 {
-                    ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
+                    ExcelWorksheet xlWorkSheet = ResolveWorksheet(excel, "Siparis", path);
                     xlWorkSheet.Cells.Style.Font.Name = "Arial";
                     xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
                     xlWorkSheet.Cells["D5"].Value = BuildAdresMetni(adres);
@@ -2448,6 +2482,7 @@ namespace CamSistemWebArayuz.Controllers
                     int k = 0;
                     int i = 8;
                     int uniqueName = 0;
+                    List<Tuple<int, string, string>> pendingPictures = new List<Tuple<int, string, string>>();
                     foreach (var item in sablon.profilList)
                     {
                         k = k + 1;
@@ -2503,9 +2538,7 @@ namespace CamSistemWebArayuz.Controllers
                             xlWorkSheet.InsertRow(i + 1, 1);
                             xlWorkSheet.Row(i + 1).Height = 34.5;
                         }
-                        // Picture is added after InsertRow to avoid EPPlus ArgumentException when
-                        // adjusting existing drawing positions during row insertion.
-                        TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
+                        pendingPictures.Add(Tuple.Create(i, item.Kesit, uniqueName++.ToString()));
                     }
 
                     xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
@@ -2569,6 +2602,9 @@ namespace CamSistemWebArayuz.Controllers
                     xlWorkSheet.Cells[x + 4, 12].Value = Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100;
                     xlWorkSheet.Cells[x + 5, 12].Value = (Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100) + sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
 
+                    foreach (var pendingPicture in pendingPictures)
+                        TryAddProfilKesitPicture(xlWorkSheet, pendingPicture.Item1, pendingPicture.Item2, pendingPicture.Item3);
+
                     excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
                 }
             }
@@ -2592,7 +2628,7 @@ namespace CamSistemWebArayuz.Controllers
             {
                 using (ExcelPackage excel = CreateExcelPackage(path, "Siparis"))
                 {
-                    ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
+                    ExcelWorksheet xlWorkSheet = ResolveWorksheet(excel, "Siparis", path);
                     xlWorkSheet.Cells.Style.Font.Name = "Arial";
                     xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
                     xlWorkSheet.Cells["D5"].Value = sablon.SirketAdres;
@@ -2603,6 +2639,7 @@ namespace CamSistemWebArayuz.Controllers
                     int k = 0;
                     int i = 8;
                     int uniqueName = 0;
+                    List<Tuple<int, string, string>> pendingPictures = new List<Tuple<int, string, string>>();
                     foreach (var item in sablon.profilList)
                     {
                         k = k + 1;
@@ -2656,9 +2693,7 @@ namespace CamSistemWebArayuz.Controllers
                             xlWorkSheet.InsertRow(i + 1, 1);
                             xlWorkSheet.Row(i + 1).Height = 34.5;
                         }
-                        // Picture is added after InsertRow to avoid EPPlus ArgumentException when
-                        // adjusting existing drawing positions during row insertion.
-                        TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
+                        pendingPictures.Add(Tuple.Create(i, item.Kesit, uniqueName++.ToString()));
                     }
                     xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
                     xlWorkSheet.Cells[i + 1, 10].Style.Font.Bold = true;
@@ -2718,6 +2753,9 @@ namespace CamSistemWebArayuz.Controllers
                     xlWorkSheet.Cells[x + 3, 12].Value = sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
                     xlWorkSheet.Cells[x + 4, 12].Value = Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100;
                     xlWorkSheet.Cells[x + 5, 12].Value = (Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100) + sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
+
+                    foreach (var pendingPicture in pendingPictures)
+                        TryAddProfilKesitPicture(xlWorkSheet, pendingPicture.Item1, pendingPicture.Item2, pendingPicture.Item3);
 
                     excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
                 }
