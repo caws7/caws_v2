@@ -142,11 +142,18 @@ namespace CamSistemWebArayuz.Controllers
         private static Tuple<int, int?, int?> ResolveSiparisSatirSistemBilgileri(Siparis siparis, SiparisEnBoyAdet satir)
         {
             var orderSistemId = siparis?.SistemId ?? 0;
-            bool satirBazliSistemVar = satir != null && satir.SistemId.HasValue && satir.SistemId.Value > 0;
+            bool satirBazliSistemVar = satir != null && HasValidId(satir.SistemId);
+            bool satirBazliMetadataVar = satir != null && (HasValidId(satir.SistemId) || HasValidId(satir.AltSistemId) || HasValidId(satir.SistemTurId));
 
-            int sistemId = satirBazliSistemVar ? satir.SistemId.Value : orderSistemId;
-            int? altSistemId = satirBazliSistemVar ? satir.AltSistemId : siparis?.AltSistemId;
-            int? sistemTurId = satirBazliSistemVar ? satir.SistemTurId : siparis?.SistemTurId;
+            int sistemId = satirBazliSistemVar
+                ? satir.SistemId.Value
+                : orderSistemId;
+            int? altSistemId = satirBazliMetadataVar
+                ? satir.AltSistemId
+                : siparis?.AltSistemId;
+            int? sistemTurId = satirBazliMetadataVar
+                ? satir.SistemTurId
+                : siparis?.SistemTurId;
 
             if (satirBazliSistemVar && orderSistemId > 0 && sistemId == orderSistemId)
             {
@@ -879,7 +886,7 @@ namespace CamSistemWebArayuz.Controllers
         #region Siparis Detay
         [AuthLog(Roles = "SİPARİS,GORUNTULEME")]
         [HttpPost]
-        public ActionResult SiparisDetayGoruntule(long SiparisId, bool raporMu)
+        public ActionResult SiparisDetayGoruntule(long SiparisId, bool raporMu = false)
         {
             try
             {
@@ -906,6 +913,13 @@ namespace CamSistemWebArayuz.Controllers
                     "</div>",
                     "text/html; charset=utf-8", Encoding.UTF8);
             }
+        }
+
+        [AuthLog(Roles = "SİPARİS,GORUNTULEME")]
+        [HttpPost]
+        public ActionResult StoktanSiparisGoruntule(long SiparisId)
+        {
+            return SiparisDetayGoruntule(SiparisId, false);
         }
 
         private ActionResult SiparisDetayGoruntuleInternal(long SiparisId, bool raporMu)

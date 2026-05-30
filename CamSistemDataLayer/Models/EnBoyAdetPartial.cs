@@ -39,9 +39,12 @@ namespace CamSistemDataLayer.Models
                 AltSistemRepo asRepo = new AltSistemRepo();
 
                 bool satirBazliSistemVar = SistemId.HasValue && SistemId.Value > 0;
+                bool satirBazliMetadataVar = satirBazliSistemVar
+                                             || (AltSistemId.HasValue && AltSistemId.Value > 0)
+                                             || (SistemTurId.HasValue && SistemTurId.Value > 0);
                 int rowSistemId = satirBazliSistemVar ? SistemId.Value : (siparisModel?.SistemId ?? 0);
-                int? rowSistemTurId = satirBazliSistemVar ? SistemTurId : siparisModel?.SistemTurId;
-                int? rowAltSistemId = satirBazliSistemVar ? AltSistemId : siparisModel?.AltSistemId;
+                int? rowSistemTurId = satirBazliMetadataVar ? SistemTurId : siparisModel?.SistemTurId;
+                int? rowAltSistemId = satirBazliMetadataVar ? AltSistemId : siparisModel?.AltSistemId;
                 if (satirBazliSistemVar && siparisModel != null && siparisModel.SistemId.HasValue && siparisModel.SistemId.Value > 0 && rowSistemId == siparisModel.SistemId.Value)
                 {
                     if ((!rowSistemTurId.HasValue || rowSistemTurId.Value <= 0) && siparisModel.SistemTurId.HasValue && siparisModel.SistemTurId.Value > 0)
