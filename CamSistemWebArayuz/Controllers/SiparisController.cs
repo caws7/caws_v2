@@ -1816,7 +1816,7 @@ namespace CamSistemWebArayuz.Controllers
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("[EnsureExcelPackageLicenseContext] Web.config okunamadı: " + ex.Message);
+                    System.Diagnostics.Trace.WriteLine("[EnsureExcelPackageLicenseContext] Web.config okunamadı: " + ex.Message);
                 }
 
                 if (!Enum.TryParse(configuredLicenseContext, true, out LicenseContext licenseContext))
@@ -1824,7 +1824,21 @@ namespace CamSistemWebArayuz.Controllers
 
                 ExcelPackage.LicenseContext = licenseContext;
                 excelPackageLicenseConfigured = true;
-                System.Diagnostics.Debug.WriteLine("[EnsureExcelPackageLicenseContext] EPPlus LicenseContext=" + licenseContext);
+                System.Diagnostics.Trace.WriteLine("[EnsureExcelPackageLicenseContext] EPPlus LicenseContext=" + licenseContext);
+            }
+        }
+
+        void ValidateReadableFile(string path)
+        {
+            try
+            {
+                using (System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException("Excel şablonu okunamadı: " + path, ex);
             }
         }
 
@@ -1838,16 +1852,7 @@ namespace CamSistemWebArayuz.Controllers
             if (!System.IO.File.Exists(templatePath))
                 throw new FileNotFoundException("Excel şablonu bulunamadı: " + templatePath, templatePath);
 
-            try
-            {
-                using (System.IO.File.Open(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new IOException("Excel şablonu okunamadı: " + templatePath, ex);
-            }
+            ValidateReadableFile(templatePath);
 
             try
             {
@@ -1858,11 +1863,15 @@ namespace CamSistemWebArayuz.Controllers
                     throw new InvalidDataException("Excel şablonunda çalışma sayfası bulunamadı: " + templatePath);
                 }
 
+                ExcelWorksheet targetWorksheet = string.IsNullOrWhiteSpace(worksheetName)
+                    ? excel.Workbook.Worksheets.FirstOrDefault()
+                    : excel.Workbook.Worksheets.FirstOrDefault(ws => string.Equals(ws.Name, worksheetName, StringComparison.OrdinalIgnoreCase));
+
                 if (!string.IsNullOrWhiteSpace(worksheetName)
-                    && excel.Workbook.Worksheets[worksheetName] == null
+                    && targetWorksheet == null
                     && !string.Equals(excel.Workbook.Worksheets.First().Name, worksheetName, StringComparison.OrdinalIgnoreCase))
                 {
-                    System.Diagnostics.Debug.WriteLine("[CreateExcelPackage] Beklenen sayfa bulunamadı. Beklenen=" + worksheetName + ", İlkSayfa=" + excel.Workbook.Worksheets.First().Name + ", Yol=" + templatePath);
+                    System.Diagnostics.Trace.WriteLine("[CreateExcelPackage] Beklenen sayfa bulunamadı. Beklenen=" + worksheetName + ", İlkSayfa=" + excel.Workbook.Worksheets.First().Name + ", Yol=" + templatePath);
                 }
 
                 return excel;
@@ -2567,7 +2576,7 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("[excelStoktanKaydet] Excel oluşturma hatası SiparisId=" + siparisId + ", SablonYolu=" + path + ", CiktiYolu=" + pathAfter + ".xlsx" + ": " + ex.Message + "\n" + ex.StackTrace);
+                System.Diagnostics.Trace.WriteLine("[excelStoktanKaydet] Excel oluşturma hatası SiparisId=" + siparisId + ", SablonYolu=" + path + ", CiktiYolu=" + pathAfter + ".xlsx" + ": " + ex.Message + "\n" + ex.StackTrace);
                 throw;
             }
         }
@@ -2717,7 +2726,7 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("[excelKaydet] Excel oluşturma hatası SiparisId=" + siparisId + ", SablonYolu=" + path + ", CiktiYolu=" + pathAfter + ".xlsx" + ": " + ex.Message + "\n" + ex.StackTrace);
+                System.Diagnostics.Trace.WriteLine("[excelKaydet] Excel oluşturma hatası SiparisId=" + siparisId + ", SablonYolu=" + path + ", CiktiYolu=" + pathAfter + ".xlsx" + ": " + ex.Message + "\n" + ex.StackTrace);
                 throw;
             }
         }
