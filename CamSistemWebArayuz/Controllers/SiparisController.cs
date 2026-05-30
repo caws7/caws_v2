@@ -1960,8 +1960,8 @@ namespace CamSistemWebArayuz.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("[DownloadExcelFile] Excel export hatası SiparisId=" + siparisId + ": " + ex.Message + "\n" + ex.StackTrace);
-                return new HttpStatusCodeResult(500, "Excel dosyası şablon ile oluşturulamadı.");
+                System.Diagnostics.Trace.WriteLine("[DownloadExcelFile] Excel export hatası SiparisId=" + siparisId + ": " + ex.Message + "\n" + ex.StackTrace);
+                return new HttpStatusCodeResult(500, "Excel dosyası oluşturulamadı.");
             }
 
             if (!System.IO.File.Exists(fullPath))
@@ -2582,14 +2582,13 @@ namespace CamSistemWebArayuz.Controllers
         void excelKaydet(long siparisId)
         {
             string pathAfter = Path.Combine(GetExportTempPath(), siparisId + "_nolu_siparis");
-
-            SiparisStokSablon sablon = BuildSiparisSablon(siparisId, out Siparis siparis, out decimal aluKgFiyat);
-            ViewBag.AluKg = aluKgFiyat;
-
             string path = Server.MapPath("~/Assets/sablonStokYeni.xlsx");
 
             try
             {
+                SiparisStokSablon sablon = BuildSiparisSablon(siparisId, out Siparis siparis, out decimal aluKgFiyat);
+                ViewBag.AluKg = aluKgFiyat;
+
                 using (ExcelPackage excel = CreateExcelPackage(path, "Siparis"))
                 {
                     ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
