@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Xml;
 
@@ -39,6 +40,8 @@ namespace CamSistemWebArayuz.Controllers
         private const string KAR_PAYI_MALZEME = "KAR PAYI";
         private const string ExcelMimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         private const string SacBoruProfilKodu = "SB-101";
+        private static readonly object ExcelPackageLicenseLock = new object();
+        private static bool excelPackageLicenseConfigured;
 
         SiparisRepo siparisRepo;
         MusteriRepo musteriRepo;
@@ -1795,18 +1798,86 @@ namespace CamSistemWebArayuz.Controllers
             }
         }
 
+        void EnsureExcelPackageLicenseContext()
+        {
+            if (excelPackageLicenseConfigured)
+                return;
+
+            lock (ExcelPackageLicenseLock)
+            {
+                if (excelPackageLicenseConfigured)
+                    return;
+
+                string configuredLicenseContext = string.Empty;
+
+                try
+                {
+                    configuredLicenseContext = WebConfigurationManager.AppSettings["EPPlus:ExcelPackage.LicenseContext"];
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("[EnsureExcelPackageLicenseContext] Web.config okunamadı: " + ex.Message);
+                }
+
+                if (!Enum.TryParse(configuredLicenseContext, true, out LicenseContext licenseContext))
+                    licenseContext = LicenseContext.NonCommercial;
+
+                ExcelPackage.LicenseContext = licenseContext;
+                excelPackageLicenseConfigured = true;
+                System.Diagnostics.Debug.WriteLine("[EnsureExcelPackageLicenseContext] EPPlus LicenseContext=" + licenseContext);
+            }
+        }
+
         ExcelPackage CreateExcelPackage(string templatePath, string worksheetName)
         {
+            EnsureExcelPackageLicenseContext();
+
+            if (string.IsNullOrWhiteSpace(templatePath))
+                throw new ArgumentException("Excel şablon yolu boş geldi.", nameof(templatePath));
+
             if (!System.IO.File.Exists(templatePath))
                 throw new FileNotFoundException("Excel şablonu bulunamadı: " + templatePath, templatePath);
 
-            return new ExcelPackage(new FileInfo(templatePath));
+            try
+            {
+                using (System.IO.File.Open(templatePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException("Excel şablonu okunamadı: " + templatePath, ex);
+            }
+
+            try
+            {
+                ExcelPackage excel = new ExcelPackage(new FileInfo(templatePath));
+                if (excel.Workbook.Worksheets.Count < 1)
+                {
+                    excel.Dispose();
+                    throw new InvalidDataException("Excel şablonunda çalışma sayfası bulunamadı: " + templatePath);
+                }
+
+                if (!string.IsNullOrWhiteSpace(worksheetName)
+                    && excel.Workbook.Worksheets[worksheetName] == null
+                    && !string.Equals(excel.Workbook.Worksheets.First().Name, worksheetName, StringComparison.OrdinalIgnoreCase))
+                {
+                    System.Diagnostics.Debug.WriteLine("[CreateExcelPackage] Beklenen sayfa bulunamadı. Beklenen=" + worksheetName + ", İlkSayfa=" + excel.Workbook.Worksheets.First().Name + ", Yol=" + templatePath);
+                }
+
+                return excel;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Excel şablonu açılırken hata oluştu: " + templatePath, ex);
+            }
         }
 
         bool TryCreateFallbackExcel(string fullPath, long siparisId, Exception ex)
         {
             try
             {
+                EnsureExcelPackageLicenseContext();
                 siparisRepo = siparisRepo ?? new SiparisRepo();
                 musteriRepo = musteriRepo ?? new MusteriRepo();
                 AdresRepo adresRepo = new AdresRepo();
@@ -2355,141 +2426,150 @@ namespace CamSistemWebArayuz.Controllers
 
             string path = Server.MapPath("~/Assets/sablonStokYeni.xlsx");
 
-            ExcelPackage excel = CreateExcelPackage(path, "Siparis");
-            ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
-            xlWorkSheet.Cells.Style.Font.Name = "Arial";
-            xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
-            xlWorkSheet.Cells["D5"].Value = BuildAdresMetni(adres);
-            xlWorkSheet.Cells["C6"].Value = siparisId;
-            xlWorkSheet.Cells["G6"].Value = siparis.KayitTarihi;
-            xlWorkSheet.Cells["K6"].Value = siparis.TeslimTarihi;
-
-            int k = 0;
-            int i = 8;
-            int uniqueName = 0;
-            foreach (var item in sablon.profilList)
+            try
             {
-                k = k + 1;
-                i = i + 1;
-
-                xlWorkSheet.Row(i).Height = 34.5;
-                //xlWorkSheet.Cells[i, 1].Value = k;
-                //xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 1].Value = SanitizeExcelText(item.Kodu);
-                xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 2].Value = SanitizeExcelText(item.Adi);
-                xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-
-                xlWorkSheet.Cells[i, 4].Value = item.BirimAgirlik;
-                xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 5].Value = item.Birim;
-                xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 6].Value = SanitizeExcelText(item.Renk);
-                xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 7].Value = item.Olcu;
-                xlWorkSheet.Cells[i, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 8].Value = item.Miktar;
-                xlWorkSheet.Cells[i, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-
-                xlWorkSheet.Cells[i, 9].Value = item.ToplamMetre;
-                xlWorkSheet.Cells[i, 9].Style.Numberformat.Format = "0.00";
-                xlWorkSheet.Cells[i, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 10].Value = item.ToplamKg + " Kg";
-                xlWorkSheet.Cells[i, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 11].Value = item.BirimFiyatKgM;
-                xlWorkSheet.Cells[i, 11].Style.Numberformat.Format = "#,##0.00 ₺";
-                xlWorkSheet.Cells[i, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 12].Value = item.ToplamTutar;
-                xlWorkSheet.Cells[i, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                xlWorkSheet.Cells[i, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                if (k != sablon.profilList.Count)
+                using (ExcelPackage excel = CreateExcelPackage(path, "Siparis"))
                 {
-                    xlWorkSheet.InsertRow(i + 1, 1);
-                    xlWorkSheet.Row(i + 1).Height = 34.5;
+                    ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
+                    xlWorkSheet.Cells.Style.Font.Name = "Arial";
+                    xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
+                    xlWorkSheet.Cells["D5"].Value = BuildAdresMetni(adres);
+                    xlWorkSheet.Cells["C6"].Value = siparisId;
+                    xlWorkSheet.Cells["G6"].Value = siparis.KayitTarihi;
+                    xlWorkSheet.Cells["K6"].Value = siparis.TeslimTarihi;
+
+                    int k = 0;
+                    int i = 8;
+                    int uniqueName = 0;
+                    foreach (var item in sablon.profilList)
+                    {
+                        k = k + 1;
+                        i = i + 1;
+
+                        xlWorkSheet.Row(i).Height = 34.5;
+                        //xlWorkSheet.Cells[i, 1].Value = k;
+                        //xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 1].Value = SanitizeExcelText(item.Kodu);
+                        xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 2].Value = SanitizeExcelText(item.Adi);
+                        xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                        xlWorkSheet.Cells[i, 4].Value = item.BirimAgirlik;
+                        xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 5].Value = item.Birim;
+                        xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 6].Value = SanitizeExcelText(item.Renk);
+                        xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 7].Value = item.Olcu;
+                        xlWorkSheet.Cells[i, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 8].Value = item.Miktar;
+                        xlWorkSheet.Cells[i, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                        xlWorkSheet.Cells[i, 9].Value = item.ToplamMetre;
+                        xlWorkSheet.Cells[i, 9].Style.Numberformat.Format = "0.00";
+                        xlWorkSheet.Cells[i, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 10].Value = item.ToplamKg + " Kg";
+                        xlWorkSheet.Cells[i, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 11].Value = item.BirimFiyatKgM;
+                        xlWorkSheet.Cells[i, 11].Style.Numberformat.Format = "#,##0.00 ₺";
+                        xlWorkSheet.Cells[i, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 12].Value = item.ToplamTutar;
+                        xlWorkSheet.Cells[i, 12].Style.Numberformat.Format = "#,##0.00 ₺";
+                        xlWorkSheet.Cells[i, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        if (k != sablon.profilList.Count)
+                        {
+                            xlWorkSheet.InsertRow(i + 1, 1);
+                            xlWorkSheet.Row(i + 1).Height = 34.5;
+                        }
+                        // Picture is added after InsertRow to avoid EPPlus ArgumentException when
+                        // adjusting existing drawing positions during row insertion.
+                        TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
+                    }
+
+                    xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
+                    xlWorkSheet.Cells[i + 1, 10].Style.Font.Bold = true;
+                    xlWorkSheet.Cells[i + 1, 12].Value = sablon.ProfilToplamTutar;
+                    xlWorkSheet.Cells[i + 1, 12].Style.Numberformat.Format = "#,##0.00 ₺";
+                    xlWorkSheet.Cells[i + 1, 12].Style.Font.Bold = true;
+
+                    int x = 0;
+                    if (sablon.profilList.Count > 0)
+                        x = i + 3;
+                    else
+                        x = i + 4;
+                    int j = 0;
+
+                    foreach (var item in sablon.aksesuarList)
+                    {
+                        j = j + 1;
+                        k = k + 1;
+                        x = x + 1;
+
+                        xlWorkSheet.Row(x).Height = 25;
+                        //xlWorkSheet.Cells[x, 1].Value = k;
+                        //xlWorkSheet.Cells[x, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[x, 1].Value = SanitizeExcelText(item.Kodu);
+                        xlWorkSheet.Cells[x, 2].Value = SanitizeExcelText(item.Adi);
+                        xlWorkSheet.Cells[x, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[x, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                        xlWorkSheet.Cells[string.Format("F{0}:J{0}", x)].Merge = true;
+                        xlWorkSheet.Cells[x, 4].Value = SanitizeExcelText(item.Birim);
+                        xlWorkSheet.Cells[x, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[x, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[x, 5].Value = item.Miktar;
+                        xlWorkSheet.Cells[x, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[x, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[x, 11].Value = item.BirimFiyat;
+                        xlWorkSheet.Cells[x, 11].Style.Numberformat.Format = "#,##0.00 ₺";
+                        xlWorkSheet.Cells[x, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[x, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[x, 12].Value = item.ToplamTutar;
+                        xlWorkSheet.Cells[x, 12].Style.Numberformat.Format = "#,##0.00 ₺";
+                        xlWorkSheet.Cells[x, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[x, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                        if (j != sablon.aksesuarList.Count)
+                        {
+                            xlWorkSheet.InsertRow(x + 1, 1);
+                            xlWorkSheet.Row(x + 1).Height = 34.5;
+                        }
+                    }
+
+                    if (sablon.aksesuarList.Count < 1)
+                        x = x + 1;
+                    xlWorkSheet.Cells[x + 1, 12].Value = sablon.AksesuarToplamTutar;
+                    xlWorkSheet.Cells[x + 3, 12].Value = sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
+                    xlWorkSheet.Cells[x + 4, 12].Value = Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100;
+                    xlWorkSheet.Cells[x + 5, 12].Value = (Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100) + sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
+
+                    excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
                 }
-                // Picture is added after InsertRow to avoid EPPlus ArgumentException when
-                // adjusting existing drawing positions during row insertion.
-                TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
             }
-
-            xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
-            xlWorkSheet.Cells[i + 1, 10].Style.Font.Bold = true;
-            xlWorkSheet.Cells[i + 1, 12].Value = sablon.ProfilToplamTutar;
-            xlWorkSheet.Cells[i + 1, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-            xlWorkSheet.Cells[i + 1, 12].Style.Font.Bold = true;
-
-            int x = 0;
-            if (sablon.profilList.Count > 0)
-                x = i + 3;
-            else
-                x = i + 4;
-            int j = 0;
-
-            foreach (var item in sablon.aksesuarList)
+            catch (Exception ex)
             {
-                j = j + 1;
-                k = k + 1;
-                x = x + 1;
-
-                xlWorkSheet.Row(x).Height = 25;
-                //xlWorkSheet.Cells[x, 1].Value = k;
-                //xlWorkSheet.Cells[x, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 1].Value = SanitizeExcelText(item.Kodu);
-                xlWorkSheet.Cells[x, 2].Value = SanitizeExcelText(item.Adi);
-                xlWorkSheet.Cells[x, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[x, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                xlWorkSheet.Cells[string.Format("F{0}:J{0}", x)].Merge = true;
-                xlWorkSheet.Cells[x, 4].Value = SanitizeExcelText(item.Birim);
-                xlWorkSheet.Cells[x, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[x, 5].Value = item.Miktar;
-                xlWorkSheet.Cells[x, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[x, 11].Value = item.BirimFiyat;
-                xlWorkSheet.Cells[x, 11].Style.Numberformat.Format = "#,##0.00 ₺";
-                xlWorkSheet.Cells[x, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[x, 12].Value = item.ToplamTutar;
-                xlWorkSheet.Cells[x, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                xlWorkSheet.Cells[x, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                if (j != sablon.aksesuarList.Count)
-                {
-                    xlWorkSheet.InsertRow(x + 1, 1);
-                    xlWorkSheet.Row(x + 1).Height = 34.5;
-                }
+                System.Diagnostics.Debug.WriteLine("[excelStoktanKaydet] Excel oluşturma hatası SiparisId=" + siparisId + ", SablonYolu=" + path + ", CiktiYolu=" + pathAfter + ".xlsx" + ": " + ex.Message + "\n" + ex.StackTrace);
+                throw;
             }
-
-            if (sablon.aksesuarList.Count < 1)
-                x = x + 1;
-            xlWorkSheet.Cells[x + 1, 12].Value = sablon.AksesuarToplamTutar;
-            xlWorkSheet.Cells[x + 3, 12].Value = sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
-            xlWorkSheet.Cells[x + 4, 12].Value = Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100;
-            xlWorkSheet.Cells[x + 5, 12].Value = (Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100) + sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
-
-            excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
-            excel.Dispose();
         }
 
         void excelKaydet(long siparisId)
@@ -2501,136 +2581,145 @@ namespace CamSistemWebArayuz.Controllers
 
             string path = Server.MapPath("~/Assets/sablonStokYeni.xlsx");
 
-            ExcelPackage excel = CreateExcelPackage(path, "Siparis");
-            ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
-            xlWorkSheet.Cells.Style.Font.Name = "Arial";
-            xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
-            xlWorkSheet.Cells["D5"].Value = sablon.SirketAdres;
-            xlWorkSheet.Cells["C6"].Value = siparisId;
-            xlWorkSheet.Cells["G6"].Value = siparis.KayitTarihi;
-            xlWorkSheet.Cells["K6"].Value = siparis.TeslimTarihi;
-
-            int k = 0;
-            int i = 8;
-            int uniqueName = 0;
-            foreach (var item in sablon.profilList)
+            try
             {
-                k = k + 1;
-                i = i + 1;
-
-                xlWorkSheet.Row(i).Height = 34.5;
-                xlWorkSheet.Cells[i, 1].Value = SanitizeExcelText(item.Kodu);
-                xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 2].Value = SanitizeExcelText(item.Adi);
-                xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-
-                xlWorkSheet.Cells[i, 4].Value = item.BirimAgirlik;
-                xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 5].Value = item.Birim;
-                xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 6].Value = SanitizeExcelText(item.Renk);
-                xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 7].Value = item.Olcu;
-                xlWorkSheet.Cells[i, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 8].Value = item.Miktar;
-                xlWorkSheet.Cells[i, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-
-                xlWorkSheet.Cells[i, 9].Value = item.ToplamMetre;
-                xlWorkSheet.Cells[i, 9].Style.Numberformat.Format = "0.00";
-                xlWorkSheet.Cells[i, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 10].Value = item.ToplamKg + " Kg";
-                xlWorkSheet.Cells[i, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 11].Value = item.BirimFiyatKgM;
-                xlWorkSheet.Cells[i, 11].Style.Numberformat.Format = "#,##0.00 ₺";
-                xlWorkSheet.Cells[i, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[i, 12].Value = item.ToplamTutar;
-                xlWorkSheet.Cells[i, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                xlWorkSheet.Cells[i, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[i, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                if (k != sablon.profilList.Count)
+                using (ExcelPackage excel = CreateExcelPackage(path, "Siparis"))
                 {
-                    xlWorkSheet.InsertRow(i + 1, 1);
-                    xlWorkSheet.Row(i + 1).Height = 34.5;
+                    ExcelWorksheet xlWorkSheet = excel.Workbook.Worksheets.First();
+                    xlWorkSheet.Cells.Style.Font.Name = "Arial";
+                    xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
+                    xlWorkSheet.Cells["D5"].Value = sablon.SirketAdres;
+                    xlWorkSheet.Cells["C6"].Value = siparisId;
+                    xlWorkSheet.Cells["G6"].Value = siparis.KayitTarihi;
+                    xlWorkSheet.Cells["K6"].Value = siparis.TeslimTarihi;
+
+                    int k = 0;
+                    int i = 8;
+                    int uniqueName = 0;
+                    foreach (var item in sablon.profilList)
+                    {
+                        k = k + 1;
+                        i = i + 1;
+
+                        xlWorkSheet.Row(i).Height = 34.5;
+                        xlWorkSheet.Cells[i, 1].Value = SanitizeExcelText(item.Kodu);
+                        xlWorkSheet.Cells[i, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 2].Value = SanitizeExcelText(item.Adi);
+                        xlWorkSheet.Cells[i, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                        xlWorkSheet.Cells[i, 4].Value = item.BirimAgirlik;
+                        xlWorkSheet.Cells[i, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 5].Value = item.Birim;
+                        xlWorkSheet.Cells[i, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 6].Value = SanitizeExcelText(item.Renk);
+                        xlWorkSheet.Cells[i, 6].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 7].Value = item.Olcu;
+                        xlWorkSheet.Cells[i, 7].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 8].Value = item.Miktar;
+                        xlWorkSheet.Cells[i, 8].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                        xlWorkSheet.Cells[i, 9].Value = item.ToplamMetre;
+                        xlWorkSheet.Cells[i, 9].Style.Numberformat.Format = "0.00";
+                        xlWorkSheet.Cells[i, 9].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 10].Value = item.ToplamKg + " Kg";
+                        xlWorkSheet.Cells[i, 10].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 11].Value = item.BirimFiyatKgM;
+                        xlWorkSheet.Cells[i, 11].Style.Numberformat.Format = "#,##0.00 ₺";
+                        xlWorkSheet.Cells[i, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[i, 12].Value = item.ToplamTutar;
+                        xlWorkSheet.Cells[i, 12].Style.Numberformat.Format = "#,##0.00 ₺";
+                        xlWorkSheet.Cells[i, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[i, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", i)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        if (k != sablon.profilList.Count)
+                        {
+                            xlWorkSheet.InsertRow(i + 1, 1);
+                            xlWorkSheet.Row(i + 1).Height = 34.5;
+                        }
+                        // Picture is added after InsertRow to avoid EPPlus ArgumentException when
+                        // adjusting existing drawing positions during row insertion.
+                        TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
+                    }
+                    xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
+                    xlWorkSheet.Cells[i + 1, 10].Style.Font.Bold = true;
+                    xlWorkSheet.Cells[i + 1, 12].Value = sablon.ProfilToplamTutar;
+                    xlWorkSheet.Cells[i + 1, 12].Style.Numberformat.Format = "#,##0.00 ₺";
+                    xlWorkSheet.Cells[i + 1, 12].Style.Font.Bold = true;
+
+                    int x = 0;
+                    if (sablon.profilList.Count > 0)
+                        x = i + 3;
+                    else
+                        x = i + 4;
+                    int j = 0;
+
+                    foreach (var item in sablon.aksesuarList)
+                    {
+                        j = j + 1;
+                        k = k + 1;
+                        x = x + 1;
+
+                        xlWorkSheet.Row(x).Height = 25;
+                        xlWorkSheet.Cells[x, 1].Value = SanitizeExcelText(item.Kodu);
+                        xlWorkSheet.Cells[x, 2].Value = SanitizeExcelText(item.Adi);
+                        xlWorkSheet.Cells[x, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[x, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                        xlWorkSheet.Cells[string.Format("F{0}:J{0}", x)].Merge = true;
+                        xlWorkSheet.Cells[x, 4].Value = SanitizeExcelText(item.Birim);
+                        xlWorkSheet.Cells[x, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[x, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[x, 5].Value = item.Miktar;
+                        xlWorkSheet.Cells[x, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[x, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[x, 11].Value = item.BirimFiyat;
+                        xlWorkSheet.Cells[x, 11].Style.Numberformat.Format = "#,##0.00 ₺";
+                        xlWorkSheet.Cells[x, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[x, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                        xlWorkSheet.Cells[x, 12].Value = item.ToplamTutar;
+                        xlWorkSheet.Cells[x, 12].Style.Numberformat.Format = "#,##0.00 ₺";
+                        xlWorkSheet.Cells[x, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        xlWorkSheet.Cells[x, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                        if (j != sablon.aksesuarList.Count)
+                        {
+                            xlWorkSheet.InsertRow(x + 1, 1);
+                            xlWorkSheet.Row(x + 1).Height = 34.5;
+                        }
+                    }
+
+                    if (sablon.aksesuarList.Count < 1)
+                        x = x + 1;
+                    xlWorkSheet.Cells[x + 1, 12].Value = sablon.AksesuarToplamTutar;
+                    xlWorkSheet.Cells[x + 3, 12].Value = sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
+                    xlWorkSheet.Cells[x + 4, 12].Value = Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100;
+                    xlWorkSheet.Cells[x + 5, 12].Value = (Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100) + sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
+
+                    excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
                 }
-                // Picture is added after InsertRow to avoid EPPlus ArgumentException when
-                // adjusting existing drawing positions during row insertion.
-                TryAddProfilKesitPicture(xlWorkSheet, i, item.Kesit, uniqueName++.ToString());
             }
-            xlWorkSheet.Cells[i + 1, 10].Value = Math.Round(sablon.ProfilToplamKg, 2) + " Kg";
-            xlWorkSheet.Cells[i + 1, 10].Style.Font.Bold = true;
-            xlWorkSheet.Cells[i + 1, 12].Value = sablon.ProfilToplamTutar;
-            xlWorkSheet.Cells[i + 1, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-            xlWorkSheet.Cells[i + 1, 12].Style.Font.Bold = true;
-
-            int x = 0;
-            if (sablon.profilList.Count > 0)
-                x = i + 3;
-            else
-                x = i + 4;
-            int j = 0;
-
-            foreach (var item in sablon.aksesuarList)
+            catch (Exception ex)
             {
-                j = j + 1;
-                k = k + 1;
-                x = x + 1;
-
-                xlWorkSheet.Row(x).Height = 25;
-                xlWorkSheet.Cells[x, 1].Value = SanitizeExcelText(item.Kodu);
-                xlWorkSheet.Cells[x, 2].Value = SanitizeExcelText(item.Adi);
-                xlWorkSheet.Cells[x, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[x, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                xlWorkSheet.Cells[string.Format("F{0}:J{0}", x)].Merge = true;
-                xlWorkSheet.Cells[x, 4].Value = SanitizeExcelText(item.Birim);
-                xlWorkSheet.Cells[x, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 4].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[x, 5].Value = item.Miktar;
-                xlWorkSheet.Cells[x, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 5].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[x, 11].Value = item.BirimFiyat;
-                xlWorkSheet.Cells[x, 11].Style.Numberformat.Format = "#,##0.00 ₺";
-                xlWorkSheet.Cells[x, 11].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 11].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                xlWorkSheet.Cells[x, 12].Value = item.ToplamTutar;
-                xlWorkSheet.Cells[x, 12].Style.Numberformat.Format = "#,##0.00 ₺";
-                xlWorkSheet.Cells[x, 12].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                xlWorkSheet.Cells[x, 12].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                xlWorkSheet.Cells[string.Format("A{0}:L{0}", x)].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                if (j != sablon.aksesuarList.Count)
-                {
-                    xlWorkSheet.InsertRow(x + 1, 1);
-                    xlWorkSheet.Row(x + 1).Height = 34.5;
-                }
+                System.Diagnostics.Debug.WriteLine("[excelKaydet] Excel oluşturma hatası SiparisId=" + siparisId + ", SablonYolu=" + path + ", CiktiYolu=" + pathAfter + ".xlsx" + ": " + ex.Message + "\n" + ex.StackTrace);
+                throw;
             }
-
-            if (sablon.aksesuarList.Count < 1)
-                x = x + 1;
-            xlWorkSheet.Cells[x + 1, 12].Value = sablon.AksesuarToplamTutar;
-            xlWorkSheet.Cells[x + 3, 12].Value = sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
-            xlWorkSheet.Cells[x + 4, 12].Value = Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100;
-            xlWorkSheet.Cells[x + 5, 12].Value = (Convert.ToDecimal(sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar) * 20 / 100) + sablon.ProfilToplamTutar + sablon.AksesuarToplamTutar;
-
-            excel.SaveAs(new FileInfo(pathAfter + ".xlsx"));
-            excel.Dispose();
         }
 
 
