@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.IO;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -13,6 +15,25 @@ namespace CamSistemWebArayuz
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             RunDatabaseMigrations();
+            ValidateCriticalTemplatePaths();
+        }
+
+        private void ValidateCriticalTemplatePaths()
+        {
+            var templates = new[]
+            {
+                new { VirtualPath = "~/Assets/sablonStokYeni.xlsx", WorksheetName = "Siparis" }
+            };
+
+            foreach (var template in templates)
+            {
+                var fullPath = HostingEnvironment.MapPath(template.VirtualPath);
+                if (string.IsNullOrWhiteSpace(fullPath))
+                    throw new InvalidOperationException("[Startup.TemplateValidation] Server.MapPath boş/null döndü. VirtualPath=" + template.VirtualPath + " | Guidance: Uygulama kök yolu ve publish içeriğini kontrol edin.");
+
+                if (!File.Exists(fullPath))
+                    throw new FileNotFoundException("[Startup.TemplateValidation] Excel şablonu bulunamadı. VirtualPath=" + template.VirtualPath + " | FullPath=" + fullPath + " | Guidance: Şablon dosyasının deploy edildiğini ve erişilebilir olduğunu doğrulayın. Beklenen worksheet='" + template.WorksheetName + "'.", fullPath);
+            }
         }
 
         private void RunDatabaseMigrations()

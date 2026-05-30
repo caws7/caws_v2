@@ -39,6 +39,8 @@ namespace CamSistemWebArayuz.Controllers
         private const int BICHAK_PAYI = 4;
         private const string KAR_PAYI_MALZEME = "KAR PAYI";
         private const string ExcelMimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        private const string SiparisExcelTemplateRelativePath = "~/Assets/sablonStokYeni.xlsx";
+        private const string SiparisWorksheetName = "Siparis";
         private const string SacBoruProfilKodu = "SB-101";
         private static readonly object ExcelPackageLicenseLock = new object();
         private static bool excelPackageLicenseConfigured;
@@ -1842,66 +1844,106 @@ namespace CamSistemWebArayuz.Controllers
             }
         }
 
+        string BuildExcelTemplateGuidanceMessage(string templatePath, string worksheetName, string reason)
+        {
+            string worksheetInfo = string.IsNullOrWhiteSpace(worksheetName) ? "(boş)" : worksheetName;
+            return "Excel şablonu doğrulanamadı. Neden: " + reason +
+                   " | ŞablonYolu=" + (templatePath ?? "(null)") +
+                   " | BeklenenWorksheet=" + worksheetInfo +
+                   " | Guidance: Assets altındaki şablon dosyasını doğrulayın, dosyanın bozuk olmadığını kontrol edin ve '" + worksheetInfo + "' isimli worksheet'in var olduğundan emin olun.";
+        }
+
+        string GetExcelTemplatePathOrThrow(string templateVirtualPath, string worksheetName)
+        {
+            if (string.IsNullOrWhiteSpace(templateVirtualPath))
+                throw new ArgumentException(BuildExcelTemplateGuidanceMessage(templateVirtualPath, worksheetName, "Template sanal yolu boş"), nameof(templateVirtualPath));
+
+            string templatePath = Server.MapPath(templateVirtualPath);
+            if (string.IsNullOrWhiteSpace(templatePath))
+                throw new InvalidOperationException(BuildExcelTemplateGuidanceMessage(templateVirtualPath, worksheetName, "Server.MapPath boş/null döndü"));
+
+            if (!System.IO.File.Exists(templatePath))
+                throw new FileNotFoundException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Şablon dosyası bulunamadı"), templatePath);
+
+            return templatePath;
+        }
+
         ExcelPackage CreateExcelPackage(string templatePath, string worksheetName)
         {
             EnsureExcelPackageLicenseContext();
 
             if (string.IsNullOrWhiteSpace(templatePath))
-                throw new ArgumentException("Excel şablon yolu boş geldi.", nameof(templatePath));
+                throw new ArgumentException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Şablon yolu boş geldi"), nameof(templatePath));
 
             if (!System.IO.File.Exists(templatePath))
-                throw new FileNotFoundException("Excel şablonu bulunamadı: " + templatePath, templatePath);
+                throw new FileNotFoundException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Şablon dosyası bulunamadı"), templatePath);
 
             ValidateReadableFile(templatePath);
 
+            ExcelPackage excel = null;
             try
             {
-                ExcelPackage excel = new ExcelPackage(new FileInfo(templatePath));
+                excel = new ExcelPackage(new FileInfo(templatePath));
+                if (excel == null)
+                    throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "ExcelPackage nesnesi null döndü"));
+
+                if (excel.Workbook == null)
+                    throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Workbook null döndü (dosya bozuk veya desteklenmeyen format olabilir)"));
+
+                if (excel.Workbook.Worksheets == null)
+                    throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Workbook.Worksheets null döndü"));
+
                 if (excel.Workbook.Worksheets.Count < 1)
-                {
-                    excel.Dispose();
-                    throw new InvalidDataException("Excel şablonunda çalışma sayfası bulunamadı: " + templatePath);
-                }
+                    throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Şablonda en az bir worksheet bulunmalı"));
+
+                if (!string.IsNullOrWhiteSpace(worksheetName) && !excel.Workbook.Worksheets.Any(ws => ws != null && string.Equals(ws.Name, worksheetName, StringComparison.OrdinalIgnoreCase)))
+                    throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Beklenen worksheet bulunamadı"));
 
                 return excel;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Excel şablonu açılırken hata oluştu: " + templatePath, ex);
+                if (excel != null)
+                    excel.Dispose();
+
+                string message = BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "EPPlus ile şablon açılırken hata oluştu: " + ex.Message);
+                System.Diagnostics.Trace.WriteLine("[CreateExcelPackage] " + message);
+                throw new InvalidOperationException(message, ex);
             }
         }
 
         ExcelWorksheet ResolveWorksheet(ExcelPackage excel, string worksheetName, string templatePath)
         {
             if (excel == null)
-                throw new ArgumentNullException(nameof(excel));
+                throw new ArgumentNullException(nameof(excel), BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "ExcelPackage null geldi"));
+
+            if (excel.Workbook == null)
+                throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Workbook null"));
+
+            if (excel.Workbook.Worksheets == null)
+                throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Worksheets null"));
 
             if (excel.Workbook.Worksheets.Count < 1)
-                throw new InvalidDataException("Excel şablonunda çalışma sayfası bulunamadı: " + templatePath);
+                throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Şablonda worksheet bulunamadı"));
 
             if (string.IsNullOrWhiteSpace(worksheetName))
-                return excel.Workbook.Worksheets.First();
+            {
+                ExcelWorksheet firstWorksheet = excel.Workbook.Worksheets.FirstOrDefault();
+                if (firstWorksheet == null)
+                    throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "İlk worksheet null döndü"));
+                return firstWorksheet;
+            }
 
-            ExcelWorksheet targetWorksheet = excel.Workbook.Worksheets.FirstOrDefault(ws => string.Equals(ws.Name, worksheetName, StringComparison.OrdinalIgnoreCase));
+            ExcelWorksheet targetWorksheet = excel.Workbook.Worksheets.FirstOrDefault(ws => ws != null && string.Equals(ws.Name, worksheetName, StringComparison.OrdinalIgnoreCase));
             if (targetWorksheet != null)
                 return targetWorksheet;
 
-            ExcelWorksheet fallbackWorksheet = excel.Workbook.Worksheets.First();
-            System.Diagnostics.Trace.WriteLine("[ResolveWorksheet] Beklenen sayfa bulunamadı. Beklenen=" + worksheetName + ", İlkSayfa=" + fallbackWorksheet.Name + ", Yol=" + templatePath);
-
-            if (!string.Equals(fallbackWorksheet.Name, worksheetName, StringComparison.OrdinalIgnoreCase))
-            {
-                try
-                {
-                    fallbackWorksheet.Name = worksheetName;
-                }
-                catch (Exception renameEx)
-                {
-                    System.Diagnostics.Trace.WriteLine("[ResolveWorksheet] Sayfa adı güncellenemedi. Beklenen=" + worksheetName + ", Mevcut=" + fallbackWorksheet.Name + ", Yol=" + templatePath + " | " + renameEx.Message);
-                }
-            }
-
-            return fallbackWorksheet;
+            string mevcutSayfalar = string.Join(", ", excel.Workbook.Worksheets.Where(ws => ws != null).Select(ws => ws.Name));
+            if (string.IsNullOrWhiteSpace(mevcutSayfalar))
+                mevcutSayfalar = "(yok)";
+            string message = BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Beklenen worksheet bulunamadı. Mevcut worksheet'ler: " + mevcutSayfalar);
+            System.Diagnostics.Trace.WriteLine("[ResolveWorksheet] " + message);
+            throw new InvalidDataException(message);
         }
 
         bool TryCreateFallbackExcel(string fullPath, long siparisId, Exception ex)
@@ -2465,13 +2507,13 @@ namespace CamSistemWebArayuz.Controllers
 
             ViewBag.AluKg = aluKgFiyat;
 
-            string path = Server.MapPath("~/Assets/sablonStokYeni.xlsx");
+            string path = GetExcelTemplatePathOrThrow(SiparisExcelTemplateRelativePath, SiparisWorksheetName);
 
             try
             {
-                using (ExcelPackage excel = CreateExcelPackage(path, "Siparis"))
+                using (ExcelPackage excel = CreateExcelPackage(path, SiparisWorksheetName))
                 {
-                    ExcelWorksheet xlWorkSheet = ResolveWorksheet(excel, "Siparis", path);
+                    ExcelWorksheet xlWorkSheet = ResolveWorksheet(excel, SiparisWorksheetName, path);
                     xlWorkSheet.Cells.Style.Font.Name = "Arial";
                     xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
                     xlWorkSheet.Cells["D5"].Value = BuildAdresMetni(adres);
@@ -2622,13 +2664,13 @@ namespace CamSistemWebArayuz.Controllers
             SiparisStokSablon sablon = BuildSiparisSablon(siparisId, out Siparis siparis, out decimal aluKgFiyat);
             ViewBag.AluKg = aluKgFiyat;
 
-            string path = Server.MapPath("~/Assets/sablonStokYeni.xlsx");
+            string path = GetExcelTemplatePathOrThrow(SiparisExcelTemplateRelativePath, SiparisWorksheetName);
 
             try
             {
-                using (ExcelPackage excel = CreateExcelPackage(path, "Siparis"))
+                using (ExcelPackage excel = CreateExcelPackage(path, SiparisWorksheetName))
                 {
-                    ExcelWorksheet xlWorkSheet = ResolveWorksheet(excel, "Siparis", path);
+                    ExcelWorksheet xlWorkSheet = ResolveWorksheet(excel, SiparisWorksheetName, path);
                     xlWorkSheet.Cells.Style.Font.Name = "Arial";
                     xlWorkSheet.Cells["A5"].Value = SanitizeExcelText(siparis.MusteriTamAdi);
                     xlWorkSheet.Cells["D5"].Value = sablon.SirketAdres;
