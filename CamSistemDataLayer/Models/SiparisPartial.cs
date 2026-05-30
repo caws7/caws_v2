@@ -108,6 +108,13 @@ namespace CamSistemDataLayer.Models
                             int rowSistemId = satirBazliSistemVar ? row.SistemId.Value : (SistemId ?? 0);
                             int? rowSistemTurId = satirBazliSistemVar ? row.SistemTurId : SistemTurId;
                             int? rowAltSistemId = satirBazliSistemVar ? row.AltSistemId : AltSistemId;
+                            if (satirBazliSistemVar && SistemId.HasValue && SistemId.Value > 0 && rowSistemId == SistemId.Value)
+                            {
+                                if ((!rowSistemTurId.HasValue || rowSistemTurId.Value <= 0) && SistemTurId.HasValue && SistemTurId.Value > 0)
+                                    rowSistemTurId = SistemTurId;
+                                if ((!rowAltSistemId.HasValue || rowAltSistemId.Value <= 0) && AltSistemId.HasValue && AltSistemId.Value > 0)
+                                    rowAltSistemId = AltSistemId;
+                            }
 
                             string rowRetVal = "";
                             if (rowSistemId > 0)

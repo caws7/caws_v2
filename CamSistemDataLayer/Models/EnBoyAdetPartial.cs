@@ -42,6 +42,13 @@ namespace CamSistemDataLayer.Models
                 int rowSistemId = satirBazliSistemVar ? SistemId.Value : (siparisModel?.SistemId ?? 0);
                 int? rowSistemTurId = satirBazliSistemVar ? SistemTurId : siparisModel?.SistemTurId;
                 int? rowAltSistemId = satirBazliSistemVar ? AltSistemId : siparisModel?.AltSistemId;
+                if (satirBazliSistemVar && siparisModel != null && siparisModel.SistemId.HasValue && siparisModel.SistemId.Value > 0 && rowSistemId == siparisModel.SistemId.Value)
+                {
+                    if ((!rowSistemTurId.HasValue || rowSistemTurId.Value <= 0) && siparisModel.SistemTurId.HasValue && siparisModel.SistemTurId.Value > 0)
+                        rowSistemTurId = siparisModel.SistemTurId;
+                    if ((!rowAltSistemId.HasValue || rowAltSistemId.Value <= 0) && siparisModel.AltSistemId.HasValue && siparisModel.AltSistemId.Value > 0)
+                        rowAltSistemId = siparisModel.AltSistemId;
+                }
 
                 string retVal = "";
                 if (rowSistemId > 0)

@@ -134,14 +134,29 @@ namespace CamSistemWebArayuz.Controllers
             return (kanatAdedi.HasValue && kanatAdedi.Value > 0) ? kanatAdedi.Value : 1;
         }
 
+        private static bool HasValidId(int? id)
+        {
+            return id.HasValue && id.Value > 0;
+        }
+
         private static Tuple<int, int?, int?> ResolveSiparisSatirSistemBilgileri(Siparis siparis, SiparisEnBoyAdet satir)
         {
-            if (satir != null && satir.SistemId.HasValue && satir.SistemId.Value > 0)
+            var orderSistemId = siparis?.SistemId ?? 0;
+            bool satirBazliSistemVar = satir != null && satir.SistemId.HasValue && satir.SistemId.Value > 0;
+
+            int sistemId = satirBazliSistemVar ? satir.SistemId.Value : orderSistemId;
+            int? altSistemId = satirBazliSistemVar ? satir.AltSistemId : siparis?.AltSistemId;
+            int? sistemTurId = satirBazliSistemVar ? satir.SistemTurId : siparis?.SistemTurId;
+
+            if (satirBazliSistemVar && orderSistemId > 0 && sistemId == orderSistemId)
             {
-                return Tuple.Create(satir.SistemId.Value, satir.AltSistemId, satir.SistemTurId);
+                if (!HasValidId(altSistemId) && HasValidId(siparis?.AltSistemId))
+                    altSistemId = siparis.AltSistemId;
+                if (!HasValidId(sistemTurId) && HasValidId(siparis?.SistemTurId))
+                    sistemTurId = siparis.SistemTurId;
             }
 
-            return Tuple.Create((int)(siparis?.SistemId ?? 0), siparis?.AltSistemId, siparis?.SistemTurId);
+            return Tuple.Create(sistemId, altSistemId, sistemTurId);
         }
 
         private OptimizasyonHesap ParseKesimBicimiToHesap(string kesimBicimi, string kullanilanAlan, long siparisId, OptOutput output, int kullaniciId)
@@ -1013,7 +1028,7 @@ namespace CamSistemWebArayuz.Controllers
                 ProfilDetayBilgileri profilDetay = new ProfilDetayBilgileri();
                 if (camBilgileriList != null)
                 {
-                    if (altSistemId4Surme.Contains(effectiveAltSistemId))
+                    if (effectiveAltSistemId.HasValue && altSistemId4Surme.Contains(effectiveAltSistemId.Value))
                     {
                         profilDetay.ToplamAlan = camBilgileriList.Where(e => !string.IsNullOrWhiteSpace(e.CamAdi) && e.CamAdi.Contains("SAĞ")).Sum(e => e.Alanm2);
                         ent.camList = camBilgileriList.ToList();
