@@ -207,7 +207,7 @@
                     <tbody>
                         @if (ViewBag.yuklenenDosyaList != null)
                         {
-                            foreach (var dosya in ViewBag.yuklenenDosyaList)
+                            @foreach (var dosya in ViewBag.yuklenenDosyaList)
                             {
                                 <tr>
                                     <td>@dosya.DosyaAdi</td>

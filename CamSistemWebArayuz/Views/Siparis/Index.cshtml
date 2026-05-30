@@ -52,7 +52,7 @@
                                     <td>
                                         @if (!string.IsNullOrEmpty(item.SistemTamami))
                                         {
-                                            foreach (var sistemAdi in item.SistemTamami.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries))
+                                            @foreach (var sistemAdi in item.SistemTamami.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries))
                                             {
                                                 <div>@sistemAdi</div>
                                             }
