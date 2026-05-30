@@ -1858,7 +1858,16 @@ namespace CamSistemWebArayuz.Controllers
             if (string.IsNullOrWhiteSpace(templateVirtualPath))
                 throw new ArgumentException(BuildExcelTemplateGuidanceMessage(templateVirtualPath, worksheetName, "Template sanal yolu boş"), nameof(templateVirtualPath));
 
-            string templatePath = Server.MapPath(templateVirtualPath);
+            string templatePath;
+            try
+            {
+                templatePath = Server.MapPath(templateVirtualPath);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(BuildExcelTemplateGuidanceMessage(templateVirtualPath, worksheetName, "Server.MapPath başarısız: " + ex.Message), ex);
+            }
+
             if (string.IsNullOrWhiteSpace(templatePath))
                 throw new InvalidOperationException(BuildExcelTemplateGuidanceMessage(templateVirtualPath, worksheetName, "Server.MapPath boş/null döndü"));
 
@@ -1895,9 +1904,6 @@ namespace CamSistemWebArayuz.Controllers
 
                 if (excel.Workbook.Worksheets.Count < 1)
                     throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Şablonda en az bir worksheet bulunmalı"));
-
-                if (!string.IsNullOrWhiteSpace(worksheetName) && !excel.Workbook.Worksheets.Any(ws => ws != null && string.Equals(ws.Name, worksheetName, StringComparison.OrdinalIgnoreCase)))
-                    throw new InvalidDataException(BuildExcelTemplateGuidanceMessage(templatePath, worksheetName, "Beklenen worksheet bulunamadı"));
 
                 return excel;
             }
