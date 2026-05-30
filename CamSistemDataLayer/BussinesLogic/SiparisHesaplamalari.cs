@@ -82,8 +82,19 @@ namespace CamSistemDataLayer.BussinesLogic
             {
                 // Use per-row system overrides when provided
                 int? effectiveSistemId = sistemIdOverride.HasValue && sistemIdOverride.Value > 0 ? sistemIdOverride : siparis.SistemId;
-                int? effectiveAltSistemId = altSistemIdOverride.HasValue && altSistemIdOverride.Value > 0 ? altSistemIdOverride : siparis.AltSistemId;
-                int? effectiveSistemTurId = sistemTurIdOverride.HasValue && sistemTurIdOverride.Value > 0 ? sistemTurIdOverride : siparis.SistemTurId;
+
+                // Only fall back to order-level AltSistemId/SistemTurId when the current row's
+                // system matches the order-level system. In mixed orders (e.g. Giyotin + Sürme),
+                // siparis.AltSistemId/SistemTurId belong to whichever system was the first row,
+                // so using them for a different system would produce a wrong join-table lookup.
+                bool sameSystem = siparis.SistemId.HasValue && siparis.SistemId.Value > 0
+                                  && effectiveSistemId == siparis.SistemId;
+                int? effectiveAltSistemId = (altSistemIdOverride.HasValue && altSistemIdOverride.Value > 0)
+                    ? altSistemIdOverride
+                    : (sameSystem ? siparis.AltSistemId : null);
+                int? effectiveSistemTurId = (sistemTurIdOverride.HasValue && sistemTurIdOverride.Value > 0)
+                    ? sistemTurIdOverride
+                    : (sameSystem ? siparis.SistemTurId : null);
 
                 // Normalize 0 to null: form sends 0 for "not selected", treat same as null/-1
                 if (effectiveAltSistemId.HasValue && effectiveAltSistemId.Value == 0) effectiveAltSistemId = null;
