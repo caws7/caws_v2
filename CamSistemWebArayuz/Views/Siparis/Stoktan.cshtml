@@ -9,15 +9,19 @@
 @*<script src="~/plugins/jquery/jquery.min.js"></script>*@
 <script src="~/Scripts/jspdf.umd.js"></script>
 <script src="~/Scripts/html2canvas.min.js"></script>
+<div id="siparisDetayAntiForgeryToken" style="display:none;">
+    @Html.AntiForgeryToken()
+</div>
 <script language="javascript" type="text/javascript">
     function SiparisDetayiGoruntule(_siparisId) {
         var url = '@Url.Action("StoktanSiparisGoruntule", "Siparis")';
+        var antiForgeryToken = $('#siparisDetayAntiForgeryToken input[name="__RequestVerificationToken"]').val();
 
         $('#showDuzenleModal').modal('show');
         $.ajax({
             url: url,
             type: 'POST',
-            data: { SiparisId: _siparisId },
+            data: { SiparisId: _siparisId, __RequestVerificationToken: antiForgeryToken },
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
             dataType: 'html',
             beforeSend: function (xhr) {

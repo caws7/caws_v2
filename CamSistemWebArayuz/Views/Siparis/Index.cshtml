@@ -172,6 +172,10 @@
     </div>
 </div>
 
+<div id="siparisDetayAntiForgeryToken" style="display:none;">
+    @Html.AntiForgeryToken()
+</div>
+
 <!-- Aksesuar Modal -->
 <div id="siparisAksesuarDuzenleModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
@@ -294,6 +298,7 @@
 
     function SiparisDetayiGoruntule(_siparisId) {
         var url = '@Url.Action("SiparisDetayGoruntule", "Siparis")';
+        var antiForgeryToken = $('#siparisDetayAntiForgeryToken input[name="__RequestVerificationToken"]').val();
 
         $('#searchResults').html('<div style="text-align:center;padding:40px;color:#666;"><i class="material-icons" style="font-size:48px;vertical-align:middle;">sync</i><br/><span>Yükleniyor...</span></div>');
         $('#showDuzenleModal').modal('show');
@@ -301,7 +306,7 @@
         $.ajax({
             url: url,
             type: 'POST',
-            data: { SiparisId: _siparisId, raporMu: false },
+            data: { SiparisId: _siparisId, raporMu: false, __RequestVerificationToken: antiForgeryToken },
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
             dataType: 'html',
             timeout: 60000,

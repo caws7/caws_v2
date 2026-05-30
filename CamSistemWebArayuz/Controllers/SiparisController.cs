@@ -143,7 +143,7 @@ namespace CamSistemWebArayuz.Controllers
         {
             var orderSistemId = siparis?.SistemId ?? 0;
             bool satirBazliSistemVar = satir != null && HasValidId(satir.SistemId);
-            bool satirBazliMetadataVar = satir != null && (HasValidId(satir.SistemId) || HasValidId(satir.AltSistemId) || HasValidId(satir.SistemTurId));
+            bool satirBazliMetadataVar = satirBazliSistemVar || (satir != null && (HasValidId(satir.AltSistemId) || HasValidId(satir.SistemTurId)));
 
             int sistemId = satirBazliSistemVar
                 ? satir.SistemId.Value
@@ -886,6 +886,7 @@ namespace CamSistemWebArayuz.Controllers
         #region Siparis Detay
         [AuthLog(Roles = "SİPARİS,GORUNTULEME")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SiparisDetayGoruntule(long SiparisId, bool raporMu = false)
         {
             try
@@ -917,6 +918,7 @@ namespace CamSistemWebArayuz.Controllers
 
         [AuthLog(Roles = "SİPARİS,GORUNTULEME")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult StoktanSiparisGoruntule(long SiparisId)
         {
             return SiparisDetayGoruntule(SiparisId, false);

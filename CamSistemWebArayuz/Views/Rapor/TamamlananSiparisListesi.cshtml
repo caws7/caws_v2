@@ -6,8 +6,15 @@
     Layout = "~/Views/Shared/_HomeLayout.cshtml";
 }
 
+<div id="siparisDetayAntiForgeryToken" style="display:none;">
+    @Html.AntiForgeryToken()
+</div>
+
 <script>
     function SiparisDetayiYukleUtf8(url, data) {
+        var antiForgeryToken = $('#siparisDetayAntiForgeryToken input[name="__RequestVerificationToken"]').val();
+        if (!data) data = {};
+        data.__RequestVerificationToken = antiForgeryToken;
         $.ajax({
             url: url,
             type: 'POST',

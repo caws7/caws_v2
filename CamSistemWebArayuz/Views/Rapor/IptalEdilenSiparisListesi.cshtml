@@ -6,15 +6,20 @@
     Layout = "~/Views/Shared/_HomeLayout.cshtml";
 }
 
+<div id="siparisDetayAntiForgeryToken" style="display:none;">
+    @Html.AntiForgeryToken()
+</div>
+
 <script>
     function SiparisDetayiGoruntule(_siparisId) {
         var url = '@Url.Action("SiparisDetayGoruntule", "Siparis")';
+        var antiForgeryToken = $('#siparisDetayAntiForgeryToken input[name="__RequestVerificationToken"]').val();
 
         $('#showDuzenleModal').modal('show');
         $.ajax({
             url: url,
             type: 'POST',
-            data: { SiparisId: _siparisId, raporMu: true },
+            data: { SiparisId: _siparisId, raporMu: true, __RequestVerificationToken: antiForgeryToken },
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
             dataType: 'html',
             beforeSend: function (xhr) {
