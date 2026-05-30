@@ -756,44 +756,45 @@
                                 <tbody>
                                     @if (item.teklifList != null)
                                     {
-                                    foreach (var item2 in item.teklifList)
-                                    {
-                    <tr>
-                        <td class="TeklifId">
-                            <span>@Html.DisplayFor(modelItem => item2.Id)</span>
-                        </td>
-                        <td class="SiparisEnBoyAdetId">
-                            <span>@Html.DisplayFor(modelItem => item2.SiparisEnBoyAdetId)</span>
-                        </td>
-                        <td class="Malzeme">
-                            <span>@Html.DisplayFor(modelItem => item2.Malzeme)</span>
-                            @*<input type="text" value="@item2.Malzeme" style="display:none" />*@
-                        </td>
-                        <td class="Birim">
-                            <span>@Html.DisplayFor(modelItem => item2.Birim)</span>
-                            <input type="text" value="@item2.Birim" style="display:none" />
-                        </td>
-                        <td class="Miktar">
-                            <span>@Html.DisplayFor(modelItem => item2.Miktar)</span>
-                            <input type="text" value="@item2.Miktar" style="display:none" />
-                        </td>
-                        <td class="BirimFiyat">
-                            <span>@Html.Raw(string.Format("{0:c2}", item2.BirimFiyat))</span>
-                            <input type="text" value="@item2.BirimFiyat" style="display:none" />
-                        </td>
-                        <td class="ToplamTutar">
-                            <span>@Html.Raw(string.Format("{0:c2}", item2.ToplamTutar))</span>
-                            <input type="text" value="@item2.ToplamTutar" style="display:none" />
-                        </td>
-                        <td>
-                            @if (!ViewBag.raporMu)
-                            {
-                <a class="Edit" href="javascript:;">Düzenle</a>
-                                        <a class="Update" href="javascript:;" style="display:none">Güncelle</a>
-                                                                <a class="Cancel" href="javascript:;" style="display:none">Vazgeç</a>}
-                        </td>
-                    </tr>
-                }
+                                        @foreach (var item2 in item.teklifList)
+                                        {
+                                            <tr>
+                                                <td class="TeklifId">
+                                                    <span>@Html.DisplayFor(modelItem => item2.Id)</span>
+                                                </td>
+                                                <td class="SiparisEnBoyAdetId">
+                                                    <span>@Html.DisplayFor(modelItem => item2.SiparisEnBoyAdetId)</span>
+                                                </td>
+                                                <td class="Malzeme">
+                                                    <span>@Html.DisplayFor(modelItem => item2.Malzeme)</span>
+                                                    @*<input type="text" value="@item2.Malzeme" style="display:none" />*@
+                                                </td>
+                                                <td class="Birim">
+                                                    <span>@Html.DisplayFor(modelItem => item2.Birim)</span>
+                                                    <input type="text" value="@item2.Birim" style="display:none" />
+                                                </td>
+                                                <td class="Miktar">
+                                                    <span>@Html.DisplayFor(modelItem => item2.Miktar)</span>
+                                                    <input type="text" value="@item2.Miktar" style="display:none" />
+                                                </td>
+                                                <td class="BirimFiyat">
+                                                    <span>@Html.Raw(string.Format("{0:c2}", item2.BirimFiyat))</span>
+                                                    <input type="text" value="@item2.BirimFiyat" style="display:none" />
+                                                </td>
+                                                <td class="ToplamTutar">
+                                                    <span>@Html.Raw(string.Format("{0:c2}", item2.ToplamTutar))</span>
+                                                    <input type="text" value="@item2.ToplamTutar" style="display:none" />
+                                                </td>
+                                                <td>
+                                                    @if (!ViewBag.raporMu)
+                                                    {
+                                                        <a class="Edit" href="javascript:;">Düzenle</a>
+                                                        <a class="Update" href="javascript:;" style="display:none">Güncelle</a>
+                                                        <a class="Cancel" href="javascript:;" style="display:none">Vazgeç</a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
                                     }
                                 </tbody>
                             </table>
