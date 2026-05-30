@@ -80,10 +80,18 @@ namespace CamSistemDataLayer.BussinesLogic
 
             if (siparis != null)
             {
-                // Use per-row system overrides when provided
-                int? effectiveSistemId = sistemIdOverride.HasValue && sistemIdOverride.Value > 0 ? sistemIdOverride : siparis.SistemId;
-                int? effectiveAltSistemId = altSistemIdOverride.HasValue && altSistemIdOverride.Value > 0 ? altSistemIdOverride : siparis.AltSistemId;
-                int? effectiveSistemTurId = sistemTurIdOverride.HasValue && sistemTurIdOverride.Value > 0 ? sistemTurIdOverride : siparis.SistemTurId;
+                // When a row-level sistemId is provided (> 0), use its alt/tur overrides directly
+                // (even if null) to prevent cross-system contamination in mixed orders.
+                // Example: a Sürme row with null AltSistemId must NOT inherit the Giyotin
+                // AltSistemId that was stored at order level from the first row.
+                bool hasRowLevelSistemId = sistemIdOverride.HasValue && sistemIdOverride.Value > 0;
+                int? effectiveSistemId = hasRowLevelSistemId ? sistemIdOverride : siparis.SistemId;
+                int? effectiveAltSistemId = hasRowLevelSistemId
+                    ? altSistemIdOverride
+                    : (altSistemIdOverride.HasValue && altSistemIdOverride.Value > 0 ? altSistemIdOverride : siparis.AltSistemId);
+                int? effectiveSistemTurId = hasRowLevelSistemId
+                    ? sistemTurIdOverride
+                    : (sistemTurIdOverride.HasValue && sistemTurIdOverride.Value > 0 ? sistemTurIdOverride : siparis.SistemTurId);
 
                 // Normalize 0 to null: form sends 0 for "not selected", treat same as null/-1
                 if (effectiveAltSistemId.HasValue && effectiveAltSistemId.Value == 0) effectiveAltSistemId = null;
