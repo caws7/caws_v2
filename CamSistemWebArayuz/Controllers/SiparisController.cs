@@ -992,8 +992,6 @@ namespace CamSistemWebArayuz.Controllers
                 ViewBag.aciklamaDosyaList = aciklamaDosyalari;
             }
 
-            List<int> altSistemId4Surme = new List<int> { 1012, 1013, 1014, 1015 };
-
             foreach (var item in siparisAdet)
             {
                 SiparisEnBoyAdet ent = new SiparisEnBoyAdet();
@@ -1047,16 +1045,8 @@ namespace CamSistemWebArayuz.Controllers
                 ProfilDetayBilgileri profilDetay = new ProfilDetayBilgileri();
                 if (camBilgileriList != null)
                 {
-                    if (effectiveAltSistemId.HasValue && altSistemId4Surme.Contains(effectiveAltSistemId.Value))
-                    {
-                        profilDetay.ToplamAlan = camBilgileriList.Where(e => !string.IsNullOrWhiteSpace(e.CamAdi) && e.CamAdi.Contains("SAĞ")).Sum(e => e.Alanm2);
-                        ent.camList = camBilgileriList.ToList();
-                    }
-                    else
-                    {
-                        profilDetay.ToplamAlan = camBilgileriList.Sum(e => e.Alanm2);
-                        ent.camList = camBilgileriList.ToList();
-                    }
+                    profilDetay.ToplamAlan = camBilgileriList.Sum(e => e.Alanm2);
+                    ent.camList = camBilgileriList.ToList();
                 }
                 else
                 {
