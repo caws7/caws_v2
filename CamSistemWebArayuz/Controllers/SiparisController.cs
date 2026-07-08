@@ -37,7 +37,7 @@ namespace CamSistemWebArayuz.Controllers
     {
         // Her kesimden önce ve sonra eklenen bıçak payı (mm)
         private const int BICHAK_PAYI = 4;
-        private const string KAR_PAYI_MALZEME = "KAR PAYI";
+        private const string KAR_PAYI_MALZEME = "KAR ORANI";
         private const string ExcelMimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         private const string SacBoruProfilKodu = "SB-101";
         private static readonly object ExcelPackageLicenseLock = new object();
@@ -1089,7 +1089,7 @@ namespace CamSistemWebArayuz.Controllers
                     "AKSESUAR SETİ",
                     "İMALAT BEDELİ",
                     "SARF MALZEME BEDELİ",
-                    "KAR PAYI"
+                    "KAR ORANI"
                 };
 
                 if (teklifSatirlari == null || teklifSatirlari.Count == 0)

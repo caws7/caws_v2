@@ -28,7 +28,7 @@ namespace CamSistemDataLayer.BussinesLogic
         /// <summary>
         /// Bir sipariş kalemi için maliyet analizi hesaplar.
         /// Sabitler önce açıklamaya göre aranır, bulunamazsa eski Id karşılıklarına düşülür.
-        /// Legacy eşlemeler: 2=Alüminyum, 3=İmalat, 4=Sarf, 5=Kar Oranı, 8=Cam, 9=Aksesuar Seti, 10=Kar Payı Birim Fiyat.
+        /// Legacy eşlemeler: 2=Alüminyum, 3=İmalat, 4=Sarf, 8=Cam, 9=Aksesuar Seti, 10=Kar Oranı (sabit adı "KAR PAYI BİRİM FİYAT"). Not: 5 (KAR PAYI ORANI) artık kullanılmıyor.
         /// </summary>
         public static MaliyetToplam MaliyetHesaplama(
             List<Aksesuar> aksesuarEntities,
@@ -144,26 +144,22 @@ namespace CamSistemDataLayer.BussinesLogic
                 ToplamTutar = sistemM2 * sarfBirimFiyat
             });
 
-            // --- 6. KAR PAYI ---
-            decimal karPayiOran = GetSabitDeger(tumSabitler, 5, "KAR PAYI ORANI", false);
+            // --- 6. KAR ORANI ---
+            // Kâr oranı, sabit tanımlamalardaki "KAR PAYI BİRİM FİYAT" (Id 10) değerinden
+            // okunur ve yüzde (%) olarak uygulanır.
+            decimal karOrani = GetSabitDeger(tumSabitler, 10, "KAR PAYI BİRİM FİYAT", false);
 
             decimal araToplamTutar = maliyetList.Sum(m => m.ToplamTutar);
-            decimal karPayiTutar = araToplamTutar * karPayiOran / 100m;
-            decimal karPayiBirimFiyat = araToplamTutar > 0m ? araToplamTutar / 100m : 0m;
-            var karPayiSabitBirimFiyat = GetSabitDeger(tumSabitler, 10, "KAR PAYI BİRİM FİYAT", true);
-            if (karPayiSabitBirimFiyat > 0m)
-            {
-                karPayiBirimFiyat = karPayiSabitBirimFiyat;
-                karPayiTutar = karPayiBirimFiyat * karPayiOran;
-            }
+            decimal karTutar = araToplamTutar * karOrani / 100m;
+            decimal karBirimFiyat = araToplamTutar > 0m ? araToplamTutar / 100m : 0m;
 
             maliyetList.Add(new Maliyet
             {
-                Malzeme = "KAR PAYI",
+                Malzeme = "KAR ORANI",
                 Birim = "%",
-                Miktar = karPayiOran,
-                BirimFiyat = karPayiBirimFiyat,
-                ToplamTutar = karPayiTutar
+                Miktar = karOrani,
+                BirimFiyat = karBirimFiyat,
+                ToplamTutar = karTutar
             });
 
             decimal toplamMaliyet = maliyetList.Sum(m => m.ToplamTutar);
