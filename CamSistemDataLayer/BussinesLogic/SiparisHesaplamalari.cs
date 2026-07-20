@@ -274,6 +274,22 @@ namespace CamSistemDataLayer.BussinesLogic
             return false;
         }
 
+        private static bool IsSurmeSistem(string sistemAdi)
+        {
+            if (string.IsNullOrWhiteSpace(sistemAdi))
+                return false;
+
+            var normalized = sistemAdi
+                .Trim()
+                .Replace("ü", "u")
+                .Replace("Ü", "U")
+                .Replace("ı", "i")
+                .Replace("İ", "I");
+
+            return normalized.Equals("Surme Sistem", StringComparison.OrdinalIgnoreCase)
+                || normalized.Equals("Surme Sistemi", StringComparison.OrdinalIgnoreCase);
+        }
+
         private static bool IsTekCamSecimi(string altSistemAdi, string sistemTurAdi)
         {
             if (IsTekCamliAltSistem(altSistemAdi))
