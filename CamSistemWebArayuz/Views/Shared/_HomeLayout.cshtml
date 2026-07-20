@@ -595,7 +595,7 @@
 
             var printWindow = window.open('', '', 'height=600,width=800');
             printWindow.document.open();
-            printWindow.document.write('<html><head><title>OPT\u0130M\u0130ZASYON</title><base href="' + window.location.protocol + '//' + window.location.host + '/" /></head><body>');
+            printWindow.document.write('<html><head><meta charset="utf-8" /><title>OPT\u0130M\u0130ZASYON</title><base href="' + window.location.protocol + '//' + window.location.host + '/" /></head><body>');
             printWindow.document.write(htmlToPrint);
             printWindow.document.write('</body></html>');
             printWindow.document.close();
@@ -605,7 +605,7 @@
         function printTextArea(elem) {
             childWindow = window.open('', 'childWindow', 'location=yes, menubar=yes, toolbar=yes');
             childWindow.document.open();
-            childWindow.document.write('<html><head></head><body>');
+            childWindow.document.write('<html><head><meta charset="utf-8" /></head><body>');
             childWindow.document.write(document.getElementById(elem).value.replace(/\n/gi, '<br>'));
             childWindow.document.write('</body></html>');
             childWindow.print();
