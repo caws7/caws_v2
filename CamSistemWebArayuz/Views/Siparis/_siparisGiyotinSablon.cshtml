@@ -818,6 +818,7 @@
     }
     @if ((bool)(ViewBag.optiVarMi ?? false) && Model != null && Model.Any())
     {
+        <text>
         <div role="tabpanel" class="tab-pane fade" id="optimizasyon">            <div class="modal-body">
                 <div class="tab-content">
                     <div id="optimizasyonyazdir">
@@ -963,9 +964,11 @@
                 </div>
             </div>
         </div>
+        </text>
     }
     else
     {
+        <text>
         <div role="tabpanel" class="tab-pane fade" id="optimizasyon">
             <div class="modal-body">
                 <div id="optimizasyonContent">
@@ -992,6 +995,7 @@
                 </script>
             </div>
         </div>
+        </text>
     }
 </div>
 

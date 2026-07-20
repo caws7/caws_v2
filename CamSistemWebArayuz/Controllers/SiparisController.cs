@@ -623,18 +623,30 @@ namespace CamSistemWebArayuz.Controllers
                 var sabitRepo = new SabitRepo();
                 ViewBag.minimumFire = sabitRepo.FindBy(e => e.Id == 1).FirstOrDefault()?.SabitDeger ?? 0;
                 var pozLookup = BuildPozLookupForSiparis(SiparisId);
+                var hazirlananKesimSayisi = pozLookup.Item1.Sum(x => x.Value != null ? x.Value.Count : 0);
                 ViewBag.PozOlcuQueueMap = pozLookup.Item1.ToDictionary(k => k.Key, v => v.Value.ToList());
                 ViewBag.ProfilDefaultPozMap = pozLookup.Item2;
 
                 var kayitlar = GetOrRunOptimizasyonHesaps(SiparisId, forceRecalculate)
                     .OrderByDescending(x => x.Id)
                     .ToList();
+
+                if (!kayitlar.Any())
+                {
+                    var bosNeden = hazirlananKesimSayisi <= 0
+                        ? "Optimizasyon için profil/kesim verisi hazırlanamadı. Sipariş satır sistem bilgilerini kontrol edin."
+                        : "Optimizasyon çalıştı ancak kayıt bulunamadı. Kayıt yazımı veya SiparisIds anahtarı eşleşmesi kontrol edilmeli.";
+                    ViewBag.OptimizasyonEmptyReason = bosNeden;
+                    System.Diagnostics.Debug.WriteLine($"[OptimizasyonHesapla] Boş sonuç SiparisId={SiparisId}, HazirlananKesim={hazirlananKesimSayisi}, Neden={bosNeden}");
+                }
+
                 string html = RenderPartialViewToString("_optimizasyonHesapGrid", kayitlar);
                 return Content(html, "text/html; charset=utf-8", Encoding.UTF8);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("[OptimizasyonHesapla] Hata SiparisId=" + SiparisId + ": " + ex.Message);
+                ViewBag.OptimizasyonEmptyReason = $"Optimizasyon ekranı render edilirken bir hata oluştu: {ex.GetType().Name} - {ex.Message}";
                 return PartialView("_optimizasyonHesapGrid", new List<OptimizasyonHesap>());
             }
         }
